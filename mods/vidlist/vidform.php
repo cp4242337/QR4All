@@ -1,4 +1,4 @@
-<form action="" method="post" name="codeform" id="codeform">
+<form action="index.php" method="post" name="codeform" id="codeform">
 <table border="0" cellspacing="0" cellpadding="0" class="codelist-form">
 <tr><td align="right" class="ftitle">Video Title:</td><td class="ffield"><input name="vid_title" class="field required maxLength:40" type="text" title="Video title must be 5-40 characters"  value="<?php echo $vidinfo->vid_title; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Video File:</td><td class="ffield"><input name="vid_file" class="field required" type="text" title="A valid URL is required" value="<?php echo $vidinfo->vid_file; ?>"></td></tr>
@@ -15,7 +15,7 @@
 
 			</select></td></tr>
 </table>
-<input name="task" type="hidden" value="savevid">
+<input name="task" type="hidden" value="saveVid">
 <input name="mod" type="hidden" value="vidlist">
 <input name="vid_id" type="hidden" value="<?php echo $vidinfo->vid_id; ?>">
 

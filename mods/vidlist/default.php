@@ -16,7 +16,7 @@ echo '</form>';
 }
 $count=0;
 echo '<form name="codelistform" method="post" action="">';
-foreach ($codes as $c) { 
+foreach ($vids as $c) { 
 	if ($c->cats) {
 		echo '<div class="codelist-client">'.$c->cl_name.'<br>'; 
 		foreach ($c->cats as $t) { 

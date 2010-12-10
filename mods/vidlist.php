@@ -37,7 +37,7 @@ class VidList {
 		if ($task == 'display') {
 			echo '<li><a href="#" onclick="allTask(\'stats\');">Vid Stats</a></li>';
 			if ($user->lvl > 1) {
-				echo '<li><a href="index.php?mod=codelist&task=addvid">Add Vid</a></li>';
+				echo '<li><a href="index.php?mod=vidlist&task=addvid">Add Vid</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'trash\');">Trash</a></li>';
@@ -50,7 +50,7 @@ class VidList {
 			if ($user->lvl > 1) echo '<li><a href="index.php?mod=vidlist">Cancel</a></li>';
 			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Video</a></li>';
 		}
-		if ($task=="gencodes" || $task=='showstats') {
+		if ($task=='showstats') {
 			echo '<li><a href="index.php?mod=vidlist">Videos</a></li>';
 		}
 		if ($task == 'showstats') {
@@ -65,12 +65,12 @@ class VidList {
 		global $user;
 		$curclient=(int)$_POST['client'];
 		$clients = $this->getClientList($user->id,$user->lvl);
-		$codes=$this->getVidList($clients,$curclient,$user->lvl);
+		$vids=$this->getVidList($clients,$curclient,$user->lvl);
 		include 'mods/vidlist/default.php';
 
 	}
 	
-	function saveCode() {
+	function saveVid() {
 		global $app;
 		$vid_id=JRequest::getInt('vid_id',0);
 		$vid_title=JRequest::getString('vid_title');
@@ -127,7 +127,7 @@ class VidList {
 		$cids = urldecode(JRequest::getVar('vids'));
 		$curclient=(int)$_POST['client'];
 		$clients = $this->getClientList($user->id,$user->lvl);
-		$vids=$this->getCodeList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
+		$vids=$this->getVidList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
 		$data=$this->getHits($vids,$cids,$sdate,$edate);
 		$filename = "video_data_" . date('Y-m-d') . ".xls";
 
@@ -175,7 +175,7 @@ class VidList {
 		global $user;
 		$clients = $this->getClientList($user->id,$user->lvl);
 		$cats = $this->getClientCats($clients);
-		$vidinfo=$this->getCodeInfo(JRequest::getInt('vid',0));
+		$vidinfo=$this->getVidInfo(JRequest::getInt('vid',0));
 		include 'mods/vidlist/vidform.php';
 	}
 	
@@ -290,13 +290,13 @@ class VidList {
 			$app->redirect();
 		}
 	}
-	function getCodeInfo($vid) {
+	function getVidInfo($vid) {
 		$q = 'SELECT * FROM qr4_videos WHERE vid_id = '.$vid;
 		$this->db->setQuery($q);
 		$info = $this->db->loadObject();
 		$q2 = 'SELECT catvid_cat FROM qr4_catvids WHERE catvid_vid = '.$vid;
 		$this->db->setQuery($q2); 
-		$info->cd_cat = $this->db->loadResult();
+		$info->vid_cat = $this->db->loadResult();
 		return $info;
 	}
 	

@@ -3,7 +3,9 @@ include('Browscap.php');
 include('ipinfodb.class.php');
 
 $db = new mysqli('localhost','qr4all','qr4all','qr4all');
-$q='SELECT * FROM qr4_videos WHERE vid_code= "'.$_GET['c'].'"';
+$q ='SELECT * FROM qr4_videos as v ';
+$q.='RIGHT JOIN qr4_viddom as d ON v.vid_domain=d.vd_id ';
+$q.='WHERE v.vid_code= "'.$_GET['c'].'"';
 $res = $db->query($q);
 $vidinfo = $res->fetch_object(); 
 //$browser = get_browser(null,true);
@@ -45,11 +47,11 @@ if ($browser['ismobiledevice']) {
 			break;
 		case 'Android':
 			//$url="rtsp://medicom04.costeffectivedev.com:1935/vod/mp4:".$vidinfo->vid_file."_android.mp4";
-			$url="content/".$vidinfo->vid_file."_android.3gp";
+			$url="http://".$vidinfo->vd_dom."/content/".$vidinfo->vid_file."_android.3gp";
 			break;
 		default:
 			//$url="rtsp://medicom04.costeffectivedev.com:1935/vod/mp4:".$vidinfo->vid_file."_android.mp4";
-			$url="content/".$vidinfo->vid_file."_android.3gp";
+			$url="http://".$vidinfo->vd_dom."/content/".$vidinfo->vid_file."_android.3gp";
 			break;
 	}
 } else {
@@ -57,4 +59,4 @@ if ($browser['ismobiledevice']) {
 }
 
 header("Location:".$url);
-exit;
+//echo $url;
