@@ -430,8 +430,9 @@ class VidList {
 			}
 		}
 		$q4  = 'SELECT c.vid_title as video, h.hit_time as timehit, CONCAT(h.hit_browser," ",h.hit_browserver) as browser, ';
-		$q4 .= 'h.hit_platform as platform, h.hit_ismobile as ismobile, h.hit_ipaddr as ipaddress '; 
-		$q4 .= 'FROM qr4_hits as h, qr4_videos as c '; 
+		$q4 .= 'h.hit_platform as platform, h.hit_ismobile as ismobile, h.hit_ipaddr as ipaddress, '; 
+		$q4 .= 'h.hit_city,h.hit_region,h.hit_country,h.hit_timezone ';
+		$q4 .= 'FROM qr4_vhits as h, qr4_videos as c '; 
 		$q4 .= 'WHERE c.vid_id=h.hit_vid && c.vid_id IN ('.implode(',',$usevids).') ';
 		if ($sdate && $edate) $q4 .= '&& date(hit_time) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
 		$this->db->setQuery($q4); $thits = $this->db->loadAssocList();

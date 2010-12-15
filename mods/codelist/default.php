@@ -38,7 +38,7 @@ foreach ($codes as $c) {
 					echo '<td>'.$d->hits.'&nbsp;</td>';
 					echo '<td class="codelist-ops">';
 					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'stats\')">Stats</a> ';
-					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'getcodes\')">Gen</a> ';
+					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'getcodes\')">View</a> ';
 					if ($user->lvl > 1) {
 						if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')">Unpub</a> ';
 						else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')">Pub</a> ';

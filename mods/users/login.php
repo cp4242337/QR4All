@@ -14,12 +14,7 @@
 	new Form.Validator.Inline($('login'), {
 		stopOnFailure: true,
 		useTitles: true,
-		errorPrefix: "",
-		onFormValidate: function(passed, form, event) {
-			if (passed) {
-				form.submit();
-			}
-		}
+		errorPrefix: ""
 		});
 	});
 </script>

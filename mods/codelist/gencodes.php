@@ -27,7 +27,11 @@ foreach ($codes as $c) {
 				echo '<td>';
 				echo '<img src="gencode.php?code=';
 				echo urlencode($codeurl);
-				echo '&size='.$size.'&errorc='.$errorc.'"><br />'.$codeurl;
+				echo '&size='.$size.'&errorc='.$errorc.'"><br />';
+				echo '<a href="gencodepdf.php?code=';
+				echo urlencode($codeurl).'&name='.urlencode($d->cd_name);
+				echo '&size='.$size.'&errorc='.$errorc.'" target="_blank">Generate PDF</a>';
+				echo '<br />'.$codeurl;
 				echo '</td>';
 			} 
 			echo '</tr></table></div></div></div>';

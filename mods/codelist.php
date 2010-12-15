@@ -38,7 +38,7 @@ class CodeList {
 		echo '<ul>';
 		if ($task == 'display') {
 			echo '<li><a href="#" onclick="allTask(\'stats\');">Code Stats</a></li>';
-			echo '<li><a href="#" onclick="allTask(\'getcodes\');">Gen Codes</a></li>';
+			echo '<li><a href="#" onclick="allTask(\'getcodes\');">View Codes</a></li>';
 			if ($user->lvl > 1) {
 				echo '<li><a href="index.php?mod=codelist&task=addcode">Add Code</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
@@ -451,7 +451,8 @@ class CodeList {
 			}
 		}
 		$q4  = 'SELECT c.cd_name as code, c.cd_type as codetype, h.hit_time as timehit, CONCAT(h.hit_browser," ",h.hit_browserver) as browser, ';
-		$q4 .= 'h.hit_platform as platform, h.hit_ismobile as ismobile, h.hit_ipaddr as ipaddress '; 
+		$q4 .= 'h.hit_platform as platform, h.hit_ismobile as ismobile, h.hit_ipaddr as ipaddress, '; 
+		$q4 .= 'h.hit_city,h.hit_region,h.hit_country,h.hit_timezone ';
 		$q4 .= 'FROM qr4_hits as h, qr4_codes as c '; 
 		$q4 .= 'WHERE c.cd_id=h.hit_code && c.cd_id IN ('.implode(',',$usecodes).') ';
 		if ($sdate && $edate) $q4 .= '&& date(hit_time) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
