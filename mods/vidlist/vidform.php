@@ -1,7 +1,20 @@
 <form action="index.php" method="post" name="codeform" id="codeform">
 <table border="0" cellspacing="0" cellpadding="0" class="codelist-form">
-<tr><td align="right" class="ftitle">Video Title:</td><td class="ffield"><input name="vid_title" class="field required maxLength:40" type="text" title="Video title must be 5-40 characters"  value="<?php echo $vidinfo->vid_title; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Video Int Title:</td><td class="ffield"><input name="vid_title" class="field required maxLength:40" type="text" title="Video title must be 5-40 characters"  value="<?php echo $vidinfo->vid_title; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Video Ext Title:</td><td class="ffield"><input name="vid_pubtitle" class="field required maxLength:40" type="text" title="Video title must be 5-40 characters"  value="<?php echo $vidinfo->vid_pubtitle; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Video File:</td><td class="ffield"><input name="vid_file" class="field required" type="text" title="A valid URL is required" value="<?php echo $vidinfo->vid_file; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Aspect Ratio:</td><td class="ffield"><select name="vid_rat" class="field"><?php 
+
+echo '<option value="43"';
+if ("43" == $vidinfo->vid_rat) echo ' selected';
+echo '>4x3</option>';
+
+echo '<option value="169"';
+if ("169" == $vidinfo->vid_rat) echo ' selected';
+echo '>16x9</option>';
+
+
+?></select></td></tr>
 <tr><td align="right" class="ftitle">Client/Cat:</td><td class="ffield"><select name="vid_cat" class="field required" title="Client/Category is required">
 			<?php 
 			foreach ($cats as $cl) {
@@ -10,6 +23,16 @@
 					if ($ct->cat_id == $vidinfo->vid_cat) echo ' selected';
 					echo '>'.$cl->cl_name.'/'.$ct->cat_name.'</option>';
 				}
+			}
+			?>
+
+			</select></td></tr>
+<tr><td align="right" class="ftitle">Domain:</td><td class="ffield"><select name="vid_domain" class="field required" title="Domain is required">
+			<?php 
+			foreach ($doms as $d) {
+				echo '<option value="'.$d->vd_id.'"';
+				if ($d->vd_id == $vidinfo->vid_domain) echo ' selected';
+				echo '>'.$d->vd_dom.'</option>';
 			}
 			?>
 

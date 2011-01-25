@@ -33,7 +33,7 @@ foreach ($vids as $c) {
 					else echo $d->vid_title;
 					echo '&nbsp;</td>';
 					echo '<td>'.$d->vid_file.'&nbsp;</td>';
-					echo '<td>http://video.qr4all.com/'.$d->vid_code.'&nbsp;</td>';
+					echo '<td>http://'.$d->vd_dom.'/'.$d->vid_code.'&nbsp;</td>';
 					echo '<td>'.$d->hits.'&nbsp;</td>';
 					echo '<td class="codelist-ops">';
 					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'stats\')">Stats</a> ';

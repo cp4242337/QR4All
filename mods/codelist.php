@@ -114,12 +114,12 @@ class CodeList {
 	    $hex = md5("in_the_beginning_there_were_qr_codes" . uniqid("", true));
 		$pack = pack('H*', $hex);
 	    $uid = base64_encode($pack);        // max 22 chars
-	    $uid = preg_replace("[^a-zA-Z0-9]", "",$uid);    // uppercase only
+	    $nuid = preg_replace("/[^a-zA-Z0-9]/", "",$uid);    // uppercase only
 	    if ($len<4) $len=4;
 	    if ($len>128) $len=128;                       // prevent silliness, can remove
-	    while (strlen($uid)<$len)
-	        $uid = $uid . gen_uuid(22);     // append until length achieved
-	    return substr($uid, 0, $len);
+	    while (strlen($nuid)<$len)
+	        $nuid = $nuid . gen_uuid(22);     // append until length achieved
+	    return substr($nuid, 0, $len);
 	}
 	function getExcel() {
 		global $user;
@@ -325,7 +325,9 @@ class CodeList {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
-		if ($ulvl == "1") $q .= ' && cu_user = '.$uid;
+		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		$q .= 'GROUP BY cl.cl_id ';
+		$q .= 'ORDER BY cl.cl_name ';
 		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
 	}

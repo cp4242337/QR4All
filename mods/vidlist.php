@@ -76,13 +76,16 @@ class VidList {
 		$vid_title=JRequest::getString('vid_title');
 		$vid_file=JRequest::getVar('vid_file');
 		$vid_cat=JRequest::getInt('vid_cat');
+		$vid_rat=JRequest::getInt('vid_rat');
+		$vid_pubtitle=JRequest::getString('vid_pubtitle');
+		$vid_domain=JRequest::getInt('vid_domain');
 		if ($vid_id == 0) {
 			$vid_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'")';
+			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file,vid_ratio,vid_pubtitle,vid_domain) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'","'.$vid_rat.'","'.$vid_pubtitle.'","'.$vid_domain.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 			$vid_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'" WHERE vid_id = '.$vid_id;
+			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'", vid_ratio = "'.$vid_rat.'", vid_pubtitle="'.$vid_pubtitle.'", vid_domain="'.$vid_domain.'" WHERE vid_id = '.$vid_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 		}
 		$vid_client=$this->getClientIdFromCat($vid_cat);
@@ -110,12 +113,12 @@ class VidList {
 	    $hex = md5("in_the_beginning_there_were_qr_codes" . uniqid("", true));
 		$pack = pack('H*', $hex);
 	    $uid = base64_encode($pack);        // max 22 chars
-	    $uid = preg_replace("[^a-zA-Z0-9]", "",$uid);    // uppercase only
+	    $nuid = preg_replace("/[^a-zA-Z0-9]/", "",$uid);    // uppercase only
 	    if ($len<4) $len=4;
 	    if ($len>128) $len=128;                       // prevent silliness, can remove
-	    while (strlen($uid)<$len)
-	        $uid = $uid . gen_uuid(22);     // append until length achieved
-	    return substr($uid, 0, $len);
+	    while (strlen($nuid)<$len)
+	        $nuid = $nuid . gen_uuid(22);     // append until length achieved
+	    return substr($nuid, 0, $len);
 	}
 	function getExcel() {
 		global $user;
@@ -169,6 +172,7 @@ class VidList {
 		global $user;
 		$clients = $this->getClientList($user->id,$user->lvl);
 		$cats = $this->getClientCats($clients);
+		$doms = $this->getDomainList();
 		include 'mods/vidlist/vidform.php';
 	}
 	function vidEdit() {
@@ -176,6 +180,7 @@ class VidList {
 		$clients = $this->getClientList($user->id,$user->lvl);
 		$cats = $this->getClientCats($clients);
 		$vidinfo=$this->getVidInfo(JRequest::getInt('vid',0));
+		$doms = $this->getDomainList();
 		include 'mods/vidlist/vidform.php';
 	}
 	
@@ -304,7 +309,16 @@ class VidList {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
-		if ($ulvl == "1") $q .= ' && cu_user = '.$uid;
+		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		$q .= 'GROUP BY cl.cl_id ';
+		$q .= 'ORDER BY cl.cl_name ';
+		$this->db->setQuery($q); 
+		return $this->db->loadObjectList();
+	}
+	
+	function getDomainList() {
+		$q  = 'SELECT * FROM qr4_viddom ';
+		$q .= 'ORDER BY vd_dom ';
 		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
 	}
@@ -336,6 +350,7 @@ class VidList {
 				foreach ($cats as &$ct) {
 					$q2  = 'SELECT * FROM qr4_catvids as cc ';
 					$q2 .= 'RIGHT JOIN qr4_videos as cd ON cc.catvid_vid = cd.vid_id ';
+					$q2 .= 'RIGHT JOIN qr4_viddom as vd ON vd.vd_id = cd.vid_domain ';
 					$q2 .= 'WHERE cc.catvid_cat = '.$ct->clcat_cat;
 					if ($ulvl == 1) $q2 .= ' && cd.published = 1';
 					if (count($cids)) $q2 .= ' && cd.vid_id IN ('.$cids.')';

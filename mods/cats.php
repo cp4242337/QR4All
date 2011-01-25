@@ -24,7 +24,7 @@ class Cats {
 				$title='Category'; break;
 			case 'catadd':
 				$title='Add Category';	break;
-			case 'clientedit':
+			case 'catedit':
 				$title='Edit Category';	break;
 		}		
 		return $title;
@@ -41,7 +41,7 @@ class Cats {
 			}
 		}
 		if ($task == 'catadd' || $task == 'catedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=clients">Cancel</a></li>';
+			if ($user->lvl > 1) echo '<li><a href="index.php?mod=cats">Cancel</a></li>';
 			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.catform.validate();">Save Category</a></li>';
 		}
 		echo '</ul>';
@@ -60,17 +60,17 @@ class Cats {
 	
 	function saveCat() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cat_id=JRequest::getInt('cat_id',0);
 		$cat_name=JRequest::getString('cat_name');
 		$cat_client=JRequest::getInt('cat_client',0);
 		if ($cat_id == 0) {
 			$q = 'INSERT INTO qr4_cats (cat_name) VALUES ("'.$cat_name.'")';
-			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('cats'); $app->redirect(); }
 			$cat_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_cats SET cat_name="'.$cat_name.' WHERE cl_id = '.$cl_id;
-			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
+			$q = 'UPDATE qr4_cats SET cat_name="'.$cat_name.'" WHERE cat_id = '.$cat_id;
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('cats'); $app->redirect(); }
 		}
 		$q2='DELETE FROM qr4_clientcats WHERE clcat_cat = '.$cat_id;
 		$this->db->setQuery($q2); $this->db->query();
@@ -94,7 +94,7 @@ class Cats {
 		global $user;
 		if ($user->lvl >= 2) {
 			$clients=$this->getClients();
-			$catinfo=$this->getClientInfo(JRequest::getInt('cat',0));
+			$catinfo=$this->getCatInfo(JRequest::getInt('cat',0));
 			include 'mods/cats/catform.php';
 		}
 	}
@@ -105,7 +105,7 @@ class Cats {
 		$app->setRedirect('cats','catadd');
 		$app->redirect();
 	}
-	function edituser() {
+	function editcat() {
 		global $app,$user;
 		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'cat', array(0), 'post', 'array' );
