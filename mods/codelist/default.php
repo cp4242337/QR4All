@@ -24,7 +24,7 @@ foreach ($codes as $c) {
 			if ($t->codes) {
 				echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 				echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($t->codes).',\'cb\','.$count.');" /></th>';
-				echo '<th width="200">Name</th><th width="50">Type</th><th width="200">Code</th><th>URL</th><th width="70">Total Hits</th><th width="300">Ops</th></tr>';
+				echo '<th width="250">Name</th><th width="50">Type</th><th width="200">Code</th><th>Destination URL</th><th width="70">Total Hits</th><th width="300">Ops</th></tr>';
 				foreach ($t->codes as $d) { 
 					echo '<tr>';
 					echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="code[]" value="'.$d->cd_id.'" onclick="isChecked(this.checked);"></td>';

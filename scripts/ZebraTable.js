@@ -1,3 +1,9 @@
+/* 
+ * Zebra Tables Plugin for MooTools 1.2.x
+ * Source: http://davidwalsh.name/mootools-zebra-table-plugin
+ * 
+ */
+
 var ZebraTable = new Class({ 
   //implements 
   Implements: [Options,Events], 
