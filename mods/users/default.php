@@ -5,7 +5,7 @@ echo '<table border="0" cellspacing="0" cellpadding="0" class="userlist-table">'
 echo '<tr>';
 echo '<th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($users).',\'cb\','.$count.');" /></th>';
 echo '<th width="30">ID</th><th width="200">Name</th><th width="120">UserName</th><th>EMail</th><th width="70">Access</th>';
-echo '<th width="50">#Clients</th><th width="50">#Codes</th><th width="50">#Cats</th><th width="300">Actions</th></tr>';
+echo '<th width="50">#Clients</th><th width="50">#Codes</th><th width="50">#Videos</th><th width="50">#Cats</th><th width="300">Actions</th></tr>';
 foreach ($users as $u) {
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="user[]" value="'.$u->usr_id.'" onclick="isChecked(this.checked);"></td>';
@@ -22,6 +22,7 @@ foreach ($users as $u) {
 	echo '</td>';
 	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_clients) : '').'</td>';
 	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_codes) : '').'</td>';
+	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_videos) : '').'</td>';
 	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_cats) : '').'</td>';
 	echo '<td class="userlist-ops">';
 	if ($u->usr_level == 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editclients\')">Clients</a> ';

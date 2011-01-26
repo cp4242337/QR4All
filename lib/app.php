@@ -21,9 +21,9 @@ class App {
 			$q = 'DELETE FROM qr4_session WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
 			$this->db->setQuery($q); $this->db->query();
 			$this->setError('Session Expired','error');
-			$_SESSION['QR4AllAdmin'] = md5(date("Ymdhis").rand(1,1771561));
-			$q = 'INSERT INTO qr4_session (sess_id,sess_user,sess_time) VALUES ("'.$_SESSION['QR4AllAdmin'].'",0,"'.time().'")';
-			$this->db->setQuery($q); $this->db->query();
+			//$this->startNewSession();
+			$this->setRedirect();
+			$this->redirect();
 			$sess=null;
 		}
 		$this->sess = $sess;

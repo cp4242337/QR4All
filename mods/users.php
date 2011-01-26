@@ -207,6 +207,13 @@ class Users {
 			$q3 .= 'WHERE ct.clcat_client IN  ('.implode(',',$clids).')';
 			$this->db->setQuery($q3);
 			$u->usr_cats = $this->db->loadObjectList();
+			
+			
+			$q2  = 'SELECT * FROM qr4_clientvids as cv ';
+			$q2 .= 'LEFT JOIN qr4_videos as vd ON cv.clvid_vid = vd.vid_id ';
+			$q2 .= 'WHERE cv.clvid_client IN  ('.implode(',',$clids).')';
+			$this->db->setQuery($q2);
+			$u->usr_videos = $this->db->loadObjectList();
 		}
 		return $users;
 	}
