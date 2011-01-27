@@ -202,6 +202,23 @@ td,th {font-size:12px;}
 	padding: 3px;
 	width: 150px;
 }
+
+.forder {
+	font-size:12px;
+	border: #444444 1px solid;
+	padding: 3px;
+	width: 60px;
+}
+
+.farea {
+	font-size:12px;
+	font-face: "Courier New", monospace;
+	border: #444444 1px solid;
+	padding: 3px;
+	width: 500px;
+	height: 300px;
+}
+
 .validation-advice {
 	font-size: 10px;
 	font-weight: bold;

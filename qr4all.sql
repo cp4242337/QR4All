@@ -102,7 +102,8 @@ INSERT INTO `qr4_menu` (`menu_id`, `menu_name`, `menu_mod`, `menu_task`, `menu_l
 (4, 'Clients', 'clients', '', 2, 30, 1),
 (5, 'Logout', 'users', 'logoutuser', 1, 1000, 1),
 (6, 'Cats', 'cats', '', 2, 40, 1),
-(7, 'Videos', 'vidlist', '', 1, 15, 1);
+(7, 'Videos', 'vidlist', '', 1, 15, 1),
+(8, 'Forms', 'formlist', '', 1, 50, 1);
 
 CREATE TABLE IF NOT EXISTS `qr4_session` (
   `sess_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -183,4 +184,56 @@ CREATE TABLE IF NOT EXISTS `qr4_videos` (
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`vid_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+CREATE TABLE IF NOT EXISTS `qr4_catforms` (
+  `catform_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `catform_cat` int(11) NOT NULL,
+  `catform_form` bigint(20) NOT NULL,
+  PRIMARY KEY (`catform_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `qr4_clientforms` (
+  `clform_id` int(11) NOT NULL AUTO_INCREMENT,
+  `clform_cl` int(11) NOT NULL,
+  `clform_form` int(11) NOT NULL,
+  PRIMARY KEY (`clform_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `qr4_fhits` (
+  `hit_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `hit_form` bigint(20) NOT NULL,
+  `hit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `hit_ipaddr` varchar(15) CHARACTER SET latin1 NOT NULL,
+  `hit_useragent` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_browser` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_browserver` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_platform` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_ismobile` tinyint(1) NOT NULL DEFAULT '0',
+  `hit_lat` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_long` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_city` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_region` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_country` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_countrycode` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `hit_timezone` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`hit_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `qr4_forms` (
+  `form_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_code` varchar(8) NOT NULL,
+  `form_title` varchar(255) NOT NULL,
+  `form_publictitle` varchar(255) NOT NULL,
+  `form_template` int(11) NOT NULL,
+  `published` tinyint(1) NOT NULL DEFAULT '1',
+  `trashed` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`form_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `qr4_formtemplates` (
+  `tmpl_id` int(11) NOT NULL AUTO_INCREMENT,
+  `tmpl_name` varchar(80) NOT NULL,
+  `tmpl_url` text NOT NULL,
+  PRIMARY KEY (`tmpl_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
