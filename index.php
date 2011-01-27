@@ -1,4 +1,10 @@
 <?php 
+/*
+ * QR4All 0.5
+ * Liscensed under GPLv2
+ * (C) Corona Productions
+ */
+
 include 'lib/app.php';
 include 'lib/user.php';
 include 'lib/filterinput.php';
