@@ -74,6 +74,15 @@ class FormList {
 		$form_cat=JRequest::getInt('form_cat');
 		$form_pubtitle=JRequest::getString('form_pubtitle');
 		$form_tmpl=JRequest::getInt('form_tmpl');
+		$form_client=$this->getClientIdFromCat($form_cat);
+		
+		if (!$this->CheckFormCount($form_client)) {
+			$app->setError("Maximum number of forms reached for client","error");
+			$app->setRedirect('codelist');
+			$app->redirect();
+			return 0;
+		}
+		
 		if ($form_id == 0) {
 			$form_code=$this->gen_uuid();
 			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template) VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'")';
@@ -83,7 +92,7 @@ class FormList {
 			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'" WHERE form_id = '.$form_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		}
-		$form_client=$this->getClientIdFromCat($form_cat);
+		
 		$qd1 = 'DELETE FROM qr4_catforms WHERE catform_form = '.$form_id;
 		$this->db->setQuery($qd1); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		$qd2 = 'DELETE FROM qr4_clientforms WHERE clform_form = '.$vid_id;
@@ -174,7 +183,8 @@ class FormList {
 	
 	function formAdd() {
 		global $user;
-		$clients = $this->getClientList($user->id,$user->lvl);
+		$uc=JRequest::getInt('useclient');
+		$clients = $this->getClientList($user->id,$user->lvl,$uc);
 		$cats = $this->getClientCats($clients);
 		$tmpls = $this->getTmplList();
 		include 'mods/formlist/formform.php';
@@ -190,7 +200,15 @@ class FormList {
 	
 	function addform() {
 		global $app;
-		$app->setRedirect('formlist','formadd');
+		$cl=JRequest::getInt('client');
+		$clurl='';
+		if ($this->CheckFormCount($cl)) {
+			if ($cl) { $clurl = '&useclient='.$cl;}
+			$app->setRedirect('formlist','formadd',$clurl);
+		} else {
+			$app->setError("Maximum number of Forms Reached","error");
+			$app->setRedirect('formlist');
+		}
 		$app->redirect();
 	}
 	function editform() {
@@ -309,11 +327,12 @@ class FormList {
 		return $info;
 	}
 	
-	function getClientList($uid,$ulvl) {
+	function getClientList($uid,$ulvl,$clid=0) {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
 		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		if ($clid) $q.=" && cl.cl_id = ".$clid.' ';
 		$q .= 'GROUP BY cl.cl_id ';
 		$q .= 'ORDER BY cl.cl_name ';
 		$this->db->setQuery($q); 
@@ -460,6 +479,21 @@ class FormList {
 		if ($sdate && $edate) $q4 .= '&& date(hit_time) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
 		$this->db->setQuery($q4); $thits = $this->db->loadAssocList();
 		return $thits;
+	}
+	
+	function checkFormCount($clid) {
+		if (!$clid) return true;
+		$q = 'SELECT cl_maxforms FROM qr4_clients WHERE cl_id='.$clid;
+		$this->db->setQuery($q); $maxforms = $this->db->loadResult();
+		if ($maxforms == 0) return true;
+		if ($maxforms == -1) return false;
+		$q2  = 'SELECT * FROM qr4_clientforms as cf ';
+		$q2 .= 'LEFT JOIN qr4_forms as cd ON cf.clform_form = cd.form_id ';
+		$q2 .= 'WHERE cf.clform_client = '.$clid;
+		$this->db->setQuery($q2);
+		$curforms = count($this->db->loadObjectList()); 
+		if ($curforms < $maxforms) return true;
+		else return false;
 	}
 	
 }

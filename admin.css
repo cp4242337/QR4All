@@ -242,6 +242,8 @@ a:hover {text-decoration:underline;
 	display: block;
 }
 
+.codelist-client a {padding-left: 5px; padding-right: 5px; font-size:12px; border-left: dotted #aaaaaa 1px; border-right: dotted #aaaaaa 1px;}
+
 .codelist-cat {
 	font-size: 14px;
 	color: #000055;
@@ -261,7 +263,7 @@ a:hover {text-decoration:underline;
 .clt-even               { background:#ffffff; }
 .clt-mo                 { background:#e3f1fb; }
 .clt-odd                { background:#eeeeee; }
-.codelist-ops a { display: block; padding-left: 8px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
+.codelist-ops a { display: block; padding-left: 5px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
 /*.codelist-ops a:hover {	background-color: #ffffcc;}*/
 
 .codelist-form {  }
@@ -278,7 +280,7 @@ a:hover {text-decoration:underline;
 .ult-even               { background:#ffffff; }
 .ult-mo                 { background:#e3f1fb; }
 .ult-odd                { background:#eeeeee; }
-.userlist-ops a { display: block; padding-left: 8px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
+.userlist-ops a { display: block; padding-left: 5px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
 
 .userlist-form {  }
 .userlist-form th {padding:2px 5px 1px 5px; background:#ddd; border-bottom:1px solid #999; text-align:left; font-weight:bold;}
@@ -294,7 +296,7 @@ a:hover {text-decoration:underline;
 .cllt-even               { background:#ffffff; }
 .cllt-mo                 { background:#e3f1fb; }
 .cllt-odd                { background:#eeeeee; }
-.clientlist-ops a { display: block; padding-left: 8px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
+.clientlist-ops a { display: block; padding-left: 5px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
 
 .clientlist-form {  }
 .clientlist-form th {padding:2px 5px 1px 5px; background:#ddd; border-bottom:1px solid #999; text-align:left; font-weight:bold;}
@@ -310,7 +312,7 @@ a:hover {text-decoration:underline;
 .calt-even               { background:#ffffff; }
 .calt-mo                 { background:#e3f1fb; }
 .calt-odd                { background:#eeeeee; }
-.catlist-ops a { display: block; padding-left: 8px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
+.catlist-ops a { display: block; padding-left: 5px; padding-right: 5px; float: left; margin: 0; border-left: dotted #aaaaaa 1px;}
 
 .catlist-form {  }
 .catlist-form th {padding:2px 5px 1px 5px; background:#ddd; border-bottom:1px solid #999; text-align:left; font-weight:bold;}

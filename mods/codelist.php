@@ -80,6 +80,15 @@ class CodeList {
 		$code_type=JRequest::getString('code_type');
 		$code_url=JRequest::getVar('code_url');
 		$code_cat=JRequest::getInt('code_cat');
+		$code_client=$this->getClientIdFromCat($code_cat);
+		
+		if (!$this->CheckCodeCount($code_client)) {
+			$app->setError("Maximum number of codes reached for client","error");
+			$app->setRedirect('codelist');
+			$app->redirect();
+			return 0;
+		}
+		
 		if ($code_id == 0) {
 			$code_code=$this->gen_uuid();
 			$q = 'INSERT INTO qr4_codes (cd_code,cd_name,cd_url,cd_type) VALUES ("'.$code_code.'","'.$code_name.'","'.$code_url.'","'.$code_type.'")';
@@ -89,7 +98,7 @@ class CodeList {
 			$q = 'UPDATE qr4_codes SET cd_name="'.$code_name.'",cd_type="'.$code_type.'",cd_url="'.$code_url.'" WHERE cd_id = '.$code_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 		}
-		$code_client=$this->getClientIdFromCat($code_cat);
+		
 		$qd1 = 'DELETE FROM qr4_catcodes WHERE catcd_code = '.$code_id;
 		$this->db->setQuery($qd1); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 		$qd2 = 'DELETE FROM qr4_clientcodes WHERE clcd_code = '.$code_id;
@@ -188,7 +197,8 @@ class CodeList {
 	
 	function codeAdd() {
 		global $user;
-		$clients = $this->getClientList($user->id,$user->lvl);
+		$uc=JRequest::getInt('useclient');
+		$clients = $this->getClientList($user->id,$user->lvl,$uc);
 		$cats = $this->getClientCats($clients);
 		include 'mods/codelist/codeform.php';
 	}
@@ -202,7 +212,15 @@ class CodeList {
 	
 	function addcode() {
 		global $app;
-		$app->setRedirect('codelist','codeadd');
+		$cl=JRequest::getInt('client');
+		$clurl='';
+		if ($this->CheckCodeCount($cl)) {
+			if ($cl) { $clurl = '&useclient='.$cl;}
+			$app->setRedirect('codelist','codeadd',$clurl);
+		} else {
+			$app->setError("Maximum number of Codes Reached","error");
+			$app->setRedirect('codelist');
+		}
 		$app->redirect();
 	}
 	function editcode() {
@@ -300,13 +318,13 @@ class CodeList {
 		$cids = JRequest::getVar( 'code', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
-			$q='DELETE FROM qr4_codes WHERE trashed = 1 && cd_id IN('.$cids.')';
-			$this->db->setQuery($q); 
-			if ($this->db->query()) {
-				$app->setError('Code(s) Deleted', 'message');
-			} else {
-				$app->setError($this->db->getErrorMsg(), 'error');
-			}
+			$q1 ='DELETE FROM qr4_codes WHERE trashed = 1 && cd_id IN('.$cids.')';
+			$q2='DELETE FROM qr4_catcodes WHERE catcd_code IN('.$cids.')';
+			$q3='DELETE FROM qr4_clientcodes WHERE clcd_code IN('.$cids.')';
+			$app->setError('Code(s) Deleted', 'message');
+			$this->db->setQuery($q1); if (!$this->db->query()) {$app->setError($this->db->getErrorMsg(), 'error');}
+			$this->db->setQuery($q2); if (!$this->db->query()) {$app->setError($this->db->getErrorMsg(), 'error');}
+			$this->db->setQuery($q3); if (!$this->db->query()) {$app->setError($this->db->getErrorMsg(), 'error');}
 			$app->setRedirect('codelist');
 			$app->redirect();
 		}
@@ -321,11 +339,12 @@ class CodeList {
 		return $info;
 	}
 	
-	function getClientList($uid,$ulvl) {
+	function getClientList($uid,$ulvl,$clid=0) {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
 		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		if ($clid) $q .= '&& cl.cl_id = '.$clid.' ';
 		$q .= 'GROUP BY cl.cl_id ';
 		$q .= 'ORDER BY cl.cl_name ';
 		$this->db->setQuery($q); 
@@ -460,6 +479,21 @@ class CodeList {
 		if ($sdate && $edate) $q4 .= '&& date(hit_time) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
 		$this->db->setQuery($q4); $thits = $this->db->loadAssocList();
 		return $thits;
+	}
+	
+	function checkCodeCount($clid) {
+		if (!$clid) return true;
+		$q = 'SELECT cl_maxcodes FROM qr4_clients WHERE cl_id='.$clid;
+		$this->db->setQuery($q); $maxcodes = $this->db->loadResult();
+		if ($maxcodes == 0) return true;
+		if ($maxcodes == -1) return false;
+		$q2  = 'SELECT * FROM qr4_clientcodes as cc ';
+		$q2 .= 'LEFT JOIN qr4_codes as cd ON cc.clcd_code = cd.cd_id ';
+		$q2 .= 'WHERE cc.clcd_client = '.$clid;
+		$this->db->setQuery($q2);
+		$curcodes = count($this->db->loadObjectList()); 
+		if ($curcodes < $maxcodes) return true;
+		else return false;
 	}
 	
 }

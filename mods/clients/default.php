@@ -4,12 +4,18 @@ echo '<form name="clientlistform" method="post" action="">';
 echo '<table border="0" cellspacing="0" cellpadding="0" class="clientlist-table">';
 echo '<tr>';
 echo '<th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($clients).',\'cb\','.$count.');" /></th>';
-echo '<th width="30">ID</th><th>Name</th><th width="300">Actions</th></tr>';
+echo '<th width="30">ID</th><th>Name</th><th width="75">Codes</th><th width="75">Videos</th><th width="75">Forms</th><th width="300">Actions</th></tr>';
 foreach ($clients as $u) {
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="client[]" value="'.$u->cl_id.'" onclick="isChecked(this.checked);"></td>';
 	echo '<td width="30">'.$u->cl_id.'</td>';
 	echo '<td><a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editclient\')">'.$u->cl_name.'</a></td>';
+	if ($u->cl_maxcodes == -1) echo '<td>N/A</td>';
+	else echo '<td>'.sizeof($u->numcodes).'/'.($u->cl_maxcodes==0?'&#8734;':$u->cl_maxcodes).'</td>';
+	if ($u->cl_maxvids == -1) echo '<td>N/A</td>';
+	else echo '<td>'.sizeof($u->numvideos).'/'.($u->cl_maxvids==0?'&#8734;':$u->cl_maxvids).'</td>';
+	if ($u->cl_maxforms == -1) echo '<td>N/A</td>';
+	else echo '<td>'.sizeof($u->numforms).'/'.($u->cl_maxforms==0?'&#8734;':$u->cl_maxforms).'</td>';
 	echo '<td class="clientlist-ops">';
 	if ($user->lvl >= 2) {
 		if ($u->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')">Unpub</a> ';

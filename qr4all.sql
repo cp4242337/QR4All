@@ -43,6 +43,9 @@ CREATE TABLE IF NOT EXISTS `qr4_clients` (
   `cl_id` int(11) NOT NULL AUTO_INCREMENT,
   `cl_name` varchar(255) CHARACTER SET latin1 NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
+  `cl_maxcodes` int(11) NOT NULL,
+  `cl_maxvids` int(11) NOT NULL,
+  `cl_maxforms` int(11) NOT NULL,
   PRIMARY KEY (`cl_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 

@@ -79,6 +79,15 @@ class VidList {
 		$vid_rat=JRequest::getInt('vid_rat');
 		$vid_pubtitle=JRequest::getString('vid_pubtitle');
 		$vid_domain=JRequest::getInt('vid_domain');
+		$vid_client=$this->getClientIdFromCat($vid_cat);
+		
+		if (!$this->CheckVideoCount($vid_client)) {
+			$app->setError("Maximum number of videos reached for client","error");
+			$app->setRedirect('codelist');
+			$app->redirect();
+			return 0;
+		}
+		
 		if ($vid_id == 0) {
 			$vid_code=$this->gen_uuid();
 			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file,vid_ratio,vid_pubtitle,vid_domain) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'","'.$vid_rat.'","'.$vid_pubtitle.'","'.$vid_domain.'")';
@@ -88,7 +97,6 @@ class VidList {
 			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'", vid_ratio = "'.$vid_rat.'", vid_pubtitle="'.$vid_pubtitle.'", vid_domain="'.$vid_domain.'" WHERE vid_id = '.$vid_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 		}
-		$vid_client=$this->getClientIdFromCat($vid_cat);
 		$qd1 = 'DELETE FROM qr4_catvids WHERE catvid_vid = '.$vid_id;
 		$this->db->setQuery($qd1); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 		$qd2 = 'DELETE FROM qr4_clientvids WHERE clvid_vid = '.$vid_id;
@@ -177,7 +185,8 @@ class VidList {
 	}
 	function vidEdit() {
 		global $user;
-		$clients = $this->getClientList($user->id,$user->lvl);
+		$uc=JRequest::getInt('useclient');
+		$clients = $this->getClientList($user->id,$user->lvl,$uc);
 		$cats = $this->getClientCats($clients);
 		$vidinfo=$this->getVidInfo(JRequest::getInt('vid',0));
 		$doms = $this->getDomainList();
@@ -186,7 +195,15 @@ class VidList {
 	
 	function addvid() {
 		global $app;
-		$app->setRedirect('vidlist','vidadd');
+		$cl=JRequest::getInt('client');
+		$clurl='';
+		if ($this->CheckVideoCount($cl)) {
+			if ($cl) { $clurl = '&useclient='.$cl;}
+			$app->setRedirect('vidlist','vidadd',$clurl);
+		} else {
+			$app->setError("Maximum number of Videos Reached","error");
+			$app->setRedirect('vidlist');
+		}
 		$app->redirect();
 	}
 	function editvid() {
@@ -305,11 +322,12 @@ class VidList {
 		return $info;
 	}
 	
-	function getClientList($uid,$ulvl) {
+	function getClientList($uid,$ulvl,$clid=0) {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
 		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		if ($clid) $q.=' && cl.cl_id = '.$clid.' ';
 		$q .= 'GROUP BY cl.cl_id ';
 		$q .= 'ORDER BY cl.cl_name ';
 		$this->db->setQuery($q); 
@@ -452,6 +470,21 @@ class VidList {
 		if ($sdate && $edate) $q4 .= '&& date(hit_time) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
 		$this->db->setQuery($q4); $thits = $this->db->loadAssocList();
 		return $thits;
+	}
+	
+	function checkVideoCount($clid) {
+		if (!$clid) return true;
+		$q = 'SELECT cl_maxvids FROM qr4_clients WHERE cl_id='.$clid;
+		$this->db->setQuery($q); $maxvids = $this->db->loadResult();
+		if ($maxvids == 0) return true;
+		if ($maxvids == -1) return false;
+		$q2  = 'SELECT * FROM qr4_clientvids as cv ';
+		$q2 .= 'LEFT JOIN qr4_videos as cd ON cv.clvid_vid = cd.vid_id ';
+		$q2 .= 'WHERE cv.clvid_client = '.$clid;
+		$this->db->setQuery($q2);
+		$curvids = count($this->db->loadObjectList()); 
+		if ($curvids < $maxvids) return true;
+		else return false;
 	}
 	
 }

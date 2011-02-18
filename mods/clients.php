@@ -63,12 +63,15 @@ class Clients {
 		if ($user->lvl >= 2) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cl_id=JRequest::getInt('cl_id',0);
 		$cl_name=JRequest::getString('cl_name');
+		$cl_maxcodes=JRequest::getInt('cl_maxcodes',0);
+		$cl_maxvids=JRequest::getInt('cl_maxvids',0);
+		$cl_maxforms=JRequest::getInt('cl_maxforms',0);
 		if ($cl_id == 0) {
-			$q = 'INSERT INTO qr4_clients (cl_name) VALUES ("'.$cl_name.'")';
+			$q = 'INSERT INTO qr4_clients (cl_name,cl_maxcodes,cl_maxvids,cl_maxforms) VALUES ("'.$cl_name.'","'.$cl_maxcodes.'","'.$cl_maxvids.'","'.$cl_maxforms.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 			$cl_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_clients SET cl_name="'.$cl_name.' WHERE cl_id = '.$cl_id;
+			$q = 'UPDATE qr4_clients SET cl_name="'.$cl_name.'", cl_maxcodes = "'.$cl_maxcodes.'", cl_maxvids = "'.$cl_maxvids.'", cl_maxforms = "'.$cl_maxforms.'" WHERE cl_id = '.$cl_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 		}
 		$app->setError('Client Saved', 'message');
@@ -98,7 +101,7 @@ class Clients {
 		$app->setRedirect('clients','clientadd');
 		$app->redirect();
 	}
-	function edituser() {
+	function editclient() {
 		global $app,$user;
 		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
@@ -110,7 +113,28 @@ class Clients {
 	function getClients() {
 		$q='SELECT * FROM qr4_clients ORDER BY cl_name';
 		$this->db->setQuery($q);
-		return $this->db->loadObjectList();
+		$data=$this->db->loadObjectList();
+		foreach ($data as &$d) {
+			$q2  = 'SELECT * FROM qr4_clientcodes as cc ';
+			$q2 .= 'LEFT JOIN qr4_codes as cd ON cc.clcd_code = cd.cd_id ';
+			$q2 .= 'WHERE cc.clcd_client = '.$d->cl_id;
+			$this->db->setQuery($q2);
+			$d->numcodes = $this->db->loadObjectList();
+			
+			$q3  = 'SELECT * FROM qr4_clientforms as cf ';
+			$q3 .= 'LEFT JOIN qr4_forms as ca ON cf.clform_form = ca.form_id ';
+			$q3 .= 'WHERE cf.clform_client = '.$d->cl_id;
+			$this->db->setQuery($q3);
+			$d->numforms = $this->db->loadObjectList();
+			
+			
+			$q2  = 'SELECT * FROM qr4_clientvids as cv ';
+			$q2 .= 'LEFT JOIN qr4_videos as vd ON cv.clvid_vid = vd.vid_id ';
+			$q2 .= 'WHERE cv.clvid_client = '.$d->cl_id;
+			$this->db->setQuery($q2);
+			$d->numvideos = $this->db->loadObjectList();
+		}
+		return $data;
 	}
 	
 	function getClientInfo($client) {
