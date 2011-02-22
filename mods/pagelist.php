@@ -96,8 +96,9 @@ class PageList {
 	function items() {
 		global $app;
 		$cids = JRequest::getVar( 'page', array(0), 'post', 'array' );
-		$cids = implode( ',', $cids );
-		$app->setRedirect('itemlist','display','&page='.urlencode($cids));
+		$page = $cids[0];
+		$form = JRequest::getInt( 'form', 0 );
+		$app->setRedirect('itemlist','display','&form='.$form.'&page='.$page);
 		$app->redirect();
 		
 	}
@@ -134,10 +135,10 @@ class PageList {
 		$form = JRequest::getInt( 'form', 0 );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
-			$q='UPDATE qr4_forms SET published = 0 WHERE form_id IN('.$cids.')';
+			$q='UPDATE qr4_formpages SET published = 0 WHERE page_id IN('.$cids.')';
 			$this->db->setQuery($q); 
 			if ($this->db->query()) {
-				$app->setError('Form(s) Unpublished', 'message');
+				$app->setError('Page(s) Unpublished', 'message');
 			} else {
 				$app->setError($this->db->getErrorMsg(), 'error');
 			}
@@ -171,7 +172,7 @@ class PageList {
 			$cid = $cids[0];
 			$q = 'SELECT ordering FROM qr4_formpages WHERE page_id = '.$cid;
 			$this->db->setQuery($q); $oold = $this->db->loadResult();
-			$q2 = 'SELECT page_id,ordering FROM qr4_formpages WHERE page_form = '.$form.' && ordering < '.$oold.' LIMIT 1';
+			$q2 = 'SELECT page_id,ordering FROM qr4_formpages WHERE page_form = '.$form.' && ordering < '.$oold.' ORDER BY ordering DESC LIMIT 1';
 			$this->db->setQuery($q2); $other = $this->db->loadObject();
 			$onew = $other->ordering; $idnew=$other->page_id;
 			$q3 = 'UPDATE qr4_formpages SET ordering = '.$onew.' WHERE page_id='.$cid;
@@ -192,7 +193,7 @@ class PageList {
 			$cid = $cids[0];
 			$q = 'SELECT ordering FROM qr4_formpages WHERE page_id = '.$cid;
 			$this->db->setQuery($q); $oold = $this->db->loadResult();
-			$q2 = 'SELECT page_id,ordering FROM qr4_formpages WHERE page_form = '.$form.' && ordering > '.$oold.' LIMIT 1';
+			$q2 = 'SELECT page_id,ordering FROM qr4_formpages WHERE page_form = '.$form.' && ordering > '.$oold.' ORDER BY ordering ASC LIMIT 1';
 			$this->db->setQuery($q2); $other = $this->db->loadObject();
 			$onew = $other->ordering; $idnew=$other->page_id;
 			$q3 = 'UPDATE qr4_formpages SET ordering = '.$onew.' WHERE page_id='.$cid;

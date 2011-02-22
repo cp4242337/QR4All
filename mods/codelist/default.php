@@ -18,7 +18,7 @@ $count=0;
 echo '<form name="codelistform" method="post" action="">';
 foreach ($codes as $c) { 
 	if ($c->cats) {
-		echo '<div class="codelist-client">'.$c->cl_name.' <a href="index.php?mod=codelist&task=addcode&client='.$c->cl_id.'">Add Code</a><br>'; 
+		echo '<div class="codelist-client">'.$c->cl_name.' <span class="codelist-client-func"><a href="index.php?mod=codelist&task=addcode&client='.$c->cl_id.'">Add Code</a></span><br>'; 
 		foreach ($c->cats as $t) { 
 			echo '<div class="codelist-cat">'.$t->cat_name.'<br><div class="codelist-codes">'; 
 			if ($t->codes) {
@@ -37,17 +37,17 @@ foreach ($codes as $c) {
 					echo '<td>'.$d->cd_url.'&nbsp;</td>';
 					echo '<td>'.$d->hits.'&nbsp;</td>';
 					echo '<td class="codelist-ops">';
-					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'stats\')">Stats</a> ';
-					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'getcodes\')">View</a> ';
+					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'stats\')" title="View Stats"><img src="images/stats.png" border="0" alt="View Stats" /></a> ';
+					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'getcodes\')" title="View Code"><img src="images/viewcode.png" border="0" alt="View Code" /></a> ';
 					if ($user->lvl > 1) {
-						if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')">Unpub</a> ';
-						else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')">Pub</a> ';
-						if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')">Trash</a> ';
+						if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')" title="Unpublish"><img src="images/unpublish.png" border="0" alt="Unpublish" /></a> ';
+						else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')" title="Publish"><img src="images/publish.png" border="0" alt="Publish" /></a> ';
+						if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')" title="Send to Trash"><img src="images/trash.png" border="0" "alt="Send to Trash" /></a> ';
 					}
 					if ($user->lvl > 2) {
 						if ($d->trashed) {
-							echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'untrash\')">Restore</a> ';
-							echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')">Delete</a> ';
+							echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'untrash\')" title="Restore from Trash"><img src="images/untrash.png" border="0" alt="Restore from Trash" /></a> ';
+							echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')" title="Permanently Delete"><img src="images/delete.png" border="0" alt"Permanently Delete" /></a> ';
 						}
 					}
 					echo '</td>';

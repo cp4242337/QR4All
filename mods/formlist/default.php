@@ -18,7 +18,7 @@ $count=0;
 echo '<form name="codelistform" method="post" action="">';
 foreach ($forms as $c) { 
 	if ($c->cats) {
-		echo '<div class="codelist-client">'.$c->cl_name.' <a href="index.php?mod=formlist&task=addform&client='.$c->cl_id.'">Add Form</a><br>'; 
+		echo '<div class="codelist-client">'.$c->cl_name.' <span class="codelist-client-func"><a href="index.php?mod=formlist&task=addform&client='.$c->cl_id.'">Add Form</a></span><br>'; 
 		foreach ($c->cats as $t) { 
 			echo '<div class="codelist-cat">'.$t->cat_name.'<br><div class="codelist-codes">'; 
 			if ($t->forms) {

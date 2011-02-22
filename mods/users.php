@@ -195,25 +195,6 @@ class Users {
 			
 			$clids=array();
 			foreach ($u->usr_clients as $c) { $clids[] = $c->cl_id;	}
-			
-			$q2  = 'SELECT * FROM qr4_clientcodes as cc ';
-			$q2 .= 'LEFT JOIN qr4_codes as cd ON cc.clcd_code = cd.cd_id ';
-			$q2 .= 'WHERE cc.clcd_client IN  ('.implode(',',$clids).')';
-			$this->db->setQuery($q2);
-			$u->usr_codes = $this->db->loadObjectList();
-			
-			$q3  = 'SELECT * FROM qr4_clientcats as ct ';
-			$q3 .= 'LEFT JOIN qr4_cats as ca ON ct.clcat_cat = ca.cat_id ';
-			$q3 .= 'WHERE ct.clcat_client IN  ('.implode(',',$clids).')';
-			$this->db->setQuery($q3);
-			$u->usr_cats = $this->db->loadObjectList();
-			
-			
-			$q2  = 'SELECT * FROM qr4_clientvids as cv ';
-			$q2 .= 'LEFT JOIN qr4_videos as vd ON cv.clvid_vid = vd.vid_id ';
-			$q2 .= 'WHERE cv.clvid_client IN  ('.implode(',',$clids).')';
-			$this->db->setQuery($q2);
-			$u->usr_videos = $this->db->loadObjectList();
 		}
 		return $users;
 	}
