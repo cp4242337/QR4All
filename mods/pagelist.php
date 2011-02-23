@@ -73,11 +73,11 @@ class PageList {
 		$ordering=$this->getNextOrderNum($page_form);
 		if ($page_id == 0) {
 			$q = 'INSERT INTO qr4_formpages (page_form,page_title,page_type,page_action,ordering,page_content) VALUES ("'.$page_form.'","'.$page_title.'","'.$page_type.'","'.$page_action.'","'.$ordering.'","'.$page_content.'")';
-			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('pagelist','default','&form='.$page_form); $app->redirect(); }
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('pagelist','display','&form='.$page_form); $app->redirect(); }
 			$form_id=$this->db->insertid();
 		} else {
 			$q = 'UPDATE qr4_formpages SET page_title="'.$page_title.'", page_type="'.$page_type.'", page_action="'.$page_action.'", page_content="'.$page_content.'" WHERE page_id = '.$page_id;
-			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('pagelist','default','&form='.$page_form); $app->redirect(); }
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('pagelist','display','&form='.$page_form); $app->redirect(); }
 		}
 		$app->setError('Page Saved', 'message');
 		$app->setRedirect('pagelist','display','&form='.$page_form); 

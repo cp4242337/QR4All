@@ -67,7 +67,7 @@ class ItemList {
 		$item_confirm=JRequest::getInt('item_confirm',0);
 		$item_verify=JRequest::getInt('item_verify',0);
 		$item_verify_limit=JRequest::getInt('item_verify_limit',0);
-		$item_depend_item=JRequest::getInt('item_dpend_item',0);
+		$item_depend_item=JRequest::getInt('item_depend_item',0);
 		$item_form=JRequest::getInt('item_form',0);
 		
 		if ($item_id == 0) {
@@ -78,7 +78,7 @@ class ItemList {
 			$this->db->setQuery($q); 
 			if (!$this->db->query()) { 
 				$app->setError($this->db->getErrorMsg(), 'error'); 
-				$app->setRedirect('itemlist','default','&form='.$item_form.'&page='.$item_page); 
+				$app->setRedirect('itemlist','display','&form='.$item_form.'&page='.$item_page); 
 				$app->redirect();
 				return 0;
 			}
@@ -90,7 +90,7 @@ class ItemList {
 			$this->db->setQuery($q); 
 			if (!$this->db->query()) { 
 				$app->setError($this->db->getErrorMsg(), 'error'); 
-				$app->setRedirect('itemlist','default','&form='.$item_form.'&page='.$item_page); 
+				$app->setRedirect('itemlist','display','&form='.$item_form.'&page='.$item_page); 
 				$app->redirect(); 
 				return 0;
 			}
@@ -102,7 +102,7 @@ class ItemList {
 	}
 	
 	function getNextOrderNum($page) {
-		$q='SELECT ordering FROM qr4_formitems WHERE item_page = '.$form.' ORDER BY ordering DESC LIMIT 1';
+		$q='SELECT ordering FROM qr4_formitems WHERE item_page = '.$page.' ORDER BY ordering DESC LIMIT 1';
 		$this->db->setQuery($q);
 		$on = (int)$this->db->loadResult();
 		if ($on) return ($on+1);
@@ -204,7 +204,7 @@ class ItemList {
 			$cid = $cids[0];
 			$q = 'SELECT ordering FROM qr4_formitems WHERE item_id = '.$cid;
 			$this->db->setQuery($q); $oold = $this->db->loadResult();
-			$q2 = 'SELECT item_id,ordering FROM qr4_formitems WHERE item_page = '.$form.' && ordering > '.$oold.' ORDER BY ordering ASC LIMIT 1';
+			$q2 = 'SELECT item_id,ordering FROM qr4_formitems WHERE item_page = '.$page.' && ordering > '.$oold.' ORDER BY ordering ASC LIMIT 1';
 			$this->db->setQuery($q2); $other = $this->db->loadObject();
 			$onew = $other->ordering; $idnew=$other->item_id;
 			$q3 = 'UPDATE qr4_formitems SET ordering = '.$onew.' WHERE item_id='.$cid;
@@ -357,7 +357,7 @@ class ItemList {
 		$page = JRequest::getInt( 'page', 0 );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
-			$q='UPDATE qr4_itempages SET trashed = 1 WHERE item_id IN('.$cids.')';
+			$q='UPDATE qr4_formitems SET trashed = 1 WHERE item_id IN('.$cids.')';
 			$this->db->setQuery($q); 
 			if ($this->db->query()) {
 				$app->setError('Item(s) Sent to Trash', 'message');
@@ -376,7 +376,7 @@ class ItemList {
 		$page = JRequest::getInt( 'page', 0 );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
-			$q='DELETE FROM qr4_itempages WHERE trashed = 1 && item_id IN('.$cids.')';
+			$q='DELETE FROM qr4_formitems WHERE trashed = 1 && item_id IN('.$cids.')';
 			$this->db->setQuery($q); 
 			if ($this->db->query()) {
 				$app->setError('Item(s) Deleted', 'message');
@@ -387,8 +387,8 @@ class ItemList {
 			$app->redirect();
 		}
 	}
-	function getItemInfo($form) {
-		$q = 'SELECT * FROM qr4_formitems WHERE item_id = '.$form;
+	function getItemInfo($item) {
+		$q = 'SELECT * FROM qr4_formitems WHERE item_id = '.$item;
 		$this->db->setQuery($q);
 		$info = $this->db->loadObject();
 		return $info;

@@ -4,53 +4,34 @@ $count=0;
 echo '<form name="codelistform" method="post" action="">';
 echo '<div class="codelist-codes">';
 echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
-echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($items).',\'cb\','.$count.');" /></th>';
-echo '<th>Title</th><th width="20">Id</th><th width="250">Type</th>';
-if ($user->lvl > 1 && (sizeof($items) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($items)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
+echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($options).',\'cb\','.$count.');" /></th>';
+echo '<th>Text</th>';
+if ($user->lvl > 1 && (sizeof($options) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($options)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
 else echo '<th width="100">Order</th>';
-echo '<th width="75"># Options</th><th width="300">Ops</th></tr>';
-foreach ($items as $d) { 
+echo '<th width="300">Ops</th></tr>';
+foreach ($options as $d) { 
 	echo '<tr>';
-	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="item[]" value="'.$d->item_id.'" onclick="isChecked(this.checked);"></td>';
+	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="opt[]" value="'.$d->opt_id.'" onclick="isChecked(this.checked);"></td>';
 	echo '<td>';
-	if ($user->lvl > 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'edititem\')">'.$d->item_title.'</a>';
-	else echo $d->item_title;
-	echo '&nbsp;</td>';
-	echo '<td>'.$d->item_id.'&nbsp;</td>';
-	echo '<td>';
-	switch ($d->item_type) {
-		case "msg": echo "Message"; break;
-		case "txt": echo "Text Field"; break;
-		case "tbx": echo "Text Box"; break;
-		case "eml": echo "Email Form"; break;
-		case "rad": echo "Radio Select"; break;
-		case "mcb": echo "Multi Checkbox"; break;
-		case "cbx": echo "Checkbox"; break;
-		case "dds": echo "Drop Down"; break;
-	}
+	if ($user->lvl > 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editopt\')">'.$d->opt_text.'</a>';
+	else echo $d->opt_text;
 	echo '&nbsp;</td>';
 	if ($user->lvl > 1) {
 		echo '<td><input type="text" name="order[]" size="5" value="'.$d->ordering.'" ';
-		if (sizeof($items) <= 1) echo 'disabled="diabled" ';
+		if (sizeof($options) <= 1) echo 'disabled="diabled" ';
 		echo 'class="forder" style="text-align: center" />';
 		if ($d->ordering != 1) echo ' <a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'orderup\')" title="Move Up"><img src="images/moveup.png" border="0" alt="Move Up" /></a> ';
 		else echo ' <img src="images/moveup_i.png" border="0" alt="Move Up" /> ';
-		if ($count != (sizeof($items)-1)) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'orderdown\')" title="Move Down"><img src="images/movedown.png" border="0" alt="Move Down" /></a> ';
+		if ($count != (sizeof($options)-1)) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'orderdown\')" title="Move Down"><img src="images/movedown.png" border="0" alt="Move Down" /></a> ';
 		else echo '<img src="images/movedown_i.png" border="0" alt="Move Down" />';
 		echo '</td>';
 	} else {
 		echo '<td>'.$d->ordering.'&nbsp;</td>';
 	}
-	echo '<td>'.$d->opts.'&nbsp;</td>';
 	echo '<td class="codelist-ops">';
-	$optsqs=Array("rad","mcb","dds");
 	if ($user->lvl > 1) {
-		if (in_array($d->item_type,$optsqs)) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'options\')" title="Item Options"><img src="images/options.png" border="0" alt="Item Options" /></a> ';
-		else echo '<img src="images/options_i.png" border="0" class="nolink" />';
-		if ($d->item_req) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'notreq\')" title="Set Not Required"><img src="images/unrequire.png" border="0" alt="Set no Required" /></a> ';
-		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'req\')" title="Set Required"><img src="images/require.png" border="0" alt="Set Required" /></a> ';
-		if ($d->item_confirm) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'notonconf\')" title="Set Not on Confirmation Page"><img src="images/unconfirm.png" border="0" alt="Set Not on Confirmation Page" /></a> ';
-		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'onconf\')" title="Set on Confirmation Page"><img src="images/confirm.png" border="0" alt="Set on Confirmation Page" /></a> ';
+		if ($d->opt_depend) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'notdepend\')" title="Set Not Dependent"><img src="images/unrequire.png" border="0" alt="Set Not Dependent" /></a> ';
+		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'depend\')" title="Set Dependent"><img src="images/require.png" border="0" alt="Set Dependent" /></a> ';
 		if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')" title="Unpublish"><img src="images/unpublish.png" border="0" alt="Unpublish" /></a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')" title="Publish"><img src="images/publish.png" border="0" alt="Publish" /></a> ';
 		if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')" title="Send to Trash"><img src="images/trash.png" border="0" "alt="Send to Trash" /></a> ';
@@ -70,7 +51,8 @@ echo '</div>';
 echo '<input type="hidden" name="task" value="">';
 echo '<input type="hidden" name="form" value="'.$form.'">';
 echo '<input type="hidden" name="page" value="'.$page.'">';
-echo '<input type="hidden" name="mod" value="itemlist">';
+echo '<input type="hidden" name="item" value="'.$item.'">';
+echo '<input type="hidden" name="mod" value="optlist">';
 echo '<input type="hidden" name="boxchecked" value="0" />';
 echo '</form>';
 
