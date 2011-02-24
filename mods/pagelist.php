@@ -102,6 +102,16 @@ class PageList {
 		$app->redirect();
 		
 	}
+		
+	function setupemail() {
+		global $app;
+		$cids = JRequest::getVar( 'page', array(0), 'post', 'array' );
+		$page = $cids[0];
+		$form = JRequest::getInt( 'form', 0 );
+		$app->setRedirect('femllist','display','&form='.$form.'&page='.$page);
+		$app->redirect();
+		
+	}
 	
 	function pageAdd() {
 		global $user;
@@ -291,7 +301,7 @@ class PageList {
 		$this->db->setQuery($q2); 
 		$pagel = $this->db->loadObjectList();
 		foreach ($pagel as &$pg) {
-			$q4  = 'SELECT COUNT(*) FORM qr4_formitems WHERE item_page = '.$pg->page_id;
+			$q4  = 'SELECT COUNT(*) FROM qr4_formitems WHERE item_page = '.$pg->page_id;
 			$q4 .= ' GROUP BY item_page';
 			$this->db->setQuery($q4); $pg->items = $this->db->loadResult(); if (!$pg->items) $pg->items=0;
 		}

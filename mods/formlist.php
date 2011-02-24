@@ -385,8 +385,8 @@ class FormList {
 						$q3 .= ' GROUP BY hit_form';
 						$this->db->setQuery($q3); $cd->hits = $this->db->loadResult(); if (!$cd->hits) $cd->hits=0;
 						
-						$q4  = 'SELECT COUNT(*) FORM qr4_formpages WHERE page_form = '.$cd->form_id;
-						$q4 .= ' GROUP BY page_from';
+						$q4  = 'SELECT COUNT(*) FROM qr4_formpages WHERE page_form = '.$cd->form_id;
+						$q4 .= ' GROUP BY page_form';
 						$this->db->setQuery($q4); $cd->pages = $this->db->loadResult(); if (!$cd->pages) $cd->pages=0;
 					}
 					$ct->forms = $forml;

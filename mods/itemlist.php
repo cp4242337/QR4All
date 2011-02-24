@@ -401,9 +401,11 @@ class ItemList {
 		$this->db->setQuery($q2); 
 		$iteml = $this->db->loadObjectList();
 		foreach ($iteml as &$it) {
-			$q4  = 'SELECT COUNT(*) FORM qr4_formitems_opts WHERE opt_item = '.$it->item_id;
+			$q4  = 'SELECT COUNT(*) FROM qr4_formitems_opts WHERE opt_item = '.$it->item_id;
 			$q4 .= ' GROUP BY opt_item';
-			$this->db->setQuery($q4); $it->opts = $this->db->loadResult(); if (!$it->opts) $it->opts=0;
+			$this->db->setQuery($q4); 
+			$it->opts = $this->db->loadResult(); 
+			if (!$it->opts) $it->opts=0;
 		}
 		$items = $iteml;
 

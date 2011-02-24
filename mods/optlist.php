@@ -89,7 +89,7 @@ class OptList {
 				return 0;
 			}
 		}
-		$app->setError('Item Saved', 'message');
+		$app->setError('Option Saved', 'message');
 		$app->setRedirect('optlist','display','&form='.$opt_form.'&page='.$opt_page.'&item='.$opt_item);  
 		$app->redirect();
 		
