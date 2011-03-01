@@ -96,6 +96,15 @@ class FEmlList {
 		$app->redirect();
 		
 	}
+	function attach() {
+		global $user,$app;
+		$form = JRequest::getInt( 'form', 0 );
+		$page = JRequest::getInt( 'page', 0 );
+		$cids = JRequest::getVar( 'eml', array(0), 'post', 'array' );
+		$eml=$cids[0];
+		$app->setRedirect('attachlist','display','&form='.$form.'&page='.$page.'&eml='.$eml);  
+		$app->redirect();
+	}
 	
 	function emlAdd() {
 		global $user;

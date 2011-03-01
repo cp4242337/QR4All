@@ -335,8 +335,9 @@ class VidList {
 	}
 	
 	function getDomainList() {
-		$q  = 'SELECT * FROM qr4_viddom ';
-		$q .= 'ORDER BY vd_dom ';
+		$q  = 'SELECT * FROM qr4_domains ';
+		$q .= 'WHERE dom_type = "video" ';
+		$q .= 'ORDER BY dom_dom ';
 		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
 	}
@@ -368,7 +369,7 @@ class VidList {
 				foreach ($cats as &$ct) {
 					$q2  = 'SELECT * FROM qr4_catvids as cc ';
 					$q2 .= 'RIGHT JOIN qr4_videos as cd ON cc.catvid_vid = cd.vid_id ';
-					$q2 .= 'RIGHT JOIN qr4_viddom as vd ON vd.vd_id = cd.vid_domain ';
+					$q2 .= 'RIGHT JOIN qr4_domains as vd ON vd.dom_id = cd.vid_domain ';
 					$q2 .= 'WHERE cc.catvid_cat = '.$ct->clcat_cat;
 					if ($ulvl == 1) $q2 .= ' && cd.published = 1';
 					if (count($cids)) $q2 .= ' && cd.vid_id IN ('.$cids.')';

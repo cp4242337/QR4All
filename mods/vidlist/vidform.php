@@ -30,9 +30,9 @@ echo '>16x9</option>';
 <tr><td align="right" class="ftitle">Domain:</td><td class="ffield"><select name="vid_domain" class="field required" title="Domain is required">
 			<?php 
 			foreach ($doms as $d) {
-				echo '<option value="'.$d->vd_id.'"';
-				if ($d->vd_id == $vidinfo->vid_domain) echo ' selected';
-				echo '>'.$d->vd_dom.'</option>';
+				echo '<option value="'.$d->dom_id.'"';
+				if ($d->dom_id == $vidinfo->vid_domain) echo ' selected';
+				echo '>'.$d->dom_dom.'</option>';
 			}
 			?>
 

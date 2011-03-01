@@ -4,7 +4,6 @@ include('ipinfodb.class.php');
 
 $db = new mysqli('localhost','qr4all','qr4all','qr4all');
 $q ='SELECT * FROM qr4_videos as v ';
-$q.='RIGHT JOIN qr4_viddom as d ON v.vid_domain=d.vd_id ';
 $q.='WHERE v.vid_code= "'.$_GET['c'].'"';
 $res = $db->query($q);
 $vidinfo = $res->fetch_object(); 
