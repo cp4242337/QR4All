@@ -6,17 +6,17 @@ echo '<div class="codelist-codes">';
 echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($options).',\'cb\','.$count.');" /></th>';
 echo '<th>Text</th>';
-if ($user->lvl > 1 && (sizeof($options) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($options)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
+if ($user->lvl_edit && (sizeof($options) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($options)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
 else echo '<th width="100">Order</th>';
 echo '<th width="300">Ops</th></tr>';
 foreach ($options as $d) { 
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="opt[]" value="'.$d->opt_id.'" onclick="isChecked(this.checked);"></td>';
 	echo '<td>';
-	if ($user->lvl > 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editopt\')">'.$d->opt_text.'</a>';
+	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editopt\')">'.$d->opt_text.'</a>';
 	else echo $d->opt_text;
 	echo '&nbsp;</td>';
-	if ($user->lvl > 1) {
+	if ($user->lvl_edit) {
 		echo '<td><input type="text" name="order[]" size="5" value="'.$d->ordering.'" ';
 		if (sizeof($options) <= 1) echo 'disabled="diabled" ';
 		echo 'class="forder" style="text-align: center" />';
@@ -29,14 +29,14 @@ foreach ($options as $d) {
 		echo '<td>'.$d->ordering.'&nbsp;</td>';
 	}
 	echo '<td class="codelist-ops">';
-	if ($user->lvl > 1) {
+	if ($user->lvl_edit) {
 		if ($d->opt_depend) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'notdepend\')" title="Set Not Dependent"><img src="images/unrequire.png" border="0" alt="Set Not Dependent" /></a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'depend\')" title="Set Dependent"><img src="images/require.png" border="0" alt="Set Dependent" /></a> ';
 		if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')" title="Unpublish"><img src="images/unpublish.png" border="0" alt="Unpublish" /></a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')" title="Publish"><img src="images/publish.png" border="0" alt="Publish" /></a> ';
 		if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')" title="Send to Trash"><img src="images/trash.png" border="0" "alt="Send to Trash" /></a> ';
 	}
-	if ($user->lvl > 2) {
+	if ($user->lvl_admin) {
 		if ($d->trashed) {
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'untrash\')" title="Restore from Trash"><img src="images/untrash.png" border="0" alt="Restore from Trash" /></a> ';
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')" title="Permanently Delete"><img src="images/delete.png" border="0" alt"Permanently Delete" /></a> ';

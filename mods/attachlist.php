@@ -33,16 +33,16 @@ class AttachList {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=attachlist&task=addat&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&eml='.JRequest::getInt('eml',0).'">Add Attachment</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 			}
-			echo '<li><a href="index.php?mod=pagelist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Emails</a></li>';
+			echo '<li><a href="index.php?mod=femllist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Emails</a></li>';
 		}
 		if ($task == 'atadd' || $task == 'atedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=attachlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&eml='.JRequest::getInt('eml',0).'">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Attachment</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=attachlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&eml='.JRequest::getInt('eml',0).'">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save Attachment</a></li>';
 		}
 		echo '</ul>';
 		
@@ -52,7 +52,7 @@ class AttachList {
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
 		$eml = JRequest::getInt( 'eml', 0 );
-		$attachs=$this->getAtList($eml,$user->lvl);
+		$attachs=$this->getAtList($eml);
 		include 'mods/attachlist/default.php';
 
 	}
@@ -65,7 +65,7 @@ class AttachList {
 		$at_page=JRequest::getString('at_page');
 		$at_form=JRequest::getInt('at_form',0);
 		
-		if ($eml_id == 0) {
+		if ($at_id == 0) {
 			
 			if($_FILES['at_file']['size'] > 0)
 			{
@@ -95,7 +95,7 @@ class AttachList {
 			}
 			$eml_id=$this->db->insertid();
 		} else {
-			$q  = 'UPDATE qr4_formpages_emails_attach SET at_name="'.$eml_title.'" WHERE at_id = '.$at_id;
+			$q  = 'UPDATE qr4_formpages_emails_attach SET at_name="'.$at_name.'" WHERE at_id = '.$at_id;
 			$this->db->setQuery($q); 
 			if (!$this->db->query()) { 
 				$app->setError($this->db->getErrorMsg(), 'error'); 
@@ -135,7 +135,7 @@ class AttachList {
 		$app->setRedirect('attachlist','atadd','&form='.$form.'&page='.$page.'&eml='.$eml);
 		$app->redirect();
 	}
-	function editeml() {
+	function editat() {
 		global $app;
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
@@ -191,7 +191,7 @@ class AttachList {
 		return $info;
 	}
 	
-	function getAtList($page,$ulvl) {
+	function getAtList($page) {
 		$q2  = 'SELECT at_id,at_email,at_name,at_filename,at_filetype,at_filesize FROM qr4_formpages_emails_attach as at ';
 		$q2 .= 'WHERE at.at_email = '.$page.' ';
 		$q2 .= 'ORDER BY at_name ASC';

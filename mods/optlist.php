@@ -33,7 +33,7 @@ class OptList {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=optlist&task=addopt&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&item='.JRequest::getInt('item',0).'">Add Option</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
@@ -41,8 +41,8 @@ class OptList {
 			echo '<li><a href="index.php?mod=itemlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Items</a></li>';
 		}
 		if ($task == 'optadd' || $task == 'optedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=optlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&item='.JRequest::getInt('item',0).'">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Option</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=optlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&item='.JRequest::getInt('item',0).'">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save Option</a></li>';
 		}
 		echo '</ul>';
 		
@@ -52,7 +52,7 @@ class OptList {
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
 		$item = JRequest::getInt( 'item', 0 );
-		$options=$this->getOptList($item,$user->lvl);
+		$options=$this->getOptList($item,$user);
 		include 'mods/optlist/default.php';
 
 	}
@@ -351,7 +351,7 @@ class OptList {
 		return $info;
 	}
 	
-	function getOptList($item,$ulvl) {
+	function getOptList($item,$user) {
 		$q2  = 'SELECT * FROM qr4_formitems_opts as fi ';
 		$q2 .= 'WHERE fi.opt_item = '.$item.' ';
 		$q2 .= 'ORDER BY ordering ASC';

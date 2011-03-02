@@ -44,20 +44,20 @@ class App {
 	
 	function getMainMenu() {
 		global $user;
-		$q = 'SELECT * FROM qr4_menu WHERE menu_lvl <= '.$user->lvl.' ORDER BY ordering';
+		$q = 'SELECT * FROM qr4_menu ORDER BY ordering';
 		$this->db->setQuery($q); $menu = $this->db->loadObjectList();
 		echo '<ul>';
 		if ($menu) foreach ($menu as $m) {
-			$needand = false;
-			echo '<li';
-			if ($m->menu_mod == $_REQUEST['mod'] && $m->menu_mod && $m->menu_task != 'logoutuser') echo ' class="active"';
-			echo '><a href="index.php?';
-			if ($m->menu_mod) { echo 'mod='.$m->menu_mod; $needand=true; }
-			
-			if ($m->menu_task) { if ($needand) { echo '&'; $needand=false; } echo 'task='.$m->menu_task; }
-			
-		
-			echo '">'.$m->menu_name.'</a></li>';
+			$lvl = $m->menu_lvl; 
+			if ($user->$lvl) {
+				$needand = false;
+				echo '<li';
+				if ($m->menu_mod == $_REQUEST['mod'] && $m->menu_mod && $m->menu_task != 'logoutuser') echo ' class="active"';
+				echo '><a href="index.php?';
+				if ($m->menu_mod) { echo 'mod='.$m->menu_mod; $needand=true; }
+				if ($m->menu_task) { if ($needand) { echo '&'; $needand=false; } echo 'task='.$m->menu_task; }
+				echo '">'.$m->menu_name.'</a></li>';
+			}
 		}
 		echo '</ul>';
 	}

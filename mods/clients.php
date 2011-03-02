@@ -34,23 +34,26 @@ class Clients {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl >= 2) {
+			if ($user->lvl_admin) {
 				echo '<li><a href="index.php?mod=clients&task=addclient">Add Client</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 			}
 		}
 		if ($task == 'clientadd' || $task == 'clientedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=clients">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.clientform.validate();">Save Client</a></li>';
+			if ($user->lvl_admin) echo '<li><a href="index.php?mod=clients">Cancel</a></li>';
+			if ($user->lvl_admin) echo '<li><a href="#" onclick="document.clientform.validate();">Save Client</a></li>';
 		}
 		echo '</ul>';
 	}
 	
 	function display() {
 		global $user;
-		if ($user->lvl == 1) {
-			echo 'You should not be here';
+		if (!$user->lvl_admin) {
+			$app->setError($this->db->getErrorMsg(), 'error'); 
+			$app->setRedirect('home'); 
+			$app->redirect();
+			return 0;
 		} else {
 			$clients=$this->getClients();
 			include 'mods/clients/default.php';
@@ -60,7 +63,7 @@ class Clients {
 	
 	function saveClient() {
 		global $app,$user;
-		if ($user->lvl >= 2) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_admin) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0; }
 		$cl_id=JRequest::getInt('cl_id',0);
 		$cl_name=JRequest::getString('cl_name');
 		$cl_maxcodes=JRequest::getInt('cl_maxcodes',0);
@@ -83,13 +86,13 @@ class Clients {
 	
 	function clientAdd() {
 		global $user;
-		if ($user->lvl >= 2) {
+		if ($user->lvl_admin) {
 			include 'mods/clients/clientform.php';
 		}
 	}
 	function clientEdit() {
 		global $user;
-		if ($user->lvl >= 2) {
+		if ($user->lvl_admin) {
 			$clientinfo=$this->getClientInfo(JRequest::getInt('client',0));
 			include 'mods/clients/clientform.php';
 		}
@@ -97,13 +100,13 @@ class Clients {
 	
 	function addclient() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_admin) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;  }
 		$app->setRedirect('clients','clientadd');
 		$app->redirect();
 	}
 	function editclient() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_admin) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;  }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
 		$app->setRedirect('clients','clientedit','&client='.(int)$cids[0]);
 		$app->redirect();
@@ -145,7 +148,7 @@ class Clients {
 	
 	function unpublish() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_admin) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;  }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -163,7 +166,7 @@ class Clients {
 	
 	function publish() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_admin) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;  }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -181,7 +184,7 @@ class Clients {
 	
 	function delete() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;  }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );

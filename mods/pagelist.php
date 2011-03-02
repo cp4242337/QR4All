@@ -35,20 +35,20 @@ class PageList {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=pagelist&task=addpage&form='.JRequest::getInt('form',0).'">Add Page</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'trash\');">Trash</a></li>';
 			}
-			if ($user->lvl > 2) {
+			if ($user->lvl_admin) {
 				echo '<li><a href="#" onclick="allTask(\'untrash\');">Restore</a></li>';
 			}
 			echo '<li><a href="index.php?mod=formlist">Forms</a></li>';
 		}
 		if ($task == 'pageadd' || $task == 'pageedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=pagelist&form='.JRequest::getInt('form',0).'">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Page</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=pagelist&form='.JRequest::getInt('form',0).'">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save Page</a></li>';
 		}
 		echo '</ul>';
 		
@@ -57,7 +57,7 @@ class PageList {
 		global $user;
 		$form = JRequest::getInt( 'form', 0 );
 		$curclient=(int)$_POST['client'];
-		$pages=$this->getPageList($form,$user->lvl);
+		$pages=$this->getPageList($form,$user);
 		include 'mods/pagelist/default.php';
 
 	}
@@ -294,7 +294,7 @@ class PageList {
 		return $info;
 	}
 	
-	function getPageList($form,$ulvl) {
+	function getPageList($form,$user) {
 		$q2  = 'SELECT * FROM qr4_formpages as fp ';
 		$q2 .= 'WHERE fp.page_form = '.$form.' ';
 		$q2 .= 'ORDER BY ordering ASC';

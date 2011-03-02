@@ -33,7 +33,7 @@ class FEmlList {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=femllist&task=addeml&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Add EMail</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
@@ -41,8 +41,8 @@ class FEmlList {
 			echo '<li><a href="index.php?mod=pagelist&form='.JRequest::getInt('form',0).'">Pages</a></li>';
 		}
 		if ($task == 'emladd' || $task == 'emledit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=femllist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save EMail</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=femllist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save EMail</a></li>';
 		}
 		echo '</ul>';
 		
@@ -51,7 +51,7 @@ class FEmlList {
 		global $user;
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
-		$emails=$this->getEmlList($page,$user->lvl);
+		$emails=$this->getEmlList($page,$user);
 		include 'mods/femllist/default.php';
 
 	}
@@ -241,7 +241,7 @@ class FEmlList {
 		return $info;
 	}
 	
-	function getEmlList($page,$ulvl) {
+	function getEmlList($page,$user) {
 		$q2  = 'SELECT * FROM qr4_formpages_emails as fi ';
 		$q2 .= 'WHERE fi.eml_page = '.$page.' ';
 		$q2 .= 'ORDER BY eml_title ASC';

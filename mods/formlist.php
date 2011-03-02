@@ -36,19 +36,19 @@ class FormList {
 		echo '<ul>';
 		if ($task == 'display') {
 			echo '<li><a href="#" onclick="allTask(\'stats\');">Form Stats</a></li>';
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=formlist&task=addform">Add Form</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'trash\');">Trash</a></li>';
 			}
-			if ($user->lvl > 2) {
+			if ($user->lvl_admin) {
 				echo '<li><a href="#" onclick="allTask(\'untrash\');">Restore</a></li>';
 			}
 		}
 		if ($task == 'formadd' || $task == 'formedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=formlist">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Form</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=formlist">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save Form</a></li>';
 		}
 		if ($task=='showstats') {
 			echo '<li><a href="index.php?mod=formlist">Forms</a></li>';
@@ -61,8 +61,8 @@ class FormList {
 	function display() {
 		global $user;
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$forms=$this->getFormList($clients,$curclient,$user->lvl);
+		$clients = $this->getClientList($user);
+		$forms=$this->getFormList($clients,$curclient,$user);
 		include 'mods/formlist/default.php';
 
 	}
@@ -133,8 +133,8 @@ class FormList {
 		if (!$edate) $edate = date("Y-m-d");
 		$cids = urldecode(JRequest::getVar('vids'));
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$vids=$this->getVidList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
+		$clients = $this->getClientList($user);
+		$vids=$this->getVidList($clients,$curclient,$user,$cids,$sdate,$edate);
 		$data=$this->getHits($vids,$cids,$sdate,$edate);
 		$filename = "form_stat_data_" . date('Y-m-d') . ".xls";
 
@@ -184,14 +184,14 @@ class FormList {
 	function formAdd() {
 		global $user;
 		$uc=JRequest::getInt('useclient');
-		$clients = $this->getClientList($user->id,$user->lvl,$uc);
+		$clients = $this->getClientList($user,$uc);
 		$cats = $this->getClientCats($clients);
 		$tmpls = $this->getTmplList();
 		include 'mods/formlist/formform.php';
 	}
 	function formEdit() {
 		global $user;
-		$clients = $this->getClientList($user->id,$user->lvl);
+		$clients = $this->getClientList($user);
 		$cats = $this->getClientCats($clients);
 		$forminfo=$this->getFormInfo(JRequest::getInt('form',0));
 		$tmpls = $this->getTmplList();
@@ -327,11 +327,11 @@ class FormList {
 		return $info;
 	}
 	
-	function getClientList($uid,$ulvl,$clid=0) {
+	function getClientList($user,$clid=0) {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
-		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		if (!$user->lvl_admin) $q .= ' && cu_user = '.$user->id.' ';
 		if ($clid) $q.=" && cl.cl_id = ".$clid.' ';
 		$q .= 'GROUP BY cl.cl_id ';
 		$q .= 'ORDER BY cl.cl_name ';
@@ -361,7 +361,7 @@ class FormList {
 		return $cats;
 	}
 	
-	function getFormList($clients,$curclient,$ulvl,$cids=array(),$sdate=null,$edate=null) {
+	function getFormList($clients,$curclient,$user,$cids=array(),$sdate=null,$edate=null) {
 		$vids = Array();
 		foreach ($clients as $cl) {	
 			if ($curclient == $cl->cl_id || !$curclient) {
@@ -375,7 +375,7 @@ class FormList {
 					$q2 .= 'RIGHT JOIN qr4_forms as cd ON cc.catform_form = cd.form_id ';
 					$q2 .= 'RIGHT JOIN qr4_formtemplates as vd ON vd.tmpl_id = cd.form_template ';
 					$q2 .= 'WHERE cc.catform_cat = '.$ct->clcat_cat;
-					if ($ulvl == 1) $q2 .= ' && cd.published = 1';
+					if (!$user->lvl_admin) $q2 .= ' && cd.trashed=0';
 					if (count($cids)) $q2 .= ' && cd.form_id IN ('.$cids.')';
 					$this->db->setQuery($q2); 
 					$forml = $this->db->loadObjectList();

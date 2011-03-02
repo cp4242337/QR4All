@@ -39,19 +39,19 @@ class CodeList {
 		if ($task == 'display') {
 			echo '<li><a href="#" onclick="allTask(\'stats\');">Code Stats</a></li>';
 			echo '<li><a href="#" onclick="allTask(\'getcodes\');">View Codes</a></li>';
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=codelist&task=addcode">Add Code</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'trash\');">Trash</a></li>';
 			}
-			if ($user->lvl > 2) {
+			if ($user->lvl_admin) {
 				echo '<li><a href="#" onclick="allTask(\'untrash\');">Restore</a></li>';
 			}
 		}
 		if ($task == 'codeadd' || $task == 'codeedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=codelist">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Code</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=codelist">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save Code</a></li>';
 		}
 		if ($task=="gencodes" || $task=='showstats') {
 			echo '<li><a href="index.php?mod=codelist">Codes</a></li>';
@@ -67,8 +67,8 @@ class CodeList {
 	function display() {
 		global $user;
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$codes=$this->getCodeList($clients,$curclient,$user->lvl);
+		$clients = $this->getClientList($user);
+		$codes=$this->getCodeList($clients,$curclient,$user);
 		include 'mods/codelist/default.php';
 
 	}
@@ -139,8 +139,8 @@ class CodeList {
 		if (!$edate) $edate = date("Y-m-d");
 		$cids = urldecode(JRequest::getVar('codes'));
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$codes=$this->getCodeList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
+		$clients = $this->getClientList($user);
+		$codes=$this->getCodeList($clients,$curclient,$user,$cids,$sdate,$edate);
 		$data=$this->getHits($codes,$cids,$sdate,$edate);
 		$filename = "website_data_" . date('Y-m-d') . ".xls";
 
@@ -180,8 +180,8 @@ class CodeList {
 		global $user;
 		$cids = urldecode(JRequest::getVar('codes'));
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$codes=$this->getCodeList($clients,$curclient,$user->lvl,$cids);
+		$clients = $this->getClientList($user);
+		$codes=$this->getCodeList($clients,$curclient,$user,$cids);
 		include 'mods/codelist/gencodes.php';
 		
 	}
@@ -198,13 +198,13 @@ class CodeList {
 	function codeAdd() {
 		global $user;
 		$uc=JRequest::getInt('useclient');
-		$clients = $this->getClientList($user->id,$user->lvl,$uc);
+		$clients = $this->getClientList($user,$uc);
 		$cats = $this->getClientCats($clients);
 		include 'mods/codelist/codeform.php';
 	}
 	function codeEdit() {
 		global $user;
-		$clients = $this->getClientList($user->id,$user->lvl);
+		$clients = $this->getClientList($user);
 		$cats = $this->getClientCats($clients);
 		$codeinfo=$this->getCodeInfo(JRequest::getInt('code',0));
 		include 'mods/codelist/codeform.php';
@@ -238,8 +238,8 @@ class CodeList {
 		if (!$edate) $edate = date("Y-m-d");
 		$cids = urldecode(JRequest::getVar('codes'));
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$codes=$this->getCodeList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
+		$clients = $this->getClientList($user);
+		$codes=$this->getCodeList($clients,$curclient,$user,$cids,$sdate,$edate);
 		$stats=$this->getStats($codes,$sdate,$edate);
 		include 'mods/codelist/showstats.php';
 		
@@ -339,11 +339,11 @@ class CodeList {
 		return $info;
 	}
 	
-	function getClientList($uid,$ulvl,$clid=0) {
+	function getClientList($user,$clid=0) {
 		$q  = 'SELECT * FROM qr4_usersclients as uc ';
 		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
 		$q .= 'WHERE cl.published = 1 ';
-		if ($ulvl == "1") $q .= ' && cu_user = '.$uid.' ';
+		if (!$user->lvl_admin) $q .= ' && cu_user = '.$user->id.' ';
 		if ($clid) $q .= '&& cl.cl_id = '.$clid.' ';
 		$q .= 'GROUP BY cl.cl_id ';
 		$q .= 'ORDER BY cl.cl_name ';
@@ -366,7 +366,7 @@ class CodeList {
 		return $cats;
 	}
 	
-	function getCodeList($clients,$curclient,$ulvl,$cids=array(),$sdate=null,$edate=null) {
+	function getCodeList($clients,$curclient,$user,$cids=array(),$sdate=null,$edate=null) {
 		$codes = Array();
 		foreach ($clients as $cl) {	
 			if ($curclient == $cl->cl_id || !$curclient) {
@@ -379,7 +379,7 @@ class CodeList {
 					$q2  = 'SELECT * FROM qr4_catcodes as cc ';
 					$q2 .= 'RIGHT JOIN qr4_codes as cd ON cc.catcd_code = cd.cd_id ';
 					$q2 .= 'WHERE cc.catcd_cat = '.$ct->clcat_cat;
-					if ($ulvl == 1) $q2 .= ' && cd.published = 1';
+					if (!$user->lvl_admin) $q2 .= ' && cd.trashed = 0';
 					if (count($cids)) $q2 .= ' && cd.cd_id IN ('.$cids.')';
 					$this->db->setQuery($q2); 
 					$codel = $this->db->loadObjectList();

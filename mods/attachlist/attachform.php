@@ -1,6 +1,6 @@
 <form action="index.php" method="post" name="codeform" id="codeform" enctype="multipart/form-data">
 <table border="0" cellspacing="0" cellpadding="0" class="codelist-form">
-<tr><td align="right" class="ftitle">Name:</td><td class="ffield"><input name="at_name" class="field required maxLength:100" type="text" title="Name must be 5-100 characters"  value="<?php echo $atinfo->at_title; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Name:</td><td class="ffield"><input name="at_name" class="field required maxLength:100" type="text" title="Name must be 5-100 characters"  value="<?php echo $atinfo->at_name; ?>"></td></tr>
 <?php if (JRequest::getString('task') == 'atadd') echo '<tr><td align="right" class="ftitle">File:</td><td class="ffield"><input name="at_file" class="field required" type="file"></td></tr>'; ?>
 </table>
 <input name="task" type="hidden" value="saveat">

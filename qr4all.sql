@@ -216,11 +216,11 @@ CREATE TABLE IF NOT EXISTS `qr4_menu` (
   `menu_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `menu_mod` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `menu_task` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `menu_lvl` int(11) NOT NULL,
+  `menu_lvl` enum('lvl_basic','lvl_edit','lvl_admin','lvl_root') COLLATE utf8_unicode_ci NOT NULL,
   `ordering` int(11) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`menu_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
 CREATE TABLE IF NOT EXISTS `qr4_session` (
   `sess_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -230,9 +230,15 @@ CREATE TABLE IF NOT EXISTS `qr4_session` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `qr4_userlvels` (
-  `lvl_id` int(11) NOT NULL,
-  `lvl_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `lvl_id` int(11) NOT NULL AUTO_INCREMENT,
+  `lvl_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `lvl_basic` tinyint(1) NOT NULL,
+  `lvl_edit` tinyint(1) NOT NULL,
+  `lvl_admin` tinyint(1) NOT NULL,
+  `lvl_root` tinyint(1) NOT NULL,
+  `lvl_order` int(11) NOT NULL,
+  PRIMARY KEY (`lvl_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
 
 CREATE TABLE IF NOT EXISTS `qr4_users` (
   `usr_id` int(3) NOT NULL AUTO_INCREMENT,
@@ -287,19 +293,20 @@ CREATE TABLE IF NOT EXISTS `qr4_videos` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `qr4_menu` (`menu_id`, `menu_name`, `menu_mod`, `menu_task`, `menu_lvl`, `ordering`, `published`) VALUES
-(1, 'Home', 'home', '', 1, 1, 1),
-(2, 'Codes', 'codelist', '', 1, 10, 1),
-(3, 'Users', 'users', '', 3, 20, 1),
-(4, 'Clients', 'clients', '', 2, 30, 1),
-(5, 'Logout', 'users', 'logoutuser', 1, 1000, 1),
-(6, 'Cats', 'cats', '', 2, 40, 1),
-(7, 'Videos', 'vidlist', '', 1, 15, 1),
-(8, 'Forms', 'formlist', '', 1, 50, 1);
+(1, 'Home', 'home', '', 'lvl_basic', 1, 1),
+(2, 'Codes', 'codelist', '', 'lvl_basic', 10, 1),
+(3, 'Users', 'users', '', 'lvl_root', 20, 1),
+(4, 'Clients', 'clients', '', 'lvl_admin', 30, 1),
+(5, 'Logout', 'users', 'logoutuser', 'lvl_basic', 1000, 1),
+(6, 'Cats', 'cats', '', 'lvl_edit', 40, 1),
+(7, 'Videos', 'vidlist', '', 'lvl_basic', 15, 1),
+(8, 'Forms', 'formlist', '', 'lvl_basic', 17, 1);
 
-INSERT INTO `qr4_userlvels` (`lvl_id`, `lvl_name`) VALUES
-(1, 'Registered'),
-(2, 'Admin'),
-(3, 'Root');
+INSERT INTO `qr4_userlvels` (`lvl_id`, `lvl_name`, `lvl_basic`, `lvl_edit`, `lvl_admin`, `lvl_root`, `lvl_order`) VALUES
+(1, 'Basic', 1, 0, 0, 0, 10),
+(2, 'Admin', 1, 1, 1, 0, 30),
+(3, 'Root', 1, 1, 1, 1, 100),
+(4, 'Editor', 1, 1, 0, 0, 20);
 
 INSERT INTO `qr4_users` (`usr_id`, `usr_name`, `usr_fullname`, `usr_email`, `usr_pass`, `published`, `usr_level`, `trashed`) VALUES
 (12, 'root', 'Root User', 'mamundsen@coronapro.com', '33beb5939f8b799a102a9d5c9e698a6a', 1, 3, 0);

@@ -12,10 +12,10 @@ foreach ($cats as $u) {
 	echo '<td><a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editcat\')">'.$u->cat_name.'</a></td>';
 	echo '<td>'.$u->cl_name.'</td>';
 	echo '<td class="clientlist-ops">';
-	if ($user->lvl >= 2) {
+	if ($user->lvl_edit) {
 		if ($u->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')">Unpub</a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')">Pub</a> ';
-		if (!$u->published && $user->lvl == 3) {
+		if (!$u->published && $user->lvl_admin) {
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')">Delete</a> ';
 		}
 	}

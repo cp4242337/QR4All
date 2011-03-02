@@ -4,7 +4,8 @@
 <tr><td align="right" class="ftitle">Full Name:</td><td class="ffield"><input name="user_fullname" class="field required maxLength:150" type="text" title="Full Name must be 5-150 characters"  value="<?php echo $userinfo->usr_fullname; ?>"></td></tr>
 <tr><td align="right" class="ftitle">EMail:</td><td class="ffield"><input name="user_email" class="field required validate-email" type="text" title="A valid email address is required"  value="<?php echo $userinfo->usr_email; ?>"></td></tr>
 <tr><td align="right" class="ftitle">User Level:</td><td class="ffield"><select name="user_level" class="field required" title="User type is required">
-			<option value="1" <?php echo ($userinfo->usr_level == '1' ? 'selected' : '') ?>>Client</option>
+			<option value="1" <?php echo ($userinfo->usr_level == '1' ? 'selected' : '') ?>>Basic</option>
+			<option value="4" <?php echo ($userinfo->usr_level == '4' ? 'selected' : '') ?>>Editor</option>
 			<option value="2" <?php echo ($userinfo->usr_level == '2' ? 'selected' : '') ?>>Admin</option>
 			<option value="3" <?php echo ($userinfo->usr_level == '3' ? 'selected' : '') ?>>Root</option>
 			</select></td></tr>

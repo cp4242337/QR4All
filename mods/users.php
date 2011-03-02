@@ -40,7 +40,7 @@ class Users {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl == 3) {
+			if ($user->lvl_root) {
 				echo '<li><a href="index.php?mod=users&task=adduser">Add User</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
@@ -49,11 +49,11 @@ class Users {
 			}
 		}
 		if ($task == 'useradd' || $task == 'useredit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=users">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.userform.validate();">Save User</a></li>';
+			if ($user->lvl_root) echo '<li><a href="index.php?mod=users">Cancel</a></li>';
+			if ($user->lvl_root) echo '<li><a href="#" onclick="document.userform.validate();">Save User</a></li>';
 		}
 		if ($task == 'userclients') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=users">Users</a></li>';
+			if ($user->lvl_root) echo '<li><a href="index.php?mod=users">Users</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'haveclient\');">Yes</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unhaveclient\');">No</a></li>';
 		}
@@ -62,7 +62,7 @@ class Users {
 	
 	function display() {
 		global $user;
-		if ($user->lvl != 3) {
+		if (!$user->lvl_root) {
 			echo 'You should not be here';
 		} else {
 			$users=$this->getUsers();
@@ -97,7 +97,7 @@ class Users {
 	
 	function saveUser() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$user_id=JRequest::getInt('user_id',0);
 		$user_name=JRequest::getString('user_name');
 		$user_email=JRequest::getString('user_email');
@@ -125,20 +125,20 @@ class Users {
 	
 	function userAdd() {
 		global $user;
-		if ($user->lvl == 3) {
+		if ($user->lvl_root) {
 			include 'mods/users/userform.php';
 		}
 	}
 	function userEdit() {
 		global $user;
-		if ($user->lvl == 3) {
+		if ($user->lvl_root) {
 			$userinfo=$this->getUserInfo(JRequest::getInt('user',0));
 			include 'mods/users/userform.php';
 		}
 	}
 	function userClients() {
 		global $user;
-		if ($user->lvl == 3) {
+		if ($user->lvl_root) {
 			$clients=$this->getUserClients(JRequest::getInt('user',0));
 			include 'mods/users/userclients.php';
 		}
@@ -146,20 +146,20 @@ class Users {
 	
 	function adduser() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$app->setRedirect('users','useradd');
 		$app->redirect();
 	}
 	function edituser() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		$app->setRedirect('users','useredit','&user='.(int)$cids[0]);
 		$app->redirect();
 	}
 	function editclients() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		$app->setRedirect('users','userclients','&user='.(int)$cids[0]);
 		$app->redirect();
@@ -201,7 +201,7 @@ class Users {
 	
 	function unpublish() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -219,7 +219,7 @@ class Users {
 	
 	function publish() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -237,7 +237,7 @@ class Users {
 	
 	function untrash() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -255,7 +255,7 @@ class Users {
 	
 	function trash() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -273,7 +273,7 @@ class Users {
 	
 	function delete() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'user', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -290,7 +290,7 @@ class Users {
 	}
 	function unhaveclient() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
 		$euser = JRequest::getInt('user',0);
 		if (count($cids)) {
@@ -308,7 +308,7 @@ class Users {
 	}
 	function haveclient() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cids = JRequest::getVar( 'client', array(0), 'post', 'array' );
 		$euser = JRequest::getInt('user',0);
 		if (count($cids)) {

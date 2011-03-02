@@ -33,7 +33,7 @@ class ItemList {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl > 1) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=itemlist&task=additem&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Add Item</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
@@ -41,8 +41,8 @@ class ItemList {
 			echo '<li><a href="index.php?mod=pagelist&form='.JRequest::getInt('form',0).'">Pages</a></li>';
 		}
 		if ($task == 'itemadd' || $task == 'itemedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=itemlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.codeform.validate();">Save Item</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=itemlist&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.codeform.validate();">Save Item</a></li>';
 		}
 		echo '</ul>';
 		
@@ -51,7 +51,7 @@ class ItemList {
 		global $user;
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
-		$items=$this->getItemList($page,$user->lvl);
+		$items=$this->getItemList($page,$user);
 		include 'mods/itemlist/default.php';
 
 	}
@@ -124,7 +124,7 @@ class ItemList {
 		global $user;
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
-		$items=$this->getItemList($page,$user->lvl);
+		$items=$this->getItemList($page,$user);
 		include 'mods/itemlist/itemform.php';
 	}
 	function itemEdit() {
@@ -132,7 +132,7 @@ class ItemList {
 		$form = JRequest::getInt( 'form', 0 );
 		$page = JRequest::getInt( 'page', 0 );
 		$item = JRequest::getInt( 'item', 0 );
-		$items=$this->getItemList($page,$user->lvl);
+		$items=$this->getItemList($page,$user);
 		$iteminfo=$this->getItemInfo($item);
 		include 'mods/itemlist/itemform.php';
 	}
@@ -394,7 +394,7 @@ class ItemList {
 		return $info;
 	}
 	
-	function getItemList($page,$ulvl) {
+	function getItemList($page,$user) {
 		$q2  = 'SELECT * FROM qr4_formitems as fi ';
 		$q2 .= 'WHERE fi.item_page = '.$page.' ';
 		$q2 .= 'ORDER BY ordering ASC';

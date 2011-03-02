@@ -11,14 +11,14 @@ foreach ($attachs as $d) {
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="at[]" value="'.$d->at_id.'" onclick="isChecked(this.checked);"></td>';
 	echo '<td>';
-	if ($user->lvl > 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editat\')">'.$d->at_name.'</a>';
+	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editat\')">'.$d->at_name.'</a>';
 	else echo $d->at_name;
 	echo '&nbsp;</td>';
 	echo '<td>'.'<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'download\')">'.$d->at_filename.'</a></td>';
 	echo '<td>'.$d->at_filesize.'</td>';
 	echo '<td>'.$d->at_filetype.'</td>';
 	echo '<td class="codelist-ops">';
-	if ($user->lvl > 1) {
+	if ($user->lvl_edit) {
 		echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')" title="Permanently Delete"><img src="images/delete.png" border="0" alt"Permanently Delete" /></a> ';
 	}
 	echo '</td>';

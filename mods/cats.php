@@ -34,23 +34,26 @@ class Cats {
 		global $user;
 		echo '<ul>';
 		if ($task == 'display') {
-			if ($user->lvl >= 2) {
+			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=cats&task=addcat">Add Category</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 			}
 		}
 		if ($task == 'catadd' || $task == 'catedit') {
-			if ($user->lvl > 1) echo '<li><a href="index.php?mod=cats">Cancel</a></li>';
-			if ($user->lvl > 1) echo '<li><a href="#" onclick="document.catform.validate();">Save Category</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="index.php?mod=cats">Cancel</a></li>';
+			if ($user->lvl_edit) echo '<li><a href="#" onclick="document.catform.validate();">Save Category</a></li>';
 		}
 		echo '</ul>';
 	}
 	
 	function display() {
 		global $user;
-		if ($user->lvl == 1) {
-			echo 'You should not be here';
+		if (!$user->lvl_edit) {
+			$app->setError($this->db->getErrorMsg(), 'error'); 
+			$app->setRedirect('home'); 
+			$app->redirect();
+			return 0;
 		} else {
 			$cats=$this->getCats();
 			include 'mods/cats/default.php';
@@ -60,17 +63,17 @@ class Cats {
 	
 	function saveCat() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if ($user->lvl_edit) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$cat_id=JRequest::getInt('cat_id',0);
 		$cat_name=JRequest::getString('cat_name');
 		$cat_client=JRequest::getInt('cat_client',0);
 		if ($cat_id == 0) {
 			$q = 'INSERT INTO qr4_cats (cat_name) VALUES ("'.$cat_name.'")';
-			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('cats'); $app->redirect(); }
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('cats'); $app->redirect(); return 0; }
 			$cat_id=$this->db->insertid();
 		} else {
 			$q = 'UPDATE qr4_cats SET cat_name="'.$cat_name.'" WHERE cat_id = '.$cat_id;
-			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('cats'); $app->redirect(); }
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('cats'); $app->redirect(); return 0;}
 		}
 		$q2='DELETE FROM qr4_clientcats WHERE clcat_cat = '.$cat_id;
 		$this->db->setQuery($q2); $this->db->query();
@@ -85,15 +88,15 @@ class Cats {
 	
 	function catAdd() {
 		global $user;
-		if ($user->lvl >= 2) {
+		if ($user->lvl_edit) {
 			$clients=$this->getClients();
 			include 'mods/cats/catform.php';
 		}
 	}
 	function catEdit() {
 		global $user;
-		if ($user->lvl >= 2) {
-			$clients=$this->getClients();
+		if ($user->lvl_edit) {
+			$clients=$this->getClients($user);
 			$catinfo=$this->getCatInfo(JRequest::getInt('cat',0));
 			include 'mods/cats/catform.php';
 		}
@@ -101,13 +104,13 @@ class Cats {
 	
 	function addcat() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_edit) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;}
 		$app->setRedirect('cats','catadd');
 		$app->redirect();
 	}
 	function editcat() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_edit) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;}
 		$cids = JRequest::getVar( 'cat', array(0), 'post', 'array' );
 		$app->setRedirect('cats','catedit','&cat='.(int)$cids[0]);
 		$app->redirect();
@@ -123,9 +126,14 @@ class Cats {
 		return $this->db->loadObjectList();
 	}	
 	
-	function getClients() {
-		$q='SELECT * FROM qr4_clients WHERE published = 1 ORDER BY cl_name';
-		$this->db->setQuery($q);
+	function getClients($user) {
+		$q  = 'SELECT * FROM qr4_usersclients as uc ';
+		$q .= 'RIGHT JOIN qr4_clients as cl ON uc.cu_client=cl.cl_id ';
+		$q .= 'WHERE cl.published = 1 ';
+		if (!$user->lvl_admin) $q .= ' && cu_user = '.$user->id.' ';
+		$q .= 'GROUP BY cl.cl_id ';
+		$q .= 'ORDER BY cl.cl_name ';
+		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
 	}
 	
@@ -140,7 +148,7 @@ class Cats {
 	
 	function unpublish() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_edit) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;}
 		$cids = JRequest::getVar( 'cat', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -158,7 +166,7 @@ class Cats {
 	
 	function publish() {
 		global $app,$user;
-		if ($user->lvl == 1) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_edit) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;}
 		$cids = JRequest::getVar( 'cat', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );
@@ -176,7 +184,7 @@ class Cats {
 	
 	function delete() {
 		global $app,$user;
-		if ($user->lvl != 3) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
+		if (!$user->lvl_admin) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); return 0;}
 		$cids = JRequest::getVar( 'cat', array(0), 'post', 'array' );
 		if (count($cids)) {
 			$cids = implode( ',', $cids );

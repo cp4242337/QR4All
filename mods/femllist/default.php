@@ -12,18 +12,18 @@ foreach ($emails as $d) {
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="eml[]" value="'.$d->eml_id.'" onclick="isChecked(this.checked);"></td>';
 	echo '<td>';
-	if ($user->lvl > 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editeml\')">'.$d->eml_title.'</a>';
+	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editeml\')">'.$d->eml_title.'</a>';
 	else echo $d->eml_title;
 	echo '&nbsp;</td>';
 	echo '<td>'.$d->attachs.'</td>';
 	echo '<td class="codelist-ops">';
-	if ($user->lvl > 1) {
-		echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'attach\')" title="Edit Attachments"><img src="images/pages.png" border="0" alt="Edit Attachments" /></a> ';
+	if ($user->lvl_edit) {
+		echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'attach\')" title="Edit Attachments"><img src="images/attach.png" border="0" alt="Edit Attachments" /></a> ';
 		if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')" title="Unpublish"><img src="images/unpublish.png" border="0" alt="Unpublish" /></a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')" title="Publish"><img src="images/publish.png" border="0" alt="Publish" /></a> ';
 		if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')" title="Send to Trash"><img src="images/trash.png" border="0" "alt="Send to Trash" /></a> ';
 	}
-	if ($user->lvl > 2) {
+	if ($user->lvl_admin) {
 		if ($d->trashed) {
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'untrash\')" title="Restore from Trash"><img src="images/untrash.png" border="0" alt="Restore from Trash" /></a> ';
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')" title="Permanently Delete"><img src="images/delete.png" border="0" alt"Permanently Delete" /></a> ';

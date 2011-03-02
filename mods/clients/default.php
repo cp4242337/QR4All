@@ -17,10 +17,10 @@ foreach ($clients as $u) {
 	if ($u->cl_maxforms == -1) echo '<td>N/A</td>';
 	else echo '<td>'.sizeof($u->numforms).'/'.($u->cl_maxforms==0?'&#8734;':$u->cl_maxforms).'</td>';
 	echo '<td class="clientlist-ops">';
-	if ($user->lvl >= 2) {
+	if ($user->lvl_admin) {
 		if ($u->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')">Unpub</a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')">Pub</a> ';
-		if (!$u->published && $user->lvl == 3) {
+		if (!$u->published && $user->lvl_root) {
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')">Delete</a> ';
 		}
 	}

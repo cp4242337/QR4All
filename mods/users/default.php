@@ -15,14 +15,15 @@ foreach ($users as $u) {
 	echo '<td>'.$u->usr_email.'</td>';
 	echo '<td align="center">';
 	switch ($u->usr_level) {
-		case 1: echo 'Client'; break;
+		case 1: echo 'Basic'; break;
+		case 4: echo 'Editor'; break;
 		case 2: echo 'Admin'; break;
 		case 3: echo 'Root'; break;
 	}
 	echo '</td>';
 	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_clients) : '').'</td>';
 	echo '<td class="userlist-ops">';
-	if ($u->usr_level == 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editclients\')">Clients</a> ';
+	if ($u->usr_level == 1 || $u->usr_level == 4) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editclients\')">Clients</a> ';
 	if ($u->usr_level != 3) {
 		if (!$u->trashed) {
 			if ($u->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')">Unpub</a> ';

@@ -6,14 +6,14 @@ echo '<div class="codelist-codes">';
 echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($pages).',\'cb\','.$count.');" /></th>';
 echo '<th>Title</th><th width="250">Type</th><th width="250">Action</th>';
-if ($user->lvl > 1 && (sizeof($pages) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($pages)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
+if ($user->lvl_edit && (sizeof($pages) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($pages)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
 else echo '<th width="100">Order</th>';
 echo '<th width="50"># Items</th><th width="300">Ops</th></tr>';
 foreach ($pages as $d) { 
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="page[]" value="'.$d->page_id.'" onclick="isChecked(this.checked);"></td>';
 	echo '<td>';
-	if ($user->lvl > 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editpage\')">'.$d->page_title.'</a>';
+	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editpage\')">'.$d->page_title.'</a>';
 	else echo $d->page_title;
 	echo '&nbsp;</td>';
 	echo '<td>';
@@ -31,7 +31,7 @@ foreach ($pages as $d) {
 		case "submitmail": echo "Submit Form and Send EMail"; break;
 	}
 	echo '&nbsp;</td>';
-	if ($user->lvl > 1) {
+	if ($user->lvl_edit) {
 		echo '<td><input type="text" name="order[]" size="5" value="'.$d->ordering.'" ';
 		if (sizeof($pages) <= 1) echo 'disabled="diabled" ';
 		echo 'class="forder" style="text-align: center" />';
@@ -45,7 +45,7 @@ foreach ($pages as $d) {
 	}
 	echo '<td>'.$d->items.'&nbsp;</td>';
 	echo '<td class="codelist-ops">';
-	if ($user->lvl > 1) {
+	if ($user->lvl_edit) {
 		if ($d->page_type == 'form') echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'items\')" title="Page Items"><img src="images/items.png" border="0" alt="Page Items" /></a> ';
 		else echo '<img src="images/items_i.png" border="0" class="nolink" />';
 		if ($d->page_action == 'submitmail') echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'setupemail\')" title="Setup Email"><img src="images/config.png" border="0" alt="Setup Email" /></a> ';
@@ -54,7 +54,7 @@ foreach ($pages as $d) {
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')" title="Publish"><img src="images/publish.png" border="0" alt="Publish" /></a> ';
 		if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')" title="Send to Trash"><img src="images/trash.png" border="0" "alt="Send to Trash" /></a> ';
 	}
-	if ($user->lvl > 2) {
+	if ($user->lvl_admin) {
 		if ($d->trashed) {
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'untrash\')" title="Restore from Trash"><img src="images/untrash.png" border="0" alt="Restore from Trash" /></a> ';
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')" title="Permanently Delete"><img src="images/delete.png" border="0" alt"Permanently Delete" /></a> ';

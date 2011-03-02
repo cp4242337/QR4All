@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `qr4_formtemplates` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `qr4_menu` (`menu_id`, `menu_name`, `menu_mod`, `menu_task`, `menu_lvl`, `ordering`, `published`) VALUES
-(8, 'Forms', 'formlist', '', 1, 50, 1);
+(8, 'Forms', 'formlist', '', 1, 17, 1);
 
 CREATE TABLE IF NOT EXISTS `qr4_formpages_emails_attach` (
   `at_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -132,4 +132,40 @@ CREATE TABLE IF NOT EXISTS `qr4_formpages_emails_attach` (
   `at_content` longblob NOT NULL,
   PRIMARY KEY (`at_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE  `qr4_userlvels` ADD PRIMARY KEY (  `lvl_id` );
+ALTER TABLE  `qr4_userlvels` CHANGE  `lvl_id`  `lvl_id` INT( 11 ) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE  `qr4_userlvels` ADD  `lvl_basic` BOOLEAN NOT NULL ,
+ADD  `lvl_edit` BOOLEAN NOT NULL ,
+ADD  `lvl_admin` BOOLEAN NOT NULL ,
+ADD  `lvl_root` BOOLEAN NOT NULL,
+ADD  `lvl_order` INT NOT NULL;
+
+UPDATE  `qr4all`.`qr4_userlvels` SET  `lvl_basic` =  '1', `lvl_name` = 'Basic', `lvl_order` = '10' WHERE  `qr4_userlvels`.`lvl_id` =1;
+
+UPDATE  `qr4all`.`qr4_userlvels` SET  `lvl_basic` =  '1', `lvl_edit` =  '1', `lvl_admin` =  '1', `lvl_order` = '30' WHERE  `qr4_userlvels`.`lvl_id` =2;
+
+UPDATE  `qr4all`.`qr4_userlvels` SET  `lvl_basic` =  '1', `lvl_edit` =  '1', `lvl_admin` =  '1', `lvl_root` =  '1', `lvl_order` = '100' WHERE  `qr4_userlvels`.`lvl_id` =3;
+
+INSERT INTO  `qr4all`.`qr4_userlvels` (`lvl_id` ,`lvl_name` ,`lvl_basic` ,`lvl_edit` ,`lvl_admin` ,`lvl_root`, `lvl_order`)
+VALUES (4 ,  'Editor',  '1',  '1',  '0',  '0', '20');
+
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`menu_id` =1;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`menu_id` =2;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_root' WHERE  `qr4_menu`.`menu_id` =3;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_admin' WHERE  `qr4_menu`.`menu_id` =4;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`menu_id` =5;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_edit' WHERE  `qr4_menu`.`menu_id` =6;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`menu_id` =7;
+
+UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`menu_id` =8;
+
 
