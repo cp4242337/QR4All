@@ -44,7 +44,6 @@ if (!$mod->hasContent($task)) {
 	<link href="admin.css" rel="stylesheet" type="text/css">
 	<link href="scripts/datepicker/datepicker.css" rel="stylesheet" type="text/css">
 	<?php 
-	echo '<link href="admin.css" rel="stylesheet" type="text/css">'."\n";
 	include 'headjava.php'; //Headers - Javascripts
 	?>
 	</head><body bgcolor="#000000">
