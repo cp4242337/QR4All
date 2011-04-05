@@ -2,7 +2,7 @@
 <table border="0" cellspacing="0" cellpadding="0" class="codelist-form">
 <tr><td align="right" class="ftitle">Item Title:</td><td class="ffield"><input name="item_title" class="field required maxLength:240" type="text" title="Item title must be 5-240 characters"  value="<?php echo $iteminfo->item_title; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Display Text:</td><td class="ffield"><textarea name="item_text" class="farea"><?php echo $iteminfo->item_text; ?></textarea></td></tr>
-<tr><td align="right" class="ftitle">Page Type:</td><td class="ffield"><select name="item_type" class="field"><?php 
+<tr><td align="right" class="ftitle">Item Type:</td><td class="ffield"><select name="item_type" class="field"><?php 
 
 echo '<option value="msg"'; if ("msg" == $iteminfo->item_type) echo ' selected'; echo '>Message</option>';
 echo '<option value="txt"'; if ("txt" == $iteminfo->item_type) echo ' selected'; echo '>Text Field</option>';

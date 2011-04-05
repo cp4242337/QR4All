@@ -6,7 +6,7 @@ echo '<div class="codelist-codes">';
 echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($pages).',\'cb\','.$count.');" /></th>';
 echo '<th>Title</th><th width="250">Type</th><th width="250">Action</th>';
-if ($user->lvl_edit && (sizeof($pages) > 1)) echo '<th width="100">Order <a href="javascript:saveorder('.(sizeof($pages)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
+if ($user->lvl_edit && (sizeof($pages) > 1)) echo '<th width="120">Order <a href="javascript:saveorder('.(sizeof($pages)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
 else echo '<th width="100">Order</th>';
 echo '<th width="50"># Items</th><th width="300">Ops</th></tr>';
 foreach ($pages as $d) { 

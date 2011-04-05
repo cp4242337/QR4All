@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `qr4_clientforms` (
 CREATE TABLE IF NOT EXISTS `qr4_fhits` (
   `hit_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hit_form` bigint(20) NOT NULL,
+  `hit_data` bigint(20) NOT NULL,
   `hit_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `hit_ipaddr` varchar(15) CHARACTER SET latin1 NOT NULL,
   `hit_useragent` varchar(255) COLLATE utf8_unicode_ci NOT NULL,

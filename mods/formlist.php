@@ -227,7 +227,7 @@ class FormList {
 		$cids = urldecode(JRequest::getVar('forms'));
 		$curclient=(int)$_POST['client'];
 		$clients = $this->getClientList($user->id,$user->lvl);
-		$forms=$this->getVidList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
+		$forms=$this->getFormList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
 		$stats=$this->getStats($forms,$sdate,$edate);
 		include 'mods/formlist/showstats.php';
 		
