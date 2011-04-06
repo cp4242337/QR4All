@@ -46,9 +46,9 @@ window.addEvent('domready', function() {
 		var data = new google.visualization.DataTable();
 		data.addColumn('date', 'Date');
 		<?php 
-		foreach ($vids as $cl) {
+		foreach ($forms as $cl) {
 			foreach ($cl->cats as $ct) {
-				foreach ($ct->vids as $cd) {
+				foreach ($ct->forms as $cd) {
 					echo 'data.addColumn(\'number\',\''.$cd->form_title.'\');'."\n";
 					$clcount++;
 				}
@@ -58,7 +58,7 @@ window.addEvent('domready', function() {
 		data.addRows(<?php echo $numdays; ?>);
 		<?php 
 		$col = 0;
-		foreach ($stats as $cl) {
+		foreach ($forms as $cl) {
 			foreach ($cl->cats as $ct) {
 				foreach ($ct->forms as $cd) {
 					$row=0;
@@ -96,9 +96,9 @@ window.addEvent('domready', function() {
 <h3>Total Hits by Category</h3> 
 <?php 
 
-foreach ($vids as $cl) {
+foreach ($forms as $cl) {
 	foreach ($cl->cats as $ct) {
-		if ($ct->vids) {
+		if ($ct->forms) {
 			echo '<div class="codelist-client" style="clear:both">'.$cl->cl_name.'<br>'; 
 			echo '<div class="codelist-cat" style="clear:both">'.$ct->cat_name.'<br>';
 			echo '<script type="text/javascript">';
@@ -139,7 +139,7 @@ foreach ($vids as $cl) {
 			echo '</table></div>';
 			echo '</div>';
 			echo '</div>';
-			foreach ($ct->froms as $o) {
+			foreach ($ct->forms as $o) {
 				foreach ($o->browsers as $ob) {
 					$browsers[$ob->hit_browser] = $ob->hits + $browsers[$ob->hit_browser];
 					$browsertotal=$browsertotal+$ob->hits;

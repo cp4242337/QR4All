@@ -22,11 +22,12 @@ foreach ($items as $d) {
 		case "msg": echo "Message"; break;
 		case "txt": echo "Text Field"; break;
 		case "tbx": echo "Text Box"; break;
-		case "eml": echo "Email Form"; break;
+		case "eml": echo "Email Address"; break;
 		case "rad": echo "Radio Select"; break;
 		case "mcb": echo "Multi Checkbox"; break;
 		case "cbx": echo "Checkbox"; break;
 		case "dds": echo "Drop Down"; break;
+		case "phn": echo "Phone Number"; break;
 	}
 	echo '&nbsp;</td>';
 	if ($user->lvl_edit) {

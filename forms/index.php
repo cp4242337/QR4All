@@ -119,6 +119,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 				case "txt":
 				case "tbx":
 				case "eml":
+				case "phn":
 				case "rad":
 				case "dds":
 				case "cbx":
@@ -191,14 +192,19 @@ if ($pageinfo->page_type=="form") {
 			echo $item->item_text;
 			echo '</strong><br>'."\n";
 		}
-	
+		
 		//output checkbox
 		if ($item->item_type == 'cbx') {
 			echo '<label><input type="checkbox" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f"';
-			if ($item->item_req) echo ' class="validate-required-check"';
+			echo "class=\"msgPos:'m".$item->item_id."f'";
+			if ($item->item_req) echo ' validate-required-check';
+			echo '"';
+			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
 			echo '>'.$item->item_text.'</label><br>'."\n";
 		}
 	
+		echo '<div id="m'.$item->item_id.'f"></div>';
+		
 		//output radio select
 		if ($item->item_type == 'rad') {
 			$query = 'SELECT * FROM qr4_formitems_opts WHERE opt_item = '.$item->item_id.' ORDER BY ordering ASC';
@@ -208,7 +214,8 @@ if ($pageinfo->page_type=="form") {
 			echo '<span id="i'.$item->id.'list">'."\n";
 			foreach ($iopts as $opts) {
 				echo '<label><input type="radio" name="i'.$item->item_id.'f" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
-				if ($item->item_req && $numopts == 0) echo ' class="validate-reqchk-byname"';
+				if ($item->item_req && $numopts == 0) echo " class=\"msgPos:'m".$item->item_id."f' validate-reqchk-byname\"";
+				if ($item->item_verify_msg && $numopts == 0) echo ' title="'.$item->item_verify_msg.'"';
 				echo '>'.$opts->opt_text.'</label><br>'."\n";
 				$numopts++;
 			}
@@ -222,8 +229,11 @@ if ($pageinfo->page_type=="form") {
 			$iopts = $db->loadObjectList();
 			$numopts=0;
 			echo '<select name="i'.$item->item_id.'f"  id="i'.$item->item_id.'f" class="inputfield';
+			echo " msgPos:'m".$item->item_id."f'";
 			if ($item->item_req) echo ' required';
-			echo '">'."\n";
+			echo '"';
+			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
+			echo '>'."\n";
 			foreach ($iopts as $opts) {
 				echo '<option value="'.$opts->opt_id.'"';
 				echo '>'.$opts->opt_text.'</option>'."\n";
@@ -240,8 +250,9 @@ if ($pageinfo->page_type=="form") {
 			$numopts=0;
 			foreach ($iopts as $opts) {
 				echo '<label><input type="checkbox" name="i'.$item->item_id.'f[]" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
-				if ($item->item_req && $numopts ==0 && !$item->item_verify) echo ' class="validate-reqchk-byname"';
-				if ($item->item_verify && $numopts == 0) echo ' class="checkAtLeast:'.$item->item_verify_limit.'"';
+				if ($item->item_req && $numopts ==0 && !$item->item_verify) echo " class=\"msgPos:'m".$item->item_id."f\'".' validate-reqchk-byname"';
+				if ($item->item_verify && $numopts == 0) echo " class=\"msgPos:'m".$item->item_id."f'".' checkAtLeast:'.$item->item_verify_limit.'"';
+				if ($item->item_verify_msg && $numopts == 0) echo ' title="'.$item->item_verify_msg.'"';
 				echo '>'.$opts->opt_text.'</label><br>'."\n";
 				$numopts++;
 			}
@@ -250,26 +261,47 @@ if ($pageinfo->page_type=="form") {
 		//output text field
 		if ($item->item_type == 'txt') { 
 			echo '<input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield';
-			if ($item->item_verify && !$item->item_depend_item) echo ' minLength:'.(int)$item->item_verify_limit;
-			if ($item->item_req && !$item->item_depend_item) echo ' required';
-			if ($item->item_verify && $item->item_depend_item) echo " required-with validate-match matchInput:'i".$item->item_depend_item."f'";
-			echo '"><br>'."\n"; 
+			echo " msgPos:'m".$item->item_id."f'";
+			if ($item->item_verify && !$item->item_match_item) echo ' minLength:'.(int)$item->item_verify_limit;
+			if ($item->item_req && !$item->item_match_item) echo ' required';
+			if ($item->item_verify && $item->item_match_item) echo " required-with validate-match matchInput:'i".$item->item_match_item."f'";
+			echo '"';
+			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
+			echo '><br>'."\n"; 
 		}
 	
 		//output text box
 		if ($item->item_type == 'tbx') { 
 			echo '<textarea cols="60" rows="3" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputbox';
+			echo " msgPos:'m".$item->item_id."f'";
 			if ($item->item_req) echo ' required';
-			echo '"></textarea><br>'."\n"; 
+			echo '"';
+			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
+			echo '></textarea><br>'."\n"; 
 		}
 	
 		//output email field
 		if ($item->item_type == 'eml') { 
 			echo '<input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield';
-			if ($item->item_verify && !$item->item_depend_item) echo ' validate-email';
-			if ($item->item_req && !$item->item_depend_item) echo ' required';
-			if ($item->item_verify && $item->item_depend_item) echo " required-with validate-match matchInput:'i".$item->item_depend_item."f'";
-			echo '"><br>'."\n";
+			echo " msgPos:'m".$item->item_id."f'";
+			if ($item->item_verify && !$item->item_match_item) echo ' validate-email';
+			if ($item->item_req && !$item->item_match_item) echo ' required';
+			if ($item->item_verify && $item->item_match_item) echo " required-with validate-match matchInput:'i".$item->item_match_item."f'";
+			echo '"';
+			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
+			echo '><br>'."\n";
+		}
+	
+		//output phone field
+		if ($item->item_type == 'phn') { 
+			echo '<input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield';
+			echo " msgPos:'m".$item->item_id."f'";
+			if ($item->item_verify && !$item->item_match_item) echo ' validate-digits';
+			if ($item->item_req && !$item->item_match_item) echo ' required';
+			if ($item->item_verify && $item->item_match_item) echo " required-with validate-match matchInput:'i".$item->item_match_item."f'";
+			echo '"';
+			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
+			echo '><br>'."\n";
 		}
 		
 		echo '<br>'."\n";
@@ -283,12 +315,47 @@ if ($pageinfo->page_type=="confirm") {
 	$qpp = 'SELECT * FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && published = 1 ORDER BY ordering ASC LIMIT '.($curstep - 2).',1';
 	$db->setQuery($qpp);
 	$prevpageinfo = $db->loadObject();
-	$qi  = 'SELECT * FROM qr4_formitems WHERE item_page = '.$prevpageinfo->page_id.' && published = 1 ';
-	$qi .= ''; //future data retrevial
-	$qi .= 'ORDER BY ordering';	
+	$qi  = 'SELECT * FROM qr4_formitems as i ';
+	$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
+	$qi .= 'WHERE item_confirm = 1 && item_page = '.$prevpageinfo->page_id.' && published = 1 && a.ans_data = '.$dataid.' ';
+	$qi .= 'ORDER BY i.ordering';	
 	$db->setQuery($qi);
 	$items = $db->loadObjectList();
-	print_r($items);
+	echo '<table class="confirm-table">';
+	foreach ($items as $item) {
+		echo '<tr><td class="confirm-field">';
+		echo $item->item_text;
+		echo '</td><td class="confirm-ans">';
+		$answer = "";
+		switch ($item->item_type) {
+			case "txt":
+			case "tbx":
+			case "eml":
+			case "phn":
+				$answer = $item->ans_answer;
+				break;
+			case "rad":
+			case "dds":
+				$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id = '.$item->ans_answer;
+				$db->setQuery($qa);
+				$answer = $db->loadResult();
+				break;
+			case "mcb":
+				$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id IN ('.str_replace(" ",",",$item->ans_answer).')';
+				$db->setQuery($qa);
+				$answer = implode("<br>",$db->loadResultArray());
+				break;
+			case "cbx":
+				$answer = ($item->ans_answer == "on" ? 'Yes' : 'No');
+				break;
+				
+		}
+		echo $answer;
+		echo '</td></tr>';
+	}
+	echo '</table>';
+
+	
 }
 
 //************

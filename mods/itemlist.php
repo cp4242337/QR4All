@@ -66,15 +66,17 @@ class ItemList {
 		$item_req=JRequest::getInt('item_req',0);
 		$item_confirm=JRequest::getInt('item_confirm',0);
 		$item_verify=JRequest::getInt('item_verify',0);
+		$item_verify_msg=JRequest::getString('item_verify_msg',0);
 		$item_verify_limit=JRequest::getInt('item_verify_limit',0);
+		$item_match_item=JRequest::getInt('item_match_item',0);
 		$item_depend_item=JRequest::getInt('item_depend_item',0);
 		$item_form=JRequest::getInt('item_form',0);
 		
 		if ($item_id == 0) {
 			$ordering=$this->getNextOrderNum($item_page);
-			$q  = 'INSERT INTO qr4_formitems (item_page,item_title,item_text,item_type,item_req,item_confirm,item_verify,item_verify_limit,item_depend_item,ordering) ';
+			$q  = 'INSERT INTO qr4_formitems (item_page,item_title,item_text,item_type,item_req,item_confirm,item_verify,item_verify_limit,item_verify_msg,item_depend_item,item_match_item,ordering) ';
 			$q .= 'VALUES ("'.$item_page.'","'.$item_title.'","'.$item_text.'","'.$item_type.'","'.$item_req.'","'.$item_confirm.'","'.$item_verify.'","';
-			$q .= $item_verify_limit.'","'.$item_depend_item.'","'.$ordering.'")';
+			$q .= $item_verify_limit.'","'.$item_verify_msg.'","'.$item_depend_item.'","'.$item_match_item.'","'.$ordering.'")';
 			$this->db->setQuery($q); 
 			if (!$this->db->query()) { 
 				$app->setError($this->db->getErrorMsg(), 'error'); 
@@ -85,7 +87,8 @@ class ItemList {
 			$item_id=$this->db->insertid();
 		} else {
 			$q  = 'UPDATE qr4_formitems SET item_title="'.$item_title.'", item_text="'.$item_text.'", item_type="'.$item_type.'", item_req="'.$item_req.'", ';
-			$q .= 'item_confirm="'.$item_confirm.'", item_verify="'.$item_verify.'", item_verify_limit="'.$item_verify_limit.'", item_depend_item="'.$item_depend_item.'" ';
+			$q .= 'item_confirm="'.$item_confirm.'", item_verify="'.$item_verify.'", item_verify_limit="'.$item_verify_limit.'", item_depend_item="'.$item_depend_item.'", ';
+			$q .= 'item_match_item="'.$item_match_item.'", item_verify_msg="'.$item_verify_msg.'" ';
 			$q .= 'WHERE item_id = '.$item_id;
 			$this->db->setQuery($q); 
 			if (!$this->db->query()) { 

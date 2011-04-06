@@ -7,11 +7,12 @@
 echo '<option value="msg"'; if ("msg" == $iteminfo->item_type) echo ' selected'; echo '>Message</option>';
 echo '<option value="txt"'; if ("txt" == $iteminfo->item_type) echo ' selected'; echo '>Text Field</option>';
 echo '<option value="tbx"'; if ("tbx" == $iteminfo->item_type) echo ' selected'; echo '>Text Box</option>';
-echo '<option value="eml"'; if ("eml" == $iteminfo->item_type) echo ' selected'; echo '>EMail Field</option>';
 echo '<option value="rad"'; if ("rad" == $iteminfo->item_type) echo ' selected'; echo '>Radio Select</option>';
 echo '<option value="mcb"'; if ("mcb" == $iteminfo->item_type) echo ' selected'; echo '>Multi Checkbox</option>';
 echo '<option value="cbx"'; if ("cbx" == $iteminfo->item_type) echo ' selected'; echo '>Single Checkbox</option>';
 echo '<option value="dds"'; if ("dds" == $iteminfo->item_type) echo ' selected'; echo '>Dropdown Select</option>';
+echo '<option value="eml"'; if ("eml" == $iteminfo->item_type) echo ' selected'; echo '>EMail Address</option>';
+echo '<option value="phn"'; if ("phn" == $iteminfo->item_type) echo ' selected'; echo '>Phone Number</option>';
 
 ?></select></td></tr>
 <tr><td align="right" class="ftitle">Required:</td><td class="ffield">
@@ -24,10 +25,17 @@ echo '<option value="dds"'; if ("dds" == $iteminfo->item_type) echo ' selected';
 <label><input type="radio" name="item_verify" value="0" <?php if (!$iteminfo->item_verify) echo 'checked="checked"'; ?>> No</label> 
 <label><input type="radio" name="item_verify" value="1" <?php if ($iteminfo->item_verify) echo 'checked="checked"'; ?>> Yes</label></td></tr>
 <tr><td align="right" class="ftitle">Verify Limit:</td><td class="ffield"><input name="item_verify_limit" class="field number" type="text" value="<?php echo $iteminfo->item_verify_limit; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Verify Message:</td><td class="ffield"><input name="item_verify_msg" class="field maxLength:240" type="text" title="Verification must be 5-240 characters"  value="<?php echo $iteminfo->item_verify_msg; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Dependent Item:</td><td class="ffield"><select name="item_depend_item" class="field"><?php 
 echo '<option value="0"'; if (0 == $iteminfo->item_depend_item) echo ' selected'; echo '>None</option>';
 foreach ($items as $i) {
-	echo '<option value="'.$i->item_id.'"'; if ($i->item_id == $iteminfo->item_depend_item) echo ' selected'; echo '>'.$i->item_title.'</option>';
+	if (in_array($i->item_type,array("rad","mcb","dds"))) echo '<option value="'.$i->item_id.'"'; if ($i->item_id == $iteminfo->item_depend_item) echo ' selected'; echo '>'.$i->item_title.'</option>';
+}
+?></select></td></tr>
+<tr><td align="right" class="ftitle">Match Item:</td><td class="ffield"><select name="item_match_item" class="field"><?php 
+echo '<option value="0"'; if (0 == $iteminfo->item_match_item) echo ' selected'; echo '>None</option>';
+foreach ($items as $i) {
+	if (in_array($i->item_type,array("txt","tbx","eml","phn"))) echo '<option value="'.$i->item_id.'"'; if ($i->item_id == $iteminfo->item_match_item) echo ' selected'; echo '>'.$i->item_title.'</option>';
 }
 ?></select></td></tr>
 </table>

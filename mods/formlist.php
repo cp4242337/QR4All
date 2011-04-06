@@ -226,8 +226,8 @@ class FormList {
 		if (!$edate) $edate = date("Y-m-d");
 		$cids = urldecode(JRequest::getVar('forms'));
 		$curclient=(int)$_POST['client'];
-		$clients = $this->getClientList($user->id,$user->lvl);
-		$forms=$this->getFormList($clients,$curclient,$user->lvl,$cids,$sdate,$edate);
+		$clients = $this->getClientList($user);
+		$forms=$this->getFormList($clients,$curclient,$user,$cids,$sdate,$edate);
 		$stats=$this->getStats($forms,$sdate,$edate);
 		include 'mods/formlist/showstats.php';
 		

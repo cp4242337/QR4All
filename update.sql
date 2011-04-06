@@ -51,12 +51,14 @@ CREATE TABLE IF NOT EXISTS `qr4_formitems` (
   `item_page` int(11) NOT NULL,
   `item_title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `item_text` text COLLATE utf8_unicode_ci NOT NULL,
-  `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','hdn') COLLATE utf8_unicode_ci NOT NULL,
+  `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','phn') COLLATE utf8_unicode_ci NOT NULL,
   `item_req` tinyint(1) NOT NULL DEFAULT '0',
   `item_confirm` tinyint(1) NOT NULL DEFAULT '0',
   `item_verify` tinyint(1) NOT NULL DEFAULT '0',
   `item_verify_limit` int(11) NOT NULL,
+  `item_verify_msg` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `item_depend_item` int(11) NOT NULL,
+  `item_match_item` int(11) NOT NULL,
   `ordering` int(11) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`item_id`)
@@ -169,4 +171,24 @@ UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`me
 
 UPDATE  `qr4all`.`qr4_menu` SET  `menu_lvl` =  'lvl_basic' WHERE  `qr4_menu`.`menu_id` =8;
 
+CREATE TABLE IF NOT EXISTS `qr4_formdata` (
+  `data_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `data_form` int(11) NOT NULL,
+  `data_start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_end` datetime NOT NULL,
+  `data_ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `data_session` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`data_id`),
+  KEY `data_form` (`data_form`),
+  KEY `data_session` (`data_session`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
 
+CREATE TABLE IF NOT EXISTS `qr4_formdata_answers` (
+  `ans_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ans_data` bigint(20) NOT NULL,
+  `ans_question` int(11) NOT NULL,
+  `ans_answer` text COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`ans_id`),
+  KEY `ans_question` (`ans_question`),
+  KEY `ans_data` (`ans_data`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=21 ;

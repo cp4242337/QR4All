@@ -21,7 +21,7 @@ foreach ($users as $u) {
 		case 3: echo 'Root'; break;
 	}
 	echo '</td>';
-	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_clients) : '').'</td>';
+	echo '<td align="center">'.($u->usr_level==1 ? count($u->usr_clients) : '&nbsp;').'</td>';
 	echo '<td class="userlist-ops">';
 	if ($u->usr_level == 1 || $u->usr_level == 4) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editclients\')">Clients</a> ';
 	if ($u->usr_level != 3) {
@@ -35,7 +35,7 @@ foreach ($users as $u) {
 			echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'delete\')">Delete</a> ';
 		}
 	}
-	echo '</td>';
+	echo '&nbsp;</td>';
 	echo '</tr>';
 	$count++;
 	
