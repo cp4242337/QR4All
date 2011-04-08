@@ -27,7 +27,7 @@ $form = JRequest::getVar('c',null);
 if (!$form) { echo 'No Form Specified'; exit; }
 $cookiename = 'form_'.$form.'_session';
 
-$qf = 'SELECT * FROM qr4_forms WHERE form_code = "'.$form.'"  && published = 1';
+$qf = 'SELECT * FROM qr4_forms WHERE form_code = "'.$form.'"  && published = 1 && trashed = 0';
 $db->setQuery($qf);
 $forminfo = $db->loadObject();
 
@@ -94,7 +94,7 @@ if (!isset($_COOKIE[$cookiename])) { //if not set up cookie and sessin id
 if (!isset($_SESSION['step'])) { $curstep = 1; $_SESSION['step']=1; }
 else { ($curstep = $_SESSION['step']); }
 
-$qp = 'SELECT * FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && published = 1 ORDER BY ordering ASC LIMIT '.($curstep - 1).',1';
+$qp = 'SELECT * FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && published = 1  && trashed = 0 ORDER BY ordering ASC LIMIT '.($curstep - 1).',1';
 $db->setQuery($qp);
 $pageinfo = $db->loadObject();
 
@@ -123,6 +123,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 				case "rad":
 				case "dds":
 				case "cbx":
+				case "hdn":
 					$answer = $db->getEscaped(JRequest::getVar("i".$item->item_id."f",""));
 					break;
 				case "mcb":
@@ -137,6 +138,46 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 		}
 	}
 	//page action
+	if ($pageinfo->page_action == 'submitmail') {
+		include 'lib/swift/swift_required.php';
+		$transport = Swift_SendmailTransport::newInstance();
+		//get emails
+		$qe = 'SELECT * FROM qr4_formpages_emails WHERE eml_page = '.$pageinfo->page_id.' && published = 1 && trashed = 0';
+		$db->setQuery($qe);
+		$emldata = $db->loadObjectList();
+		foreach ($emldata as $eml) {
+			//get to name and address
+			$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.$eml->eml_toaddr;
+			$db->setQuery($qte);
+			$toaddr = $db->loadResult();
+			$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.$eml->eml_toname;
+			$db->setQuery($qte);
+			$toname = $db->loadResult();
+			if ($toaddr) {
+				$mailer = Swift_Mailer::newInstance($transport);
+				$logger = new Swift_Plugins_Loggers_ArrayLogger();
+				$mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($logger));
+				$message = Swift_Message::newInstance();
+				$message->setSubject($eml->eml_subject);
+				$message->setFrom(array($eml->eml_fromaddr => $eml->eml_fromname));
+				$message->setTo(array($toaddr => $toname));
+				$dba = 'SELECT * FROM qr4_formpages_emails_attach WHERE at_email = '.$eml->eml_id;
+				$db->setQuery($dba);
+				$atlist = $db->loadObjectList();
+				foreach ($atlist as $at) {
+					$attachment = Swift_Attachment::newInstance($at->at_content, $at->at_filename, $at->at_filetype);
+					$message->attach($attachment);
+				}
+				$body = $eml->eml_content;
+				$message->setBody($body,'text/html');
+				$mailer->send($message);
+				$dbl = 'INSERT INTO qr4_formpages_emails_logs (log_eml,log_msg) VALUES ("'.$eml->eml_id.'","'.$db->getEscaped($logger->dump()).'")';
+				$db->setQuery($dbl);
+				$db->query();
+			}
+			
+		}
+	}
 	// --- EMAIL ACTION TO GO HERE ---
 	//set end if submitting
 	if ($pageinfo->page_action == 'submit' || $pageinfo->page_action == 'submitmail') {
@@ -302,6 +343,11 @@ if ($pageinfo->page_type=="form") {
 			echo '"';
 			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
 			echo '><br>'."\n";
+		}
+	
+		//output hidden field
+		if ($item->item_type == 'hdn') { 
+			echo '<input type="hidden" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" value="'.$item->item_text.'">';
 		}
 		
 		echo '<br>'."\n";

@@ -28,6 +28,7 @@ foreach ($items as $d) {
 		case "cbx": echo "Checkbox"; break;
 		case "dds": echo "Drop Down"; break;
 		case "phn": echo "Phone Number"; break;
+		case "hdn": echo "Hidden"; break;
 	}
 	echo '&nbsp;</td>';
 	if ($user->lvl_edit) {

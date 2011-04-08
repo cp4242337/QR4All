@@ -17,11 +17,13 @@ foreach ($items as $l) {
 <tr><td align="right" class="ftitle">To EMail:</td><td class="ffield"><select name="eml_toaddr" class="field">
 <?php 
 foreach ($items as $l) {
-	echo '<option value="'.$l->item_id.'"';
-	if ($l->item_id==$emlinfo->eml_toaddr) echo ' selected';
-	echo '>';
-	echo $l->item_title;
-	echo '</option>';
+	if ($l->item_type == 'eml' || $l->item_type == 'hdn') {
+		echo '<option value="'.$l->item_id.'"';
+		if ($l->item_id==$emlinfo->eml_toaddr) echo ' selected';
+		echo '>';
+		echo $l->item_title;
+		echo '</option>';
+	}
 }
 ?>
 </select></td></tr>

@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `qr4_formitems` (
   `item_page` int(11) NOT NULL,
   `item_title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `item_text` text COLLATE utf8_unicode_ci NOT NULL,
-  `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','phn') COLLATE utf8_unicode_ci NOT NULL,
+  `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','phn','hdn') COLLATE utf8_unicode_ci NOT NULL,
   `item_req` tinyint(1) NOT NULL DEFAULT '0',
   `item_confirm` tinyint(1) NOT NULL DEFAULT '0',
   `item_verify` tinyint(1) NOT NULL DEFAULT '0',
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `qr4_formdata` (
   PRIMARY KEY (`data_id`),
   KEY `data_form` (`data_form`),
   KEY `data_session` (`data_session`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
 CREATE TABLE IF NOT EXISTS `qr4_formdata_answers` (
   `ans_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -191,4 +191,12 @@ CREATE TABLE IF NOT EXISTS `qr4_formdata_answers` (
   PRIMARY KEY (`ans_id`),
   KEY `ans_question` (`ans_question`),
   KEY `ans_data` (`ans_data`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=21 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+
+CREATE TABLE IF NOT EXISTS `qr4_formpages_emails_logs` (
+  `log_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `log_eml` int(11) NOT NULL,
+  `log_msg` text COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`log_id`),
+  KEY `log_eml` (`log_eml`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
