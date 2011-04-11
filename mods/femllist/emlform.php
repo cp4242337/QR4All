@@ -6,11 +6,13 @@
 <tr><td align="right" class="ftitle">To Name:</td><td class="ffield"><select name="eml_toname" class="field">
 <?php 
 foreach ($items as $l) {
-	echo '<option value="'.$l->item_id.'"';
-	if ($l->item_id==$emlinfo->eml_toname) echo ' selected';
-	echo '>';
-	echo $l->item_title;
-	echo '</option>';
+	if ($l->item_type == 'eml' || $l->item_type == 'hdn' || $l->item_type == 'txt') {
+		echo '<option value="'.$l->item_id.'"';
+		if ($l->item_id==$emlinfo->eml_toname) echo ' selected';
+		echo '>';
+		echo $l->item_title;
+		echo '</option>';
+	}
 }
 ?>
 </select></td></tr>
@@ -28,7 +30,19 @@ foreach ($items as $l) {
 ?>
 </select></td></tr>
 <tr><td align="right" class="ftitle">Subject:</td><td class="ffield"><input name="eml_subject" class="field required maxLength:255" type="text" title="EMail Subject must be 5-255 characters"  value="<?php echo $emlinfo->eml_subject; ?>"></td></tr>
-<tr><td align="right" class="ftitle">Content:</td><td class="ffield"><textarea name="eml_content" class="farea required"><?php echo $emlinfo->eml_content; ?></textarea></td></tr>
+<tr><td align="right" class="ftitle">Content:</td><td class="ffield"><textarea name="eml_content" class="farea required"><?php echo $emlinfo->eml_content; ?></textarea><br><br>
+<?php 
+echo '<b>Available items for content:</b><br>';
+foreach ($items as $i) {
+	echo '{i'.$i->item_id.'} - '.$i->item_title.'<br>';
+}
+echo '<br>Place the {i##} element where you want the answer to that item';
+	
+?>
+
+
+</td></tr>
+
 </table>
 <input name="task" type="hidden" value="saveeml">
 <input name="eml_page" type="hidden" value="<?php echo $page; ?>">

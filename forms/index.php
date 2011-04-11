@@ -169,6 +169,44 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 					$message->attach($attachment);
 				}
 				$body = $eml->eml_content;
+				$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.$pageinfo->ordering;
+				$db->setQuery($qpp);
+				$prevpages = $db->loadResultArray();
+				if ($prevpages) {
+					$qi  = 'SELECT * FROM qr4_formitems as i ';
+					$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
+					$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$dataid.' ';
+					$qi .= 'ORDER BY i.ordering';	
+					$db->setQuery($qi);
+					$items = $db->loadObjectList();
+					foreach ($items as $item) {
+						$answer = "";
+						switch ($item->item_type) {
+							case "txt":
+							case "tbx":
+							case "eml":
+							case "phn":
+								$answer = $item->ans_answer;
+								break;
+							case "rad":
+							case "dds":
+								$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id = '.$item->ans_answer;
+								$db->setQuery($qa);
+								$answer = $db->loadResult();
+								break;
+							case "mcb":
+								$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id IN ('.str_replace(" ",",",$item->ans_answer).')';
+								$db->setQuery($qa);
+								$answer = implode("<br>",$db->loadResultArray());
+								break;
+							case "cbx":
+								$answer = ($item->ans_answer == "on" ? 'Yes' : 'No');
+								break;
+								
+						}
+						$body = str_replace("{i".$item->item_id."}",$answer,$body);
+					}
+				}
 				$message->setBody($body,'text/html');
 				$mailer->send($message);
 				$dbl = 'INSERT INTO qr4_formpages_emails_logs (log_eml,log_msg) VALUES ("'.$eml->eml_id.'","'.$db->getEscaped($logger->dump()).'")';
@@ -216,8 +254,47 @@ if ($pageinfo->page_action != 'none') {
 //************
 
 // Page
-if ($pageinfo->page_type=="text") {
-	echo $pageinfo->page_content."\n";
+if ($pageinfo->page_type=="text" || $pageinfo->page_type=="form" || $pageinfo->page_type=="confirm") {
+	$pagecontent = $pageinfo->page_content;
+	$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.$pageinfo->ordering;
+	$db->setQuery($qpp);
+	$prevpages = $db->loadResultArray();
+	if ($prevpages) {
+		$qi  = 'SELECT * FROM qr4_formitems as i ';
+		$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
+		$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$dataid.' ';
+		$qi .= 'ORDER BY i.ordering';	
+		$db->setQuery($qi);
+		$items = $db->loadObjectList();
+		foreach ($items as $item) {
+			$answer = "";
+			switch ($item->item_type) {
+				case "txt":
+				case "tbx":
+				case "eml":
+				case "phn":
+					$answer = $item->ans_answer;
+					break;
+				case "rad":
+				case "dds":
+					$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id = '.$item->ans_answer;
+					$db->setQuery($qa);
+					$answer = $db->loadResult();
+					break;
+				case "mcb":
+					$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id IN ('.str_replace(" ",",",$item->ans_answer).')';
+					$db->setQuery($qa);
+					$answer = implode("<br>",$db->loadResultArray());
+					break;
+				case "cbx":
+					$answer = ($item->ans_answer == "on" ? 'Yes' : 'No');
+					break;
+					
+			}
+			$pagecontent = str_replace("{i".$item->item_id."}",$answer,$pagecontent);
+		}
+	}
+	echo $pagecontent."\n";
 }
 
 // Form Page
@@ -358,12 +435,12 @@ if ($pageinfo->page_type=="form") {
 
 // Confirm Page
 if ($pageinfo->page_type=="confirm") {
-	$qpp = 'SELECT * FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && published = 1 ORDER BY ordering ASC LIMIT '.($curstep - 2).',1';
-	$db->setQuery($qpp);
-	$prevpageinfo = $db->loadObject();
+	$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.$pageinfo->ordering;
+	$db->setQuery($qpp); 
+	$prevpages = $db->loadResultArray();
 	$qi  = 'SELECT * FROM qr4_formitems as i ';
 	$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
-	$qi .= 'WHERE item_confirm = 1 && item_page = '.$prevpageinfo->page_id.' && published = 1 && a.ans_data = '.$dataid.' ';
+	$qi .= 'WHERE item_confirm = 1 && item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$dataid.' ';
 	$qi .= 'ORDER BY i.ordering';	
 	$db->setQuery($qi);
 	$items = $db->loadObjectList();

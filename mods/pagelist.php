@@ -122,6 +122,7 @@ class PageList {
 		global $user;
 		$form = JRequest::getInt( 'form', 0 );
 		$pageinfo=$this->getPageInfo(JRequest::getInt('page',0));
+		$aitems = $this->getAvailableItems($form,$pageinfo->ordering);
 		include 'mods/pagelist/pageform.php';
 	}
 	
@@ -309,6 +310,20 @@ class PageList {
 
 		return $pages;
 		
+	}
+	
+	function getAvailableItems($form,$order) {
+		$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$form.'  && trashed = 0 && published = 1 && ordering < '.$order;
+		$this->db->setQuery($qpp);
+		$prevpages = $this->db->loadResultArray();
+		if ($prevpages) {
+			$qi  = 'SELECT item_id,item_title FROM qr4_formitems as i ';
+			$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 ';
+			$qi .= 'ORDER BY i.ordering';	
+			$this->db->setQuery($qi);
+			$items = $this->db->loadObjectList();
+		}
+		return $items;
 	}
 	
 }

@@ -35,7 +35,22 @@ if ("submitmail" == $pageinfo->page_action) echo ' selected';
 echo '>Submit Form and Send EMail</option>';
 
 ?></select></td></tr>
-<tr><td align="right" class="ftitle">Page Content:</td><td class="ffield"><textarea name="page_content" class="farea" type="text"><?php echo $pageinfo->page_content; ?></textarea></td></tr>
+<tr><td align="right" class="ftitle">Page Content:</td><td class="ffield"><textarea name="page_content" class="farea"><?php echo $pageinfo->page_content; ?></textarea><br><br>
+<?php 
+if ($aitems) {
+	echo '<b>Available items for content:</b><br>';
+	foreach ($aitems as $i) {
+		echo '{i'.$i->item_id.'} - '.$i->item_title.'<br>';
+	}
+	echo '<br>Place the {i##} element where you want the answer to that item';
+	
+} else {
+	echo 'No items available for content or new page';
+}
+
+
+?>
+</td></tr>
 </table>
 <input name="task" type="hidden" value="savepage">
 <input name="page_form" type="hidden" value="<?php echo $form; ?>">

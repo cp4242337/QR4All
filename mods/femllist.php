@@ -260,9 +260,8 @@ class FEmlList {
 		$q2 = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$form.' ORDER BY ordering';
 		$this->db->setQuery($q2); $pages = $this->db->loadResultArray();
 		$q  = 'SELECT item_id,item_title,item_type FROM qr4_formitems WHERE item_page IN('.implode(",",$pages).') ';
-		$q .= '&& item_type IN ("txt","eml","hdn") ORDER BY item_page,ordering ASC';
+		$q .= 'ORDER BY item_page,ordering ASC';
 		$this->db->setQuery($q);
 		return $this->db->loadObjectList();
 	}
-	
 }
