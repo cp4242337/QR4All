@@ -187,13 +187,6 @@ CREATE TABLE IF NOT EXISTS `qr4_forms` (
   PRIMARY KEY (`form_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `qr4_formtemplates` (
-  `tmpl_id` int(11) NOT NULL AUTO_INCREMENT,
-  `tmpl_name` varchar(80) CHARACTER SET latin1 NOT NULL,
-  `tmpl_url` text CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`tmpl_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 CREATE TABLE IF NOT EXISTS `qr4_hits` (
   `hit_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hit_code` bigint(20) NOT NULL,
@@ -336,3 +329,15 @@ CREATE TABLE IF NOT EXISTS `qr4_formdata_answers` (
   KEY `ans_data` (`ans_data`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
+CREATE TABLE `qr4_templates` (
+  `tmpl_id` int(11) NOT NULL AUTO_INCREMENT,
+  `tmpl_name` varchar(80) CHARACTER SET latin1 NOT NULL,
+  `tmpl_url` text CHARACTER SET latin1 NOT NULL,
+  `tmpl_type` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`tmpl_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
+
+INSERT INTO `qr4_templates` (`tmpl_id`, `tmpl_name`, `tmpl_url`, `tmpl_type`) VALUES
+(1, 'Default Template', 'default.css', 'video'),
+(2, 'MM Eblast', 'mme.css', 'video'),
+(3, 'MM Eblast', 'mme.css', 'form');
