@@ -79,6 +79,10 @@ class VidList {
 		$vid_rat=JRequest::getInt('vid_rat');
 		$vid_pubtitle=JRequest::getString('vid_pubtitle');
 		$vid_domain=JRequest::getInt('vid_domain');
+		$vid_sdomain=JRequest::getInt('vid_sdomain');
+		$vid_tmpl=JRequest::getInt('vid_tmpl');
+		$vid_returl=JRequest::getInt('vid_returl');
+		$vid_rettitle=JRequest::getInt('vid_rettitle');
 		$vid_client=$this->getClientIdFromCat($vid_cat);
 		
 		if (!$this->CheckVideoCount($vid_client)) {
@@ -90,11 +94,11 @@ class VidList {
 		
 		if ($vid_id == 0) {
 			$vid_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file,vid_ratio,vid_pubtitle,vid_domain) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'","'.$vid_rat.'","'.$vid_pubtitle.'","'.$vid_domain.'")';
+			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file,vid_ratio,vid_pubtitle,vid_domain,vid_sdomain,vid_tmpl,vid_returl,vid_rettitle) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'","'.$vid_rat.'","'.$vid_pubtitle.'","'.$vid_domain.'","'.$vid_sdomain.'","'.$vid_tmpl.'","'.$vid_returl.'","'.$vid_rettitle.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 			$vid_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'", vid_ratio = "'.$vid_rat.'", vid_pubtitle="'.$vid_pubtitle.'", vid_domain="'.$vid_domain.'" WHERE vid_id = '.$vid_id;
+			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'", vid_ratio = "'.$vid_rat.'", vid_pubtitle="'.$vid_pubtitle.'", vid_domain="'.$vid_domain.'", vid_sdomain="'.$vid_sdomain.'", vid_tmpl="'.$vid_tmpl.'", vid_returl="'.$vid_returl.'", vid_rettitle="'.$vid_rettitle.'" WHERE vid_id = '.$vid_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 		}
 		$qd1 = 'DELETE FROM qr4_catvids WHERE catvid_vid = '.$vid_id;
@@ -180,7 +184,9 @@ class VidList {
 		global $user;
 		$clients = $this->getClientList($user);
 		$cats = $this->getClientCats($clients);
-		$doms = $this->getDomainList();
+		$doms = $this->getDomainList("video");
+		$sdoms = $this->getDomainList("stream");
+		$tmpls = $this->getTmplList();
 		include 'mods/vidlist/vidform.php';
 	}
 	function vidEdit() {
@@ -189,7 +195,9 @@ class VidList {
 		$clients = $this->getClientList($user,$uc);
 		$cats = $this->getClientCats($clients);
 		$vidinfo=$this->getVidInfo(JRequest::getInt('vid',0));
-		$doms = $this->getDomainList();
+		$doms = $this->getDomainList("video");
+		$sdoms = $this->getDomainList("stream");
+		$tmpls = $this->getTmplList();
 		include 'mods/vidlist/vidform.php';
 	}
 	
@@ -334,10 +342,18 @@ class VidList {
 		return $this->db->loadObjectList();
 	}
 	
-	function getDomainList() {
+	function getDomainList($type) {
 		$q  = 'SELECT * FROM qr4_domains ';
-		$q .= 'WHERE dom_type = "video" ';
+		$q .= 'WHERE dom_type = "'.$type.'" ';
 		$q .= 'ORDER BY dom_dom ';
+		$this->db->setQuery($q); 
+		return $this->db->loadObjectList();
+	}
+	
+	function getTmplList() {
+		$q  = 'SELECT * FROM qr4_templates ';
+		$q .= 'WHERE tmpl_type = "video" ';
+		$q .= 'ORDER BY tmpl_name ';
 		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
 	}

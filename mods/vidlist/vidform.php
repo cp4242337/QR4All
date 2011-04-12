@@ -27,7 +27,7 @@ echo '>16x9</option>';
 			?>
 
 			</select></td></tr>
-<tr><td align="right" class="ftitle">Domain:</td><td class="ffield"><select name="vid_domain" class="field required" title="Domain is required">
+<tr><td align="right" class="ftitle">Video Domain:</td><td class="ffield"><select name="vid_domain" class="field required" title="Domain is required">
 			<?php 
 			foreach ($doms as $d) {
 				echo '<option value="'.$d->dom_id.'"';
@@ -37,6 +37,27 @@ echo '>16x9</option>';
 			?>
 
 			</select></td></tr>
+<tr><td align="right" class="ftitle">Stream Domain:</td><td class="ffield"><select name="vid_sdomain" class="field required" title="Domain is required">
+			<?php 
+			foreach ($sdoms as $d) {
+				echo '<option value="'.$d->dom_id.'"';
+				if ($d->dom_id == $vidinfo->vid_sdomain) echo ' selected';
+				echo '>'.$d->dom_dom.'</option>';
+			}
+			?>
+
+			</select></td></tr>
+<tr><td align="right" class="ftitle">Video Template:</td><td class="ffield"><select name="vid_tmpl" class="field required" title="Domain is required">
+			<?php 
+			foreach ($tmpls as $d) {
+				echo '<option value="'.$d->tmpl_id.'"';
+				if ($d->tmpl_id == $vidinfo->vid_tmpl) echo ' selected';
+				echo '>'.$d->tmpl_name.'</option>';
+			}
+			?>
+
+			</select></td></tr><tr><td align="right" class="ftitle">Return Title:</td><td class="ffield"><input name="vid_rettitle" class="field maxLength:255" type="text" title="Must be 5-255 characters"  value="<?php echo $vidinfo->vid_rettitle; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Return URL:</td><td class="ffield"><input name="vid_returl" class="field validate-url maxLength:255" type="text" title="Must be 5-255 characters and a URL"  value="<?php echo $vidinfo->vid_returl; ?>"></td></tr>
 </table>
 <input name="task" type="hidden" value="saveVid">
 <input name="mod" type="hidden" value="vidlist">

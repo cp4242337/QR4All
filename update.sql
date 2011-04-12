@@ -5,7 +5,7 @@ RENAME TABLE  `qr4all`.`qr4_viddom` TO  `qr4all`.`qr4_domains` ;
 ALTER TABLE  `qr4_domains` CHANGE  `vd_id`  `dom_id` INT( 11 ) NOT NULL AUTO_INCREMENT ,
 CHANGE  `vd_dom`  `dom_dom` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 
-ALTER TABLE  `qr4_domains` ADD  `dom_type` ENUM(  'video',  'form',  'code' ) NOT NULL;
+ALTER TABLE  `qr4_domains` ADD  `dom_type` ENUM(  'video',  'form',  'code', 'stream' ) NOT NULL;
 
 ALTER TABLE `qr4_clients` ADD   `cl_maxcodes` int(11) NOT NULL;
 ALTER TABLE `qr4_clients` ADD   `cl_maxvids` int(11) NOT NULL;
@@ -115,10 +115,11 @@ CREATE TABLE IF NOT EXISTS `qr4_forms` (
   PRIMARY KEY (`form_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `qr4_formtemplates` (
+CREATE TABLE IF NOT EXISTS `qr4_templates` (
   `tmpl_id` int(11) NOT NULL AUTO_INCREMENT,
   `tmpl_name` varchar(80) CHARACTER SET latin1 NOT NULL,
   `tmpl_url` text CHARACTER SET latin1 NOT NULL,
+  `tmpl_type` enum('video','form') COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`tmpl_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -144,6 +145,12 @@ ADD  `lvl_edit` BOOLEAN NOT NULL ,
 ADD  `lvl_admin` BOOLEAN NOT NULL ,
 ADD  `lvl_root` BOOLEAN NOT NULL,
 ADD  `lvl_order` INT NOT NULL;
+
+ALTER TABLE `qr4_videos ADD 
+ADD  `vid_returl` varchar(255) NOT NULL,
+ADD  `vid_rettitle` varchar(255) NOT NULL,
+ADD  `vid_tmpl` int(11) NOT NULL DEFAULT '1',
+ADD  `vid_sdomain` int(11) NOT NULL DEFAULT '4';
 
 UPDATE  `qr4all`.`qr4_userlvels` SET  `lvl_basic` =  '1', `lvl_name` = 'Basic', `lvl_order` = '10' WHERE  `qr4_userlvels`.`lvl_id` =1;
 

@@ -27,7 +27,9 @@ $form = JRequest::getVar('c',null);
 if (!$form) { echo 'No Form Specified'; exit; }
 $cookiename = 'form_'.$form.'_session';
 
-$qf = 'SELECT * FROM qr4_forms WHERE form_code = "'.$form.'"  && published = 1 && trashed = 0';
+$qf  = 'SELECT * FROM qr4_forms as f';
+$qf .= 'RIGHT JOIN qr4_templates as t ON f.form_tmplate=t.tmpl_id ';
+$qf .= 'WHERE f.form_code = "'.$form.'"  && f.published = 1 && f.trashed = 0';
 $db->setQuery($qf);
 $forminfo = $db->loadObject();
 
@@ -235,12 +237,12 @@ $title=$forminfo->form_publictitle.' - '.$pageinfo->page_title;
 echo '<html>'."\n";
 echo '<head><title>'.$title.'</title>'."\n";
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'."\n"; 
-// css goes here echo '<link href="admin.css" rel="stylesheet" type="text/css">'."\n";
+echo '<link rel="stylesheet" href="'.$forminfo->tmpl_url.'" type="text/css" />'."\n";
 echo '<script type="text/javascript" src="scripts/mootools.js"></script>'."\n";
 echo '<script type="text/javascript" src="scripts/mootools-more.js"></script>'."\n";
 echo '</head>'."\n";
 echo '<body>'."\n";
-echo '<div id="container">'."\n";
+echo '<div id="wrapper">'."\n";
 echo '<div id="header"></div>'."\n";
 echo '<div id="content">'."\n";
 //start form

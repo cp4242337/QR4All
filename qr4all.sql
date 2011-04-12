@@ -283,6 +283,10 @@ CREATE TABLE IF NOT EXISTS `qr4_videos` (
   `vid_domain` int(11) NOT NULL DEFAULT '1',
   `vid_ratio` enum('43','169') CHARACTER SET latin1 NOT NULL DEFAULT '169',
   `vid_pubtitle` varchar(150) CHARACTER SET latin1 NOT NULL,
+  `vid_returl` varchar(255) NOT NULL,
+  `vid_rettitle` varchar(255) NOT NULL,
+  `vid_tmpl` int(11) NOT NULL,
+  `vid_sdomain` int(11) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`vid_id`)
@@ -333,9 +337,9 @@ CREATE TABLE `qr4_templates` (
   `tmpl_id` int(11) NOT NULL AUTO_INCREMENT,
   `tmpl_name` varchar(80) CHARACTER SET latin1 NOT NULL,
   `tmpl_url` text CHARACTER SET latin1 NOT NULL,
-  `tmpl_type` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `tmpl_type` enum('video','form') COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`tmpl_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `qr4_templates` (`tmpl_id`, `tmpl_name`, `tmpl_url`, `tmpl_type`) VALUES
 (1, 'Default Template', 'default.css', 'video'),

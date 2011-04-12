@@ -3,8 +3,9 @@ include('Browscap.php');
 include('ipinfodb.class.php');
 
 $db = new mysqli('localhost','qr4all','qr4all','qr4all');
-$q ='SELECT * FROM qr4_videos as v ';
+$q ='SELECT v.*,d.dom_dom as vdom, s.dom_dom as sdom FROM qr4_videos as v ';
 $q.='RIGHT JOIN qr4_domains as d ON v.vid_domain=d.dom_id ';
+$q.='RIGHT JOIN qr4_domains as s ON v.vid_sdomain=s.dom_id ';
 $q.='WHERE v.vid_code= "'.$_GET['c'].'"';
 $res = $db->query($q);
 $vidinfo = $res->fetch_object(); 
@@ -43,15 +44,15 @@ $db->query($q2);
 if ($browser['ismobiledevice']) {
 	switch ($browser['platform']) {
 		case 'iPhone OSX':
-			$url="http://medicom04.costeffectivedev.com:1935/vod/".$vidinfo->vid_file."_iphone.mp4/playlist.m3u8";
+			$url="http://".$vidinfo->sdom.":1935/vod/".$vidinfo->vid_file."_iphone.mp4/playlist.m3u8";
 			break;
 		case 'Android':
 			//$url="rtsp://medicom04.costeffectivedev.com:1935/vod/mp4:".$vidinfo->vid_file."_android.mp4";
-			$url="http://".$vidinfo->dom_dom."/content/".$vidinfo->vid_file."_android.3gp";
+			$url="http://".$vidinfo->vdom."/content/".$vidinfo->vid_file."_android.3gp";
 			break;
 		default:
 			//$url="rtsp://medicom04.costeffectivedev.com:1935/vod/mp4:".$vidinfo->vid_file."_android.mp4";
-			$url="http://".$vidinfo->dom_dom."/content/".$vidinfo->vid_file."_android.3gp";
+			$url="http://".$vidinfo->vdom."/content/".$vidinfo->vid_file."_android.3gp";
 			break;
 	}
 } else {

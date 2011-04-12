@@ -4,6 +4,7 @@ include('ipinfodb.class.php');
 
 $db = new mysqli('localhost','qr4all','qr4all','qr4all');
 $q ='SELECT * FROM qr4_videos as v ';
+$q.='RIGHT JOIN qr4_templates as t ON v.vid_tmpl=t.tmpl_id ';
 $q.='WHERE v.vid_code= "'.$_GET['c'].'"';
 $res = $db->query($q);
 $vidinfo = $res->fetch_object(); 
@@ -11,7 +12,8 @@ $vidinfo = $res->fetch_object();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
-		<title>VidPlyr</title>
+		<title><?php echo $vidinfo->vid_pubtitle; ?></title>
+		<link rel="stylesheet" href="<?php echo $vidinfo->tmpl_url; ?>" type="text/css" />
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<script type="text/javascript" src="swfobject.js"></script>
 		<script type="text/javascript">
@@ -26,6 +28,7 @@ $vidinfo = $res->fetch_object();
 			flashvars.vidfile="<?php echo $vidinfo->vid_file; ?>_iphone.mp4";
 			flashvars.vidtitle="<?php echo $vidinfo->vid_pubtitle; ?>";
 			flashvars.vidrat="<?php echo $vidinfo->vid_ratio; ?>";
+			flashvars.returl="<?php echo $vidinfo->vid_returl; ?>";
 			var params = {};
 			params.quality = "high";
 			params.bgcolor = "#000000";
@@ -42,8 +45,6 @@ $vidinfo = $res->fetch_object();
 			attributes.id = "VidPlyr";
 			attributes.name = "VidPlyr";
 			attributes.align = "middle";
-			swfobject.createCSS("html", "height:100%; background-color: #000000;");
-			swfobject.createCSS("body", "margin:0; padding:0; overflow:hidden; height:100%;");
 			swfobject.embedSWF(
 				"VidPlyr.swf", "flashContent",
 				"512", "288",
@@ -52,12 +53,22 @@ $vidinfo = $res->fetch_object();
 		</script>
 	</head>
 	<body>
-		<!-- SWFObject's dynamic embed method replaces this alternative HTML content for Flash content when enough JavaScript and Flash plug-in support is available. -->
+		<div id="wrapper"><div id="header"></div>
+		<div id="content">
+		<div align="center">
 		<div id="flashContent">
 			<a href="http://www.adobe.com/go/getflash">
 				<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
 			</a>
 			<p>This page requires Flash Player version 10.0.2 or higher.</p>
+		</div></div><?php if ($vidinfo->vid_returl) { ?>
+		<div align="center">
+		<br /><a href="<?php echo $vidinfo->vid_returl; ?>"><?php echo $vidinfo->vid_rettitle; ?></a>
+		</div>
+		<?php } ?>
+		</div>
+		<div id="footer"></div>
+		<div style="clear:both;"></div>
 		</div>
 	</body>
 </html>

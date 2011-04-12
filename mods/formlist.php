@@ -340,7 +340,8 @@ class FormList {
 	}
 	
 	function getTmplList() {
-		$q  = 'SELECT * FROM qr4_formtemplates ';
+		$q  = 'SELECT * FROM qr4_templates ';
+		$q .= 'WHERE tmpl_type = "form" ';
 		$q .= 'ORDER BY tmpl_name ';
 		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
