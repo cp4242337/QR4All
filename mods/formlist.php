@@ -14,6 +14,7 @@ class FormList {
 			case 'formadd': $title='Add Form'; break;
 			case 'formedit': $title='Edit Form'; break;
 			case 'showstats': $title='Stats'; break;
+			case 'showdata': $title='Data'; break;
 		}		
 		return $title;
 	}
@@ -25,6 +26,7 @@ class FormList {
 			case 'formadd':
 			case 'formedit':
 			case 'showstats':
+			case 'showdata':
 				$hascontent = true;
 				break;
 		}
@@ -52,7 +54,11 @@ class FormList {
 		}
 		if ($task=='showstats') {
 			echo '<li><a href="index.php?mod=formlist">Forms</a></li>';
-			echo '<li><a href="index.php?mod=formlist&task=getexcel&vids='.JRequest::getVar('vids').'&st_sdate='.JRequest::getVar('st_sdate',date("Y-m-d", strtotime("-1 months"))).'&st_edate='.JRequest::getVar('st_edate',date("Y-m-d")).'">Export to Excel</a></li>';
+			echo '<li><a href="index.php?mod=formlist&task=getexcel&forms='.JRequest::getVar('vids').'&st_sdate='.JRequest::getVar('st_sdate',date("Y-m-d", strtotime("-1 months"))).'&st_edate='.JRequest::getVar('st_edate',date("Y-m-d")).'">Export to Excel</a></li>';
+		}
+		if ($task=='showstats') {
+			echo '<li><a href="index.php?mod=formlist">Forms</a></li>';
+			echo '<li><a href="index.php?mod=formlist&task=dataexcel&form='.JRequest::getVar('form').'&st_sdate='.JRequest::getVar('st_sdate',date("Y-m-d", strtotime("-1 months"))).'&st_edate='.JRequest::getVar('st_edate',date("Y-m-d")).'">Export to Excel</a></li>';
 		}
 		echo '</ul>';
 		
@@ -172,6 +178,14 @@ class FormList {
 		$app->redirect();
 		
 	}	
+		
+	function data() {
+		global $app;
+		$cids = JRequest::getVar( 'form', array(0), 'post', 'array' );
+		$app->setRedirect('formlist','showdata','&form='.$cids[0]);
+		$app->redirect();
+		
+	}	
 	
 	function pages() {
 		global $app;
@@ -233,6 +247,19 @@ class FormList {
 		$forms=$this->getFormList($clients,$curclient,$user,$cids,$sdate,$edate);
 		$stats=$this->getStats($forms,$sdate,$edate);
 		include 'mods/formlist/showstats.php';
+		
+	}
+	
+	function showdata() {
+		global $user;
+		$sdate = JRequest::getVar('st_sdate');
+		if (!$sdate) $sdate = date("Y-m-d", strtotime("-1 months"));
+		$edate = JRequest::getVar('st_edate');
+		if (!$edate) $edate = date("Y-m-d");
+		$form = urldecode(JRequest::getVar('form'));
+		$items=$this->getFormItems($form);
+		$data=$this->getData($form,$items,$sdate,$edate);
+		include 'mods/formlist/showdata.php';
 		
 	}
 	
@@ -511,4 +538,72 @@ class FormList {
 		return $this->db->loadObjectList();
 	}
 	
+	function getData($form,$items,$sdate,$edate) {
+		$q = 'SELECT * FROM qr4_forms WHERE form_id = '.$form.' ';
+		$this->db->setQuery($q);
+		$forminfo = $this->db->loadObject();
+		$q2  = 'SELECT * FROM qr4_formdata as d ';
+		$q2 .= 'WHERE d.data_form = '.$form.' ';
+		if ($sdate && $edate) $q2 .= '&& date(d.data_start) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
+		$q2 .= 'ORDER BY d.data_start DESC';
+		$this->db->setQuery($q2);
+		$formdata=$this->db->loadObjectList();
+		$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$form.'  && trashed = 0 && published = 1';
+		$this->db->setQuery($qpp);
+		$prevpages = $this->db->loadResultArray();
+		foreach ($items as $i) { $itemids[] = $i->item_id; }
+		$q3 = 'SELECT opt_id,opt_text FROM qr4_formitems_opts WHERE opt_item IN ('.implode(",",$itemids).')';
+		$this->db->setQuery($q3);
+		$anskeydata = $this->db->loadObjectList();
+		$anskey = array();
+		foreach ($anskeydata as $o) {
+			$anskey[$o->opt_id] = $o->opt_text;
+		}
+		foreach ($formdata as &$d) {
+			$qi  = 'SELECT * FROM qr4_formitems as i ';
+			$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
+			$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$d->data_id.' ';
+			$qi .= 'ORDER BY i.ordering';	
+			$this->db->setQuery($qi);
+			$ansdata = $this->db->loadObjectList();
+			foreach ($ansdata as $a) {
+				$ans = "i".$a->item_id;
+				switch ($a->item_type) {
+					case "txt":
+					case "tbx":
+					case "eml":
+					case "phn":
+						$d->$ans = $a->ans_answer;
+						break;
+					case "rad":
+					case "dds":
+						$d->$ans = $anskey[$a->ans_answer];
+						break;
+					case "mcb":
+						$ids = explode(" ",$a->ans_answer);
+						foreach ($ids as $id) {
+							$d->$ans .= $anskey[$id].'; ';
+						}
+						break;
+					case "cbx":
+						$d->$ans = ($a->ans_answer == "on" ? 'Yes' : 'No');
+						break;
+						
+				}
+			}
+		}
+		return $formdata;
+	}
+	
+	function getFormItems($form) {
+		$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$form.'  && trashed = 0 && published = 1';
+		$this->db->setQuery($qpp);
+		$prevpages = $this->db->loadResultArray();
+		$qi  = 'SELECT * FROM qr4_formitems as i ';
+		$qi .= 'WHERE item_type != "hdn" && item_type != "msg" && item_page IN ('.implode(",",$prevpages).') && published = 1 ';
+		$qi .= 'ORDER BY i.ordering';	
+		$this->db->setQuery($qi);
+		$items = $this->db->loadObjectList();
+		return $items;
+	}
 }
