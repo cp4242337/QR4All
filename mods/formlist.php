@@ -74,6 +74,7 @@ class FormList {
 		$form_cat=JRequest::getInt('form_cat');
 		$form_pubtitle=JRequest::getString('form_pubtitle');
 		$form_tmpl=JRequest::getInt('form_tmpl');
+		$form_domain=JRequest::getInt('form_domain');
 		$form_client=$this->getClientIdFromCat($form_cat);
 		
 		if (!$this->CheckFormCount($form_client)) {
@@ -85,11 +86,11 @@ class FormList {
 		
 		if ($form_id == 0) {
 			$form_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template) VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'")';
+			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain) VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 			$form_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'" WHERE form_id = '.$form_id;
+			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'", form_domain="'.$form_domain.'" WHERE form_id = '.$form_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		}
 		
@@ -187,6 +188,7 @@ class FormList {
 		$clients = $this->getClientList($user,$uc);
 		$cats = $this->getClientCats($clients);
 		$tmpls = $this->getTmplList();
+		$doms = $this->getDomainList();
 		include 'mods/formlist/formform.php';
 	}
 	function formEdit() {
@@ -195,6 +197,7 @@ class FormList {
 		$cats = $this->getClientCats($clients);
 		$forminfo=$this->getFormInfo(JRequest::getInt('form',0));
 		$tmpls = $this->getTmplList();
+		$doms = $this->getDomainList();
 		include 'mods/formlist/formform.php';
 	}
 	
@@ -374,7 +377,8 @@ class FormList {
 				foreach ($cats as &$ct) {
 					$q2  = 'SELECT * FROM qr4_catforms as cc ';
 					$q2 .= 'RIGHT JOIN qr4_forms as cd ON cc.catform_form = cd.form_id ';
-					$q2 .= 'RIGHT JOIN qr4_formtemplates as vd ON vd.tmpl_id = cd.form_template ';
+					$q2 .= 'RIGHT JOIN qr4_templates as vd ON vd.tmpl_id = cd.form_template ';
+					$q2 .= 'RIGHT JOIN qr4_domains as dom ON dom.dom_id = cd.form_domain ';
 					$q2 .= 'WHERE cc.catform_cat = '.$ct->clcat_cat;
 					if (!$user->lvl_admin) $q2 .= ' && cd.trashed=0';
 					if (count($cids)) $q2 .= ' && cd.form_id IN ('.$cids.')';
@@ -495,6 +499,16 @@ class FormList {
 		$curforms = count($this->db->loadObjectList()); 
 		if ($curforms < $maxforms) return true;
 		else return false;
+	}
+	
+
+	
+	function getDomainList() {
+		$q  = 'SELECT * FROM qr4_domains ';
+		$q .= 'WHERE dom_type = "form" ';
+		$q .= 'ORDER BY dom_dom ';
+		$this->db->setQuery($q); 
+		return $this->db->loadObjectList();
 	}
 	
 }

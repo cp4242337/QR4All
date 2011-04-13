@@ -27,8 +27,8 @@ $form = JRequest::getVar('c',null);
 if (!$form) { echo 'No Form Specified'; exit; }
 $cookiename = 'form_'.$form.'_session';
 
-$qf  = 'SELECT * FROM qr4_forms as f';
-$qf .= 'RIGHT JOIN qr4_templates as t ON f.form_tmplate=t.tmpl_id ';
+$qf  = 'SELECT * FROM qr4_forms as f ';
+$qf .= 'RIGHT JOIN qr4_templates as t ON f.form_template=t.tmpl_id ';
 $qf .= 'WHERE f.form_code = "'.$form.'"  && f.published = 1 && f.trashed = 0';
 $db->setQuery($qf);
 $forminfo = $db->loadObject();
@@ -234,6 +234,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 $title=$forminfo->form_publictitle.' - '.$pageinfo->page_title;
 
 //start oage
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 echo '<html>'."\n";
 echo '<head><title>'.$title.'</title>'."\n";
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'."\n"; 
@@ -491,7 +492,7 @@ if ($pageinfo->page_action=="next" || $pageinfo->page_action=="submit" || $pagei
 	echo '<input type="hidden" name="pagesubmit" value="'.$pageinfo->page_id.'">'."\n";
 	echo '<input type="submit" ';
 	switch ($pageinfo->page_action) {
-		case "next": echo 'value="next"'; break;
+		case "next": echo 'value="Next"'; break;
 		case "submit":
 		case "submitmail": echo 'value="Submit"'; break;
 	}
@@ -548,6 +549,7 @@ if ($pageinfo->page_action != 'none') {
 //end page
 echo '</div>'."\n";
 echo '<div id="footer"></div>'."\n";
+echo '<div style="clear:both;">'."\n";
 echo '</div>'."\n";
 echo '</body>'."\n";
 echo '</html>';

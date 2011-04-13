@@ -33,7 +33,7 @@ foreach ($forms as $c) {
 					else echo $d->form_title;
 					echo '&nbsp;</td>';
 					echo '<td>'.$d->form_publictitle.'&nbsp;</td>';
-					echo '<td>http://forms.qr4all.com/'.$d->form_code.'&nbsp;</td>';
+					echo '<td>http://'.$d->dom_dom.'/'.$d->form_code.'&nbsp;</td>';
 					echo '<td>'.$d->pages.'&nbsp;</td>';
 					echo '<td>'.$d->hits.'&nbsp;</td>';
 					echo '<td class="codelist-ops">';

@@ -1,6 +1,6 @@
 --.5 to .7 update
 
-RENAME TABLE  `qr4all`.`qr4_viddom` TO  `qr4all`.`qr4_domains` ;
+--RENAME TABLE  `qr4all`.`qr4_viddom` TO  `qr4all`.`qr4_domains` ;
 
 ALTER TABLE  `qr4_domains` CHANGE  `vd_id`  `dom_id` INT( 11 ) NOT NULL AUTO_INCREMENT ,
 CHANGE  `vd_dom`  `dom_dom` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS `qr4_forms` (
   `form_title` varchar(255) CHARACTER SET latin1 NOT NULL,
   `form_publictitle` varchar(255) CHARACTER SET latin1 NOT NULL,
   `form_template` int(11) NOT NULL,
+  `form_domain` int(11) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`form_id`)

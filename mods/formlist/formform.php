@@ -24,6 +24,16 @@
 			?>
 
 			</select></td></tr>
+<tr><td align="right" class="ftitle">Template:</td><td class="ffield"><select name="form_domain" class="field required" title="Domain is required">
+<?php 
+foreach ($doms as $d) {
+	echo '<option value="'.$d->dom_id.'"';
+	if ($d->dom_id == $forminfo->form_domain) echo ' selected';
+	echo '>'.$d->dom_dom.'</option>';
+}
+?>
+
+</select></td></tr>
 </table>
 <input name="task" type="hidden" value="saveForm">
 <input name="mod" type="hidden" value="formlist">

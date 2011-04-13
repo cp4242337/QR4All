@@ -182,6 +182,7 @@ CREATE TABLE IF NOT EXISTS `qr4_forms` (
   `form_title` varchar(255) CHARACTER SET latin1 NOT NULL,
   `form_publictitle` varchar(255) CHARACTER SET latin1 NOT NULL,
   `form_template` int(11) NOT NULL,
+  `form_domain` int(11) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`form_id`)
