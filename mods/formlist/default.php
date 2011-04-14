@@ -38,7 +38,7 @@ foreach ($forms as $c) {
 					echo '<td>'.$d->hits.'&nbsp;</td>';
 					echo '<td class="codelist-ops">';
 					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'stats\')" title="View Stats"><img src="images/stats.png" border="0" alt="View Stats" /></a> ';
-					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'data\')" title="View Data">Data</a> ';
+					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'data\')" title="View Data"><img src="images/data.png" border="0" alt="View Form Data" /></a> ';
 					if ($user->lvl_edit) {
 						echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'pages\')" title="Pages"><img src="images/pages.png" border="0" alt="Pages" /></a> ';
 						if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')" title="Unpublish"><img src="images/unpublish.png" border="0" alt="Unpublish" /></a> ';

@@ -54,9 +54,9 @@ class FormList {
 		}
 		if ($task=='showstats') {
 			echo '<li><a href="index.php?mod=formlist">Forms</a></li>';
-			echo '<li><a href="index.php?mod=formlist&task=getexcel&forms='.JRequest::getVar('vids').'&st_sdate='.JRequest::getVar('st_sdate',date("Y-m-d", strtotime("-1 months"))).'&st_edate='.JRequest::getVar('st_edate',date("Y-m-d")).'">Export to Excel</a></li>';
+			echo '<li><a href="index.php?mod=formlist&task=getexcel&forms='.JRequest::getVar('forms').'&st_sdate='.JRequest::getVar('st_sdate',date("Y-m-d", strtotime("-1 months"))).'&st_edate='.JRequest::getVar('st_edate',date("Y-m-d")).'">Export to Excel</a></li>';
 		}
-		if ($task=='showstats') {
+		if ($task=='showdata') {
 			echo '<li><a href="index.php?mod=formlist">Forms</a></li>';
 			echo '<li><a href="index.php?mod=formlist&task=dataexcel&form='.JRequest::getVar('form').'&st_sdate='.JRequest::getVar('st_sdate',date("Y-m-d", strtotime("-1 months"))).'&st_edate='.JRequest::getVar('st_edate',date("Y-m-d")).'">Export to Excel</a></li>';
 		}
@@ -131,6 +131,45 @@ class FormList {
 	        $nuid = $nuid . gen_uuid(22);     // append until length achieved
 	    return substr($nuid, 0, $len);
 	}
+	
+	function dataExcel() {
+		global $user;
+		ini_set('memory_limit', '1024M');
+		$sdate = JRequest::getVar('st_sdate');
+		if (!$sdate) $sdate = date("Y-m-d", strtotime("-1 months"));
+		$edate = JRequest::getVar('st_edate');
+		if (!$edate) $edate = date("Y-m-d");
+		$form = urldecode(JRequest::getVar('form'));
+		$items=$this->getFormItems($form);
+		$data=$this->getData($form,$items,$sdate,$edate);
+		$filename = "form_data_" . date('Y-m-d') . ".xls";
+		header("Content-Disposition: attachment; filename=\"$filename\"");
+		header("Content-Type: application/vnd.ms-excel");
+		$flag = false;
+		echo "Started\tEnded\tElapsed Time (secs)\t";
+		echo "Browser\tPlatform\tMobile\tLocation\t";
+		foreach ($items as $i) {
+			echo $this->cleanItem($i->item_title)."\t";
+		}
+		echo "\n";
+		foreach ($data as $d) {
+			echo $this->cleanItem($d->data_start)."\t";
+			echo $this->cleanItem($d->data_end)."\t";
+			if ($d->data_end != '0000-00-00 00:00:00') echo $this->cleanItem((strtotime($d->data_end)-strtotime($d->data_start)))."\t";
+			else echo 'Incomplete'."\t";
+			echo $this->cleanItem($d->hit_browser.' '.$d->hit_browserver)."\t";
+			echo $this->cleanItem($d->hit_platform)."\t";
+			echo ($d->hit_ismobile==1?'Yes':'No')."\t";
+			echo $this->cleanItem($d->hit_city.', '.$d->hit_region.', '.$d->hit_country)."\t";
+			foreach ($items as $i) {
+				$ans = 'i'.$i->item_id;
+				echo $this->cleanItem($d->$ans)."\t";
+			}
+			echo "\n";
+		}
+		exit;
+	}
+	
 	function getExcel() {
 		global $user;
 		ini_set('memory_limit', '1024M');
@@ -138,13 +177,13 @@ class FormList {
 		if (!$sdate) $sdate = date("Y-m-d", strtotime("-1 months"));
 		$edate = JRequest::getVar('st_edate');
 		if (!$edate) $edate = date("Y-m-d");
-		$cids = urldecode(JRequest::getVar('vids'));
+		$cids = urldecode(JRequest::getVar('forms'));
 		$curclient=(int)$_POST['client'];
 		$clients = $this->getClientList($user);
-		$vids=$this->getVidList($clients,$curclient,$user,$cids,$sdate,$edate);
-		$data=$this->getHits($vids,$cids,$sdate,$edate);
+		$forms=$this->getFormList($clients,$curclient,$user,$cids,$sdate,$edate);
+		$data=$this->getHits($forms,$cids,$sdate,$edate);
 		$filename = "form_stat_data_" . date('Y-m-d') . ".xls";
-
+		
 		header("Content-Disposition: attachment; filename=\"$filename\"");
 		header("Content-Type: application/vnd.ms-excel");
 		
@@ -168,6 +207,13 @@ class FormList {
 			$r = preg_replace("/\r?\n/", "\\n", $r);
 			if(strstr($r, '"')) $r = '"' . str_replace('"', '""', $r) . '"';
 		}
+	}
+	function cleanItem($item)
+	{
+		$item = preg_replace("/\t/", "\\t", $item);
+		$item = preg_replace("/\r?\n/", "\\n", $item);
+		if(strstr($item, '"')) $item = '"' . str_replace('"', '""', $item) . '"';
+		return $item;
 	}
 		
 	function stats() {
@@ -499,7 +545,7 @@ class FormList {
 		foreach ($forms as $cl) {
 			foreach ($cl->cats as $ct) {
 				foreach ($ct->forms as $cd) {
-					if (in_array($cd->form_id,explode(',',$cids))) $usevids[] = $cd->form_id;
+					if (in_array($cd->form_id,explode(',',$cids))) $useforms[] = $cd->form_id;
 				}
 			}
 		}
@@ -543,6 +589,7 @@ class FormList {
 		$this->db->setQuery($q);
 		$forminfo = $this->db->loadObject();
 		$q2  = 'SELECT * FROM qr4_formdata as d ';
+		$q2 .= 'RIGHT JOIN qr4_fhits as h ON d.data_id = h.hit_data ';
 		$q2 .= 'WHERE d.data_form = '.$form.' ';
 		if ($sdate && $edate) $q2 .= '&& date(d.data_start) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
 		$q2 .= 'ORDER BY d.data_start DESC';

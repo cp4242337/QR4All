@@ -31,6 +31,7 @@ $numdays = $count;
 echo '<h3>Survey Data</h3>';
 echo '<table width="100%" cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 echo '<tr><th>Started</th><th>Ended</th><th>Elapsed Time (secs)</th>';
+echo '<th>Browser</th><th>Platform</th><th>Mobile</th><th>Location</th>';
 foreach ($items as $i) {
 	echo '<th>'.$i->item_title.'</th>';
 }
@@ -41,6 +42,10 @@ foreach ($data as $d) {
 	echo '<td>'.$d->data_end.'</td>';
 	if ($d->data_end != '0000-00-00 00:00:00') echo '<td>'.(strtotime($d->data_end)-strtotime($d->data_start)).'</td>';
 	else echo '<td>Incomplete</td>';
+	echo '<td>'.$d->hit_browser.' '.$d->hit_browserver.'</td>';
+	echo '<td>'.$d->hit_platform.'</td>';
+	echo '<td>'.($d->hit_ismobile==1?'Yes':'No').'</td>';
+	echo '<td>'.$d->hit_city.', '.$d->hit_region.', '.$d->hit_country.'</td>';
 	foreach ($items as $i) {
 		$ans = 'i'.$i->item_id;
 		echo '<td>'.$d->$ans.'</td>';
@@ -62,4 +67,10 @@ window.addEvent('domready', function() {
     	cssMouseEnter: 'clt-mo'
 	});
 });
+</script>
+<script type="text/javascript">
+window.addEvent('domready', function() {
+	new DatePicker($$('input.statsdate'), { format: '%Y-%m-%d'}); //,pickerClass: 'datepicker_dashboard'
+});
+
 </script>

@@ -76,13 +76,13 @@ class VidList {
 		$vid_title=JRequest::getString('vid_title');
 		$vid_file=JRequest::getVar('vid_file');
 		$vid_cat=JRequest::getInt('vid_cat');
-		$vid_rat=JRequest::getInt('vid_rat');
+		$vid_ratio=JRequest::getInt('vid_ratio');
 		$vid_pubtitle=JRequest::getString('vid_pubtitle');
 		$vid_domain=JRequest::getInt('vid_domain');
 		$vid_sdomain=JRequest::getInt('vid_sdomain');
 		$vid_tmpl=JRequest::getInt('vid_tmpl');
-		$vid_returl=JRequest::getInt('vid_returl');
-		$vid_rettitle=JRequest::getInt('vid_rettitle');
+		$vid_returl=JRequest::getString('vid_returl');
+		$vid_rettitle=JRequest::getString('vid_rettitle');
 		$vid_client=$this->getClientIdFromCat($vid_cat);
 		
 		if (!$this->CheckVideoCount($vid_client)) {
@@ -94,11 +94,11 @@ class VidList {
 		
 		if ($vid_id == 0) {
 			$vid_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file,vid_ratio,vid_pubtitle,vid_domain,vid_sdomain,vid_tmpl,vid_returl,vid_rettitle) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'","'.$vid_rat.'","'.$vid_pubtitle.'","'.$vid_domain.'","'.$vid_sdomain.'","'.$vid_tmpl.'","'.$vid_returl.'","'.$vid_rettitle.'")';
+			$q = 'INSERT INTO qr4_videos (vid_code,vid_title,vid_file,vid_ratio,vid_pubtitle,vid_domain,vid_sdomain,vid_tmpl,vid_returl,vid_rettitle) VALUES ("'.$vid_code.'","'.$vid_title.'","'.$vid_file.'","'.$vid_ratio.'","'.$vid_pubtitle.'","'.$vid_domain.'","'.$vid_sdomain.'","'.$vid_tmpl.'","'.$vid_returl.'","'.$vid_rettitle.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 			$vid_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'", vid_ratio = "'.$vid_rat.'", vid_pubtitle="'.$vid_pubtitle.'", vid_domain="'.$vid_domain.'", vid_sdomain="'.$vid_sdomain.'", vid_tmpl="'.$vid_tmpl.'", vid_returl="'.$vid_returl.'", vid_rettitle="'.$vid_rettitle.'" WHERE vid_id = '.$vid_id;
+			$q = 'UPDATE qr4_videos SET vid_title="'.$vid_title.'",vid_file="'.$vid_file.'", vid_ratio = "'.$vid_ratio.'", vid_pubtitle="'.$vid_pubtitle.'", vid_domain="'.$vid_domain.'", vid_sdomain="'.$vid_sdomain.'", vid_tmpl="'.$vid_tmpl.'", vid_returl="'.$vid_returl.'", vid_rettitle="'.$vid_rettitle.'" WHERE vid_id = '.$vid_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('vidlist'); $app->redirect(); }
 		}
 		$qd1 = 'DELETE FROM qr4_catvids WHERE catvid_vid = '.$vid_id;
