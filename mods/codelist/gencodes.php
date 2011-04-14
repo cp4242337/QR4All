@@ -9,7 +9,7 @@ echo '<option value="Q"'.(($errorc=='Q')?' selected':'').'>Q</option>';
 echo '<option value="H"'.(($errorc=='H')?' selected':'').'>H - best</option>';
 echo '</select>';
 echo ' Size: <select name="gencode-sz" onchange="document.codeops.submit()" class="field">';
-for($i=4;$i<=12;$i++) echo '<option value="'.$i.'"'.(($size==$i)?' selected':'').'>'.$i.'</option>';
+for($i=4;$i<=15;$i++) echo '<option value="'.$i.'"'.(($size==$i)?' selected':'').'>'.$i.'</option>';
 echo '</select>';
 echo '</form>';
 foreach ($codes as $c) {  

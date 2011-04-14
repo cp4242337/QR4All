@@ -82,7 +82,7 @@ if (!$mod->hasContent($task)) {
 			<?php 
 				if ($user->id) echo 'User: '.$user->name.' | ';
 				echo 'IP: '.$_SERVER['REMOTE_ADDR']; 
-				echo ' | v0.7RC';
+				echo ' | v0.7RC2';
 			?>
 		</div>
 		

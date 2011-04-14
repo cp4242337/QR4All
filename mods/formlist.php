@@ -10,7 +10,7 @@ class FormList {
 	function getTitle($task) {
 		$title='';
 		switch ($task) {
-			case 'display':	$title='Froms'; break;
+			case 'display':	$title='Forms'; break;
 			case 'formadd': $title='Add Form'; break;
 			case 'formedit': $title='Edit Form'; break;
 			case 'showstats': $title='Stats'; break;

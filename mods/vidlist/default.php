@@ -18,7 +18,7 @@ $count=0;
 echo '<form name="codelistform" method="post" action="">';
 foreach ($vids as $c) { 
 	if ($c->cats) {
-		echo '<div class="codelist-client">'.$c->cl_name.' <span class="codelist-client-func"><a href="index.php?mod=vidlist&task=addvid&client='.$c->cl_id.'">Add Video</a></span><br>'; 
+		echo '<div class="codelist-client">'.$c->cl_name.($user->lvl_edit?' <span class="codelist-client-func"><a href="index.php?mod=vidlist&task=addvid&client='.$c->cl_id.'">Add Video</a></span>':'').'<br>'; 
 		foreach ($c->cats as $t) { 
 			echo '<div class="codelist-cat">'.$t->cat_name.'<br><div class="codelist-codes">'; 
 			if ($t->vids) {
@@ -52,6 +52,10 @@ foreach ($vids as $c) {
 					echo '</tr>'; 
 					$count++;
 				} 
+				echo '</table>';
+			} else {
+				echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
+				echo '<tr><th><em>No Videos Available</em></th></tr>';
 				echo '</table>';
 			}
 			echo '</div></div>';

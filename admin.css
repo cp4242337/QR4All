@@ -1,7 +1,9 @@
 body {
 	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
 	font-size: 12px;
-	background-color: #FFFFFF;
+	background-color: #555555;
+	padding-right: 4px;
+	padding-left: 4px;
 }
 td,th {font-size:12px;}
 
@@ -13,7 +15,12 @@ td,th {font-size:12px;}
 	background-color:#FFFFFF;
 	width: 100%;
 	text-align:center;
-	padding:0;
+	padding:3px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-moz-box-shadow: 2px 2px 2px #222;
+	-webkit-box-shadow: 2px 2px 2px #222;
+	box-shadow: 2px 2px 2px #222;
 }
 
 #top{
@@ -56,6 +63,8 @@ td,th {font-size:12px;}
 	color: #FFFFFF;
 	width: 100%;
 	text-align:right;
+	border-radius: 3px;
+	-moz-border-radius: 3px;	
  }
  #header #menu{
 	float: right;
@@ -67,7 +76,7 @@ td,th {font-size:12px;}
 }
 
 #header #menu ul { float: right; list-style: none; margin: 0; padding: 0; }
-#header #menu ul li {float: left; margin:0; padding:0;}
+#header #menu ul li {float: left; margin:0; padding:0; font-size:13px;}
 
 #header #menu ul li a {
 	display: block;
@@ -79,6 +88,7 @@ td,th {font-size:12px;}
 	text-decoration:none;
 	color:#FFFFFF;
 	border-left: dotted #aaaaaa 1px;
+	text-shadow: 1px 1px 0 #000;
 }
 #header #menu ul li a:hover {
 	color:#FFFFCC;
@@ -97,6 +107,7 @@ td,th {font-size:12px;}
 	text-align: left;
 	font-size:16px;
 	font-weight:bold;
+	text-shadow: 1px 1px 0 #000;
 }
 
 #subheader{
@@ -107,6 +118,8 @@ td,th {font-size:12px;}
 	width: 100%;
 	text-align:right;
 	border-bottom: 2px solid #444444;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
  }
  
 #subheader #submenu {
@@ -185,6 +198,8 @@ td,th {font-size:12px;}
 	text-align:center;
 	font-size:10px;
 	clear: both;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 #copyright {
@@ -201,13 +216,17 @@ td,th {font-size:12px;}
 	border: #444444 1px solid;
 	padding: 3px;
 	width: 150px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 .forder {
-	font-size:12px;
+	font-size:11px;
 	border: #444444 1px solid;
 	padding: 1px;
 	width: 60px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 .farea {
@@ -217,6 +236,8 @@ td,th {font-size:12px;}
 	padding: 3px;
 	width: 500px;
 	height: 300px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 .validation-advice {

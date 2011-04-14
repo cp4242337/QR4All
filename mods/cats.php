@@ -55,7 +55,8 @@ class Cats {
 			$app->redirect();
 			return 0;
 		} else {
-			$cats=$this->getCats();
+			$clients=$this->getClients($user);
+			$cats=$this->getCats($clients);
 			include 'mods/cats/default.php';
 		}
 
@@ -89,7 +90,7 @@ class Cats {
 	function catAdd() {
 		global $user;
 		if ($user->lvl_edit) {
-			$clients=$this->getClients();
+			$clients=$this->getClients($user);
 			include 'mods/cats/catform.php';
 		}
 	}
@@ -117,10 +118,12 @@ class Cats {
 	}
 	
 	
-	function getCats() {
+	function getCats($cls) {
+		foreach ($cls as $c) { $clids[] = $c->cl_id; }
 		$q  = 'SELECT c.*,cl.cl_id,cl.cl_name FROM qr4_cats as c ';
 		$q .= 'LEFT JOIN qr4_clientcats as cc ON c.cat_id = clcat_cat ';
 		$q .= 'LEFT JOIN qr4_clients as cl ON cc.clcat_client = cl.cl_id ';
+		$q .= 'WHERE cl.cl_id IN ('.implode(",",$clids).') ';
 		$q .= 'ORDER BY c.cat_name';
 		$this->db->setQuery($q); 
 		return $this->db->loadObjectList();
