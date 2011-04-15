@@ -82,6 +82,8 @@ class FormList {
 		$form_tmpl=JRequest::getInt('form_tmpl');
 		$form_domain=JRequest::getInt('form_domain');
 		$form_client=$this->getClientIdFromCat($form_cat);
+		$form_header= $this->db->getEscaped(JRequest::getVar( 'form_header', null, 'default', 'none', 2));
+		$form_body= $this->db->getEscaped(JRequest::getVar( 'form_body', null, 'default', 'none', 2));
 		
 		if (!$this->CheckFormCount($form_client)) {
 			$app->setError("Maximum number of forms reached for client","error");
@@ -92,11 +94,11 @@ class FormList {
 		
 		if ($form_id == 0) {
 			$form_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain) VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'")';
+			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain,form_header,form_body) VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'","'.$form_header.'","'.$form_body.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 			$form_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'", form_domain="'.$form_domain.'" WHERE form_id = '.$form_id;
+			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'", form_domain="'.$form_domain.'", form_header="'.$form_header.'", form_body="'.$form_body.'" WHERE form_id = '.$form_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		}
 		

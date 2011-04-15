@@ -238,11 +238,13 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www
 echo '<html>'."\n";
 echo '<head><title>'.$title.'</title>'."\n";
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'."\n"; 
+echo $forminfo->form_header."\n";
 echo '<link rel="stylesheet" href="'.$forminfo->tmpl_url.'" type="text/css" />'."\n";
 echo '<script type="text/javascript" src="scripts/mootools.js"></script>'."\n";
 echo '<script type="text/javascript" src="scripts/mootools-more.js"></script>'."\n";
 echo '</head>'."\n";
-echo '<body>'."\n";
+if ($forminfo->form_body) echo '<body '.$forminfo->form_body.'>'."\n";
+else echo '<body>'."\n";
 echo '<div id="wrapper">'."\n";
 echo '<div id="header"></div>'."\n";
 echo '<div id="content">'."\n";
@@ -489,6 +491,7 @@ if ($pageinfo->page_type=="confirm") {
 //************
 
 if ($pageinfo->page_action=="next" || $pageinfo->page_action=="submit" || $pageinfo->page_action=="submitmail") {
+	echo '<div id="page-action">';
 	echo '<input type="hidden" name="pagesubmit" value="'.$pageinfo->page_id.'">'."\n";
 	echo '<input type="submit" ';
 	switch ($pageinfo->page_action) {
@@ -497,7 +500,7 @@ if ($pageinfo->page_action=="next" || $pageinfo->page_action=="submit" || $pagei
 		case "submitmail": echo 'value="Submit"'; break;
 	}
 	echo ' class="button" name="submit">'."\n";
-
+	echo '</div>';
 	
 }
 
