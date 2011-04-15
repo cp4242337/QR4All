@@ -1,6 +1,6 @@
---.5 to .7 update
 
---RENAME TABLE  `qr4all`.`qr4_viddom` TO  `qr4all`.`qr4_domains` ;
+
+RENAME TABLE  `qr4all`.`qr4_viddom` TO  `qr4all`.`qr4_domains` ;
 
 ALTER TABLE  `qr4_domains` CHANGE  `vd_id`  `dom_id` INT( 11 ) NOT NULL AUTO_INCREMENT ,
 CHANGE  `vd_dom`  `dom_dom` VARCHAR( 255 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
