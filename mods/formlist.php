@@ -305,6 +305,7 @@ class FormList {
 		$edate = JRequest::getVar('st_edate');
 		if (!$edate) $edate = date("Y-m-d");
 		$form = urldecode(JRequest::getVar('form'));
+		$forminfo=$this->getFormInfo($form);
 		$items=$this->getFormItems($form);
 		$data=$this->getData($form,$items,$sdate,$edate);
 		include 'mods/formlist/showdata.php';

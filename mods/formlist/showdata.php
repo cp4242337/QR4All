@@ -28,7 +28,7 @@ while(date_create($current) <= $datetime2){
 } 
 $numdays = $count; 
 
-echo '<h3>Survey Data</h3>';
+echo '<h3>Form Data - '.$forminfo->form_title.'</h3>';
 echo '<table width="100%" cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 echo '<tr><th>Started</th><th>Ended</th><th>Elapsed Time (secs)</th>';
 echo '<th>Browser</th><th>Platform</th><th>Mobile</th><th>Location</th>';
