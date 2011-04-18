@@ -248,8 +248,8 @@ class FEmlList {
 		$this->db->setQuery($q2); 
 		$emls = $this->db->loadObjectList();
 		foreach ($emls as &$e) {
-			$q4  = 'SELECT COUNT(*) FROM qr4_formpages_emails_attach WHERE eml_page = '.$e->eml_id;
-			$q4 .= ' GROUP BY eml_page';
+			$q4  = 'SELECT COUNT(*) FROM qr4_formpages_emails_attach WHERE at_email = '.$e->eml_id;
+			$q4 .= ' GROUP BY at_email';
 			$this->db->setQuery($q4); $e->attachs = $this->db->loadResult(); if (!$e->attachs) $e->attachs=0;
 		}
 		return $emls;

@@ -104,11 +104,11 @@ class FormList {
 		
 		$qd1 = 'DELETE FROM qr4_catforms WHERE catform_form = '.$form_id;
 		$this->db->setQuery($qd1); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
-		$qd2 = 'DELETE FROM qr4_clientforms WHERE clform_form = '.$vid_id;
+		$qd2 = 'DELETE FROM qr4_clientforms WHERE clform_form = '.$form_id;
 		$this->db->setQuery($qd2); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		$qi1 = 'INSERT INTO qr4_catforms (catform_cat,catform_form) VALUES ('.$form_cat.','.$form_id.')';
 		$this->db->setQuery($qi1); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
-		$qi2 = 'INSERT INTO qr4_clientforms (clform_client,clform_form) VALUES ('.$form_client.','.$form_id.')';
+		$qi2 = 'INSERT INTO qr4_clientforms (clform_cl,clform_form) VALUES ('.$form_client.','.$form_id.')';
 		$this->db->setQuery($qi2); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		$app->setError('Form Saved', 'message');
 		$app->setRedirect('formlist'); 

@@ -34,8 +34,8 @@ foreach ($doms as $d) {
 ?>
 
 </select></td></tr>
-<tr><td align="right" class="ftitle">Header Lines:</td><td class="ffield"><textarea name="form_header" class="farea"><?php echo $pageinfo->form_header; ?></textarea></td></tr>
-<tr><td align="right" class="ftitle">Body Tag:</td><td class="ffield"><textarea name="form_body" class="farea"><?php echo $pageinfo->form_body; ?></textarea></td></tr>
+<tr><td align="right" class="ftitle">Header Lines:</td><td class="ffield"><textarea name="form_header" class="farea"><?php echo $forminfo->form_header; ?></textarea></td></tr>
+<tr><td align="right" class="ftitle">Body Tag:</td><td class="ffield"><textarea name="form_body" class="farea"><?php echo $forminfo->form_body; ?></textarea></td></tr>
 </table>
 <input name="task" type="hidden" value="saveForm">
 <input name="mod" type="hidden" value="formlist">

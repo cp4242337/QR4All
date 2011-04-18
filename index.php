@@ -1,6 +1,6 @@
 <?php 
 /*
- * QR4All 0.7.1
+ * QR4All 0.7.2
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -82,7 +82,7 @@ if (!$mod->hasContent($task)) {
 			<?php 
 				if ($user->id) echo 'User: '.$user->name.' | ';
 				echo 'IP: '.$_SERVER['REMOTE_ADDR']; 
-				echo ' | v0.7';
+				echo ' | v0.7.2';
 			?>
 		</div>
 		
