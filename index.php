@@ -33,6 +33,12 @@ if (!$user->id && $task != 'loginuser') {$module='users'; $task='login';}
 include 'mods/'.$module.'.php';
 $mod = new $module();
 
+//Get Template Info
+$qt  = 'SELECT * FROM qr4_templates ';
+$qt .= 'WHERE tmpl_id = "'.$settings['template'].'" ';
+$db->setQuery($qt);
+$deftmpl = $db->loadObject();
+
 if (!$mod->hasContent($task)) {
 	$mod->$task();
 } else {
@@ -41,7 +47,7 @@ if (!$mod->hasContent($task)) {
 	<html>
 	<head><title>QR4All Administration: <?php echo $mod->getTitle($task); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-	<link href="admin.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo $deftmpl->tmpl_url; ?>" rel="stylesheet" type="text/css">
 	<link href="scripts/datepicker/datepicker.css" rel="stylesheet" type="text/css">
 	<?php 
 	include 'headjava.php'; //Headers - Javascripts
