@@ -1,5 +1,5 @@
 body {
-	font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+	font-family: Verdana, Helevetica, sans-serif;
 	font-size: 12px;
 	background-color: #341201;
 	padding: 0;
@@ -9,7 +9,6 @@ td,th {font-size:12px;}
 
 /* Main Layout */
 #container {
-	position: relative;
 	margin: 0;
 	background-color:#341201;
 	width: 100%;
@@ -18,7 +17,6 @@ td,th {font-size:12px;}
 }
 
 #top{
-	position:relative;
 	margin:0;
 	padding:0;
 	height: 131px;
@@ -54,7 +52,6 @@ td,th {font-size:12px;}
 
 
 #header{
-	position:relative;
 	margin:0;
 	padding:0;
 	height: 30px;
@@ -108,15 +105,18 @@ td,th {font-size:12px;}
 	text-shadow: 1px 1px 0 #dddddd;
 }
 
-#subheader{
-	position:relative;
-	margin:0;
+#subheader {
+	margin-top: 5px;
+	margin-right: 5px;
+	margin-left: 5px;
+	margin-bottom: 0;
 	padding:0;
 	height: 30px;
 	width: 100%;
-	text-align:right;
-	border-bottom: 2px solid #444444;
+	border-bottom: 1px solid #444444;
 	background-color: #fff;
+	border-radius: 8px 8px 0 0;
+	-moz-border-radius: 8px 8px 0 0;
  }
  
 #subheader #submenu {
@@ -125,10 +125,10 @@ td,th {font-size:12px;}
 	padding:0;
 	line-height: 30px;
 	text-align:right;
-	width:600px
+	width:600px;
 }
 
-#subheader #submenu ul { float: right; list-style: none; margin: 0; padding: 0; }
+#subheader #submenu ul { float: right; list-style: none; margin:0 14px 0 14px; padding: 0; }
 #subheader #submenu ul li {float: left; margin:0; padding:0;}
 
 #subheader #submenu ul li a {
@@ -164,7 +164,6 @@ td,th {font-size:12px;}
 
 
 #errormsg {
-	position:relative;
 	padding:2px;
 	color: #FFFFFF;
 	text-align:left;
@@ -177,17 +176,17 @@ td,th {font-size:12px;}
 
 
 #content {
-	position: relative;
-	margin: 0;
+	margin: 0 5px 5px 5px;
 	text-align: left;
 	padding: 2px;
 	min-height:500px;
 	clear: both;
 	background-color: #fff;
+	border-radius: 0 0 8px 8px;
+	-moz-border-radius: 0 0 8px 8px;
 }
 
 #footer {
-	position:relative;
 	margin:0;
 	padding:2px;
 	height: 32px;
@@ -201,7 +200,6 @@ td,th {font-size:12px;}
 }
 
 #copyright {
-	position:relative;
 	margin:0;
 	padding:0;
 	text-align:center;
@@ -230,7 +228,7 @@ td,th {font-size:12px;}
 
 .farea {
 	font-size:12px;
-	font-face: "Courier New", monospace;
+	font-family: "Courier New", monospace;
 	border: #444444 1px solid;
 	padding: 3px;
 	width: 500px;
