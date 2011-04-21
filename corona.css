@@ -46,7 +46,7 @@ td,th {font-size:12px;}
 	padding:0;
 	width: 300px;
 	height: 130px;
-	background: url(images/cor_coronapro.png) no-repeat;
+	background: url(images/cor_coronapro.png) top right no-repeat;
 	text-align: right;
 	font-size:16px;
 	font-weight:bold;
@@ -70,7 +70,7 @@ td,th {font-size:12px;}
 	padding:0;
 	line-height: 30px;
 	text-align:right;
-	width:600px
+	width:700px
 }
 
 #header #menu ul { float: right; list-style: none; margin: 0; padding: 0; }
@@ -101,7 +101,7 @@ td,th {font-size:12px;}
 	margin:0 5px 0 5px;
 	padding:0;
 	line-height: 30px;
-	width: 300px;
+	width: 250px;
 	text-align: left;
 	font-size:16px;
 	font-weight:bold;
@@ -165,7 +165,6 @@ td,th {font-size:12px;}
 
 #errormsg {
 	position:relative;
-	margin-top:4px;
 	padding:2px;
 	color: #FFFFFF;
 	text-align:left;
@@ -173,8 +172,8 @@ td,th {font-size:12px;}
 	font-weight:bold;
 }
 
-.message { background-color: #2b4f77; }
-.error { background-color: #990000; }
+.message { background-color: #2b4f77; margin: 0;}
+.error { background-color: #990000; margin: 0;}
 
 
 #content {

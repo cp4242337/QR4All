@@ -38,6 +38,7 @@ td,th {font-size:12px;}
 	margin:0 5px 0 5px;
 	padding:0;
 	width: 300px;
+	height: 80px;
 	background: url(images/qr4all.png) no-repeat;
 	text-align: left;
 	font-size:16px;
@@ -49,7 +50,8 @@ td,th {font-size:12px;}
 	margin:0 5px 0 5px;
 	padding:0;
 	width: 300px;
-	background: url(images/coronapro.png) no-repeat;
+	height: 80px;
+	background: url(images/coronapro.png) top right no-repeat;
 	text-align: right;
 	font-size:16px;
 	font-weight:bold;
@@ -74,7 +76,7 @@ td,th {font-size:12px;}
 	padding:0;
 	line-height: 30px;
 	text-align:right;
-	width:600px
+	width:700px
 }
 
 #header #menu ul { float: right; list-style: none; margin: 0; padding: 0; }
@@ -105,7 +107,7 @@ td,th {font-size:12px;}
 	margin:0 5px 0 5px;
 	padding:0;
 	line-height: 30px;
-	width: 300px;
+	width: 250px;
 	text-align: left;
 	font-size:16px;
 	font-weight:bold;
