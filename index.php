@@ -1,10 +1,11 @@
 <?php 
 /*
- * QR4All 0.7.3
+ * QR4All 0.8
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
 
+include 'settings.php';
 include 'lib/app.php';
 include 'lib/user.php';
 include 'lib/filterinput.php';
@@ -14,9 +15,9 @@ include 'lib/database/mysql.php';
 include 'lib/database/mysqli.php';
 
 global $dbc,$user,$app;
-$dbc['user'] = 'qr4all';
-$dbc['password'] = 'qr4all';
-$dbc['database'] = 'qr4all';
+$dbc['user'] = $settings['dbuser'];
+$dbc['password'] = $settings['dbpass'];
+$dbc['database'] = $settings['dbname'];
 $dbc['driver'] = 'mysqli';
 
 //$db = new JDatabase($dbc);
@@ -55,8 +56,8 @@ if (!$mod->hasContent($task)) {
 	</head><body bgcolor="#000000">
 	<div id="container">
 		<div id="top">
-			<div id="topl"><img src="qr4all.png"></div>
-			<div id="topr"><a href="http://coronapro.com"><img src="coronapro.png" border="0"></a></div>
+			<div id="topl"></div>
+			<div id="topr"></div>
 		</div>
 		<div id="header">
 			<div id="maintitle">Administration</div>

@@ -38,6 +38,7 @@ td,th {font-size:12px;}
 	margin:0 5px 0 5px;
 	padding:0;
 	width: 300px;
+	background: url(images/qr4all.png) no-repeat;
 	text-align: left;
 	font-size:16px;
 	font-weight:bold;
@@ -48,6 +49,7 @@ td,th {font-size:12px;}
 	margin:0 5px 0 5px;
 	padding:0;
 	width: 300px;
+	background: url(images/coronapro.png) no-repeat;
 	text-align: right;
 	font-size:16px;
 	font-weight:bold;
