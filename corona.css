@@ -87,10 +87,10 @@ td,th {font-size:12px;}
 }
 #header #menu ul li a:hover {
 	color:#000000;
-	background-color: #ffbf9d;
+	background-color: #ffcdb1;
 }
 
-#header #menu ul li.active { background-color: #bfd0dc; }
+#header #menu ul li.active { background-color: #dddddd; }
 
 
 #header #maintitle {
@@ -114,7 +114,7 @@ td,th {font-size:12px;}
 	height: 30px;
 	clear: both;
 	border-bottom: 1px solid #444444;
-	background-color: #fff;
+	background-color: #ffcdb1;
 	border-radius: 8px 8px 0 0;
 	-moz-border-radius: 8px 8px 0 0;
 	text-align: left;
@@ -127,6 +127,7 @@ td,th {font-size:12px;}
 	line-height: 30px;
 	text-align:right;
 	width:600px;
+	font-size: 11px;
 }
 
 #subheader #submenu ul { float: right; list-style: none; margin:0 14px 0 14px; padding: 0;  }
@@ -135,8 +136,8 @@ td,th {font-size:12px;}
 #subheader #submenu ul li a {
 	display: block;
 	height: 30px;
-	padding-left: 15px;
-	padding-right: 15px;
+	padding-left: 10px;
+	padding-right: 10px;
 	float: left;
 	margin: 0;
 	text-decoration:none;
@@ -145,10 +146,10 @@ td,th {font-size:12px;}
 }
 #subheader #submenu ul li a:hover {
 	color:#000077;
-	background-color: #dddddd;
+	background-color: #dfad91;
 }
 
-#subheader #submenu ul li.active { background-color: #bbceff; }
+#subheader #submenu ul li.active { background-color: #dddddd; }
 
 
 #subheader #subtitle {
@@ -160,7 +161,7 @@ td,th {font-size:12px;}
 	text-align: left;
 	font-size:14px;
 	font-weight:bold;
-	color: #000088;
+	color: #000000;
 }
 
 
