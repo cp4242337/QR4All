@@ -1,14 +1,21 @@
 <form action="" method="post" name="userform" id="userform">
 <table border="0" cellspacing="0" cellpadding="0" class="userlist-form">
+<?php if ($user->lvl_root) { ?>
 <tr><td align="right" class="ftitle">UserName:</td><td class="ffield"><input name="user_name" class="field required maxLength:40" type="text" title="Username must be 5-40 characters"  value="<?php echo $userinfo->usr_name; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Full Name:</td><td class="ffield"><input name="user_fullname" class="field required maxLength:150" type="text" title="Full Name must be 5-150 characters"  value="<?php echo $userinfo->usr_fullname; ?>"></td></tr>
+<?php } else { ?>
+<tr><td align="right" class="ftitle">UserName:</td><td class="ffield"><?php echo $userinfo->usr_name; ?></td></tr>
+<tr><td align="right" class="ftitle">Full Name:</td><td class="ffield"><?php echo $userinfo->usr_fullname; ?></td></tr>
+<?php } ?>
 <tr><td align="right" class="ftitle">EMail:</td><td class="ffield"><input name="user_email" class="field required validate-email" type="text" title="A valid email address is required"  value="<?php echo $userinfo->usr_email; ?>"></td></tr>
+<?php if ($user->lvl_root) { ?>
 <tr><td align="right" class="ftitle">User Level:</td><td class="ffield"><select name="user_level" class="field required" title="User type is required">
 			<option value="1" <?php echo ($userinfo->usr_level == '1' ? 'selected' : '') ?>>Basic</option>
 			<option value="4" <?php echo ($userinfo->usr_level == '4' ? 'selected' : '') ?>>Editor</option>
 			<option value="2" <?php echo ($userinfo->usr_level == '2' ? 'selected' : '') ?>>Admin</option>
 			<option value="3" <?php echo ($userinfo->usr_level == '3' ? 'selected' : '') ?>>Root</option>
-			</select></td></tr>
+</select></td></tr>
+<?php } ?>
 <tr><td align="right" class="ftitle">New Password:</td><td class="ffield"><input id="user_pass" name="user_pass" class="field required-without matchInput:'user_id' optionalMinLength:8 " type="password" title="Password must be at least 8 characters"></td></tr>
 <tr><td align="right" class="ftitle">Confirm:</td><td class="ffield"><input id="user_passc" name="user_passc" class="field required-with validate-match matchInput:'user_pass'" type="password" title="Passwords must match"></td></tr>
 </table>

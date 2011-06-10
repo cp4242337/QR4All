@@ -79,7 +79,8 @@ td,th {font-size:12px;}
 	width:700px
 }
 
-#header #menu ul { float: right; list-style: none; margin: 0; padding: 0; }
+/*
+#header #menu ul { float: right; list-style: none; margin: 0 0 10px 0; padding: 0; }
 #header #menu ul li {float: left; margin:0; padding:0; font-size:13px;}
 
 #header #menu ul li a {
@@ -100,6 +101,77 @@ td,th {font-size:12px;}
 }
 
 #header #menu ul li.active { background-color: #000044; }
+*/
+
+#nav{
+	float:right;
+	width:100%;
+	list-style:none;
+	font-weight:bold;
+	padding: 0;
+	margin: 0;
+}
+#nav li{
+	float:left;
+	margin-right:10px;
+	position:relative;
+	display:block;
+}
+#nav li a{
+	display:block;
+	padding:0 5px 0 5px;
+	color:#fff;
+	text-decoration:none;
+	text-shadow:1px 1px 1px rgba(0,0,0,0.75); /* Text shadow to lift it a little */
+
+}
+#nav li a:hover{
+	color:#fff;
+	background:#6b0c36; /* Solid colour fall-back */
+	background:rgba(107,12,54,0.75); /* It'll look nice semi-transparent */
+
+	text-decoration:underline;
+}
+
+/*--- DROPDOWN ---*/
+#nav ul{
+	list-style:none;
+	position:absolute;
+	left:-9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
+	opacity:0; /* Set initial state to transparent */
+	-webkit-transition:0.25s linear opacity; /* Make the dropdown fade-in in Webkit */
+}
+#nav ul li{
+	padding-top:1px; /* Introducing a padding between the li and the a give the illusion spaced items */
+
+	float:none;
+}
+#nav ul a{
+	white-space:nowrap; /* Stop text wrapping and creating multi-line dropdown items */
+	display:block;
+}
+#nav li:hover ul{ /* Display the dropdown on hover */
+	left:0; /* Bring back on-screen when needed */
+	opacity:1; /* Fade to opaque */
+}
+#nav li:hover a{ /* Set styles for top level when dropdown is hovered */
+
+	background:#6b0c36; /* Solid colour fall-back */
+	background:rgba(107,12,54,0.75); /* It'll look nice semi-transparent */
+	text-decoration:underline;
+}
+#nav li:hover ul a{ /* Override some top level styles when dropdown is hovered */
+	text-decoration:none;
+	-webkit-transition:-webkit-transform 0.075s linear;
+}
+#nav li:hover ul li a:hover{ /* Set styles for dropdown when items are hovered */
+	background:#333; /* Solid colour fall-back */
+
+	background:rgba(51,51,51,0.75); /* It'll look nice semi-transparent */
+	text-decoration:underline;
+	-moz-transform:scale(1.05);
+	-webkit-transform:scale(1.05);
+}
 
 
 #header #maintitle {
@@ -235,7 +307,7 @@ td,th {font-size:12px;}
 
 .farea {
 	font-size:12px;
-	font-face: "Courier New", monospace;
+	font-family: "Courier New", monospace;
 	border: #444444 1px solid;
 	padding: 3px;
 	width: 500px;

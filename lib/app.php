@@ -44,9 +44,9 @@ class App {
 	
 	function getMainMenu() {
 		global $user;
-		$q = 'SELECT * FROM qr4_menu ORDER BY ordering';
+		$q = 'SELECT * FROM qr4_menu WHERE menu_parent = 0 ORDER BY ordering';
 		$this->db->setQuery($q); $menu = $this->db->loadObjectList();
-		echo '<ul>';
+		echo '<ul id="nav">';
 		if ($menu) foreach ($menu as $m) {
 			$lvl = $m->menu_lvl; 
 			if ($user->$lvl) {
@@ -56,7 +56,28 @@ class App {
 				echo '><a href="index.php?';
 				if ($m->menu_mod) { echo 'mod='.$m->menu_mod; $needand=true; }
 				if ($m->menu_task) { if ($needand) { echo '&'; $needand=false; } echo 'task='.$m->menu_task; }
-				echo '">'.$m->menu_name.'</a></li>';
+				echo '">'.$m->menu_name.'</a>';
+				$qp = 'SELECT * FROM qr4_menu WHERE menu_parent = '.$m->menu_id.' ORDER BY ordering';
+				$this->db->setQuery($qp); $menup = $this->db->loadObjectList();
+			
+				if ($menup) { 
+					echo '<ul>';
+					foreach ($menup as $mp) {
+						$lvl = $m->menu_lvl; 
+						if ($user->$lvl) {
+							$needand = false;
+							echo '<li';
+							if ($mp->menu_mod == $_REQUEST['mod'] && $mp->menu_mod && $mp->menu_task != 'logoutuser') echo ' class="active"';
+							echo '><a href="index.php?';
+							if ($mp->menu_mod) { echo 'mod='.$mp->menu_mod; $needand=true; }
+							if ($mp->menu_task) { if ($needand) { echo '&'; $needand=false; } echo 'task='.$mp->menu_task; }
+							echo '">'.$mp->menu_name.'</a>';
+							echo '</li>';
+						}
+					}
+					echo '</ul>';
+				}
+				echo '</li>';
 			}
 		}
 		echo '</ul>';

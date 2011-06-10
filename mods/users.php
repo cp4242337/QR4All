@@ -13,6 +13,7 @@ class Users {
 			case 'useradd':
 			case 'useredit':
 			case 'userclients':
+			case 'myaccount':
 				$hascontent = true;
 				break;
 		}
@@ -32,6 +33,8 @@ class Users {
 				$title='Edit User';	break;
 			case 'userclients':
 				$title='User Clients';	break;
+			case 'myaccount':
+				$title='My Account';	break;
 		}		
 		return $title;
 	}
@@ -49,13 +52,17 @@ class Users {
 			}
 		}
 		if ($task == 'useradd' || $task == 'useredit') {
-			if ($user->lvl_root) echo '<li><a href="index.php?mod=users">Cancel</a></li>';
-			if ($user->lvl_root) echo '<li><a href="#" onclick="document.userform.validate();">Save User</a></li>';
+			if ($user->lvl_root || (JRequest::getInt('user',0) == $user->id && $user->lvl_edit)) echo '<li><a href="index.php?mod=users">Cancel</a></li>';
+			if ($user->lvl_root || (JRequest::getInt('user',0) == $user->id && $user->lvl_edit)) echo '<li><a href="#" onclick="document.userform.validate();">Save User</a></li>';
 		}
 		if ($task == 'userclients') {
 			if ($user->lvl_root) echo '<li><a href="index.php?mod=users">Users</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'haveclient\');">Yes</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unhaveclient\');">No</a></li>';
+		}
+		if ($task == 'myaccount') {
+			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=useredit&user='.$user->id.'">Edit Details / Change Password</a></li>';
+			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=payopts&user='.$user->id.'">Payment Options</a></li>';
 		}
 		echo '</ul>';
 	}
@@ -97,12 +104,15 @@ class Users {
 	
 	function saveUser() {
 		global $app,$user;
-		if (!$user->lvl_root) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$user_id=JRequest::getInt('user_id',0);
+		if (!$user->lvl_root && !($user_id == $user->id && $user->lvl_edit)) { $app->setError('No Access', 'error'); $app->setRedirect('home'); $app->redirect(); }
 		$user_name=JRequest::getString('user_name');
+		if ($user_id == $user->id && $user->lvl_edit) { $user_name=$user->name; }
 		$user_email=JRequest::getString('user_email');
 		$user_level=JRequest::getInt('user_level',1);
+		if ($user_id == $user->id && $user->lvl_edit) { $user_level=$user->lvl; }
 		$user_fullname=JRequest::getString('user_fullname');
+		if ($user_id == $user->id && $user->lvl_edit) { $user_fullname=$user->fullname; }
 		$user_pass=JRequest::getString('user_pass');
 		if ($user_id == 0) {
 			$q = 'INSERT INTO qr4_users (usr_name,usr_fullname,usr_level,usr_email) VALUES ("'.$user_name.'","'.$user_fullname.'","'.$user_level.'","'.$user_email.'")';
@@ -116,8 +126,14 @@ class Users {
 			$q2='UPDATE qr4_users SET usr_pass = "'.md5($user_pass).'" WHERE usr_id = '.$user_id;
 			$this->db->setQuery($q2); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 		}
-		$app->setError('User Saved', 'message');
-		$app->setRedirect('users'); 
+		if ($user_id = $user->id) {
+			$app->setError('Saved', 'message');
+			$app->setRedirect('users','myaccount');
+			
+		} else {
+			$app->setError('User Saved', 'message');
+			$app->setRedirect('users');
+		} 
 		$app->redirect();
 		
 	}
@@ -131,10 +147,16 @@ class Users {
 	}
 	function userEdit() {
 		global $user;
-		if ($user->lvl_root) {
-			$userinfo=$this->getUserInfo(JRequest::getInt('user',0));
+		$usr = JRequest::getInt('user',0);
+		if ($user->lvl_root || ($usr == $user->id && $user->lvl_edit)) {
+			$userinfo=$this->getUserInfo($usr);
 			include 'mods/users/userform.php';
 		}
+	}
+	function myaccount() {
+		global $user;
+		$userinfo=$this->getUserInfo($user->id);
+		include 'mods/users/myaccount.php';
 	}
 	function userClients() {
 		global $user;
