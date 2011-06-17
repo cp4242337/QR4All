@@ -4,7 +4,7 @@ echo '<form name="userlistform" method="post" action="">';
 echo '<table border="0" cellspacing="0" cellpadding="0" class="userlist-table">';
 echo '<tr>';
 echo '<th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($users).',\'cb\','.$count.');" /></th>';
-echo '<th width="30">ID</th><th width="200">Name</th><th width="120">UserName</th><th>EMail</th><th width="70">Access</th>';
+echo '<th width="30">ID</th><th width="200">Name</th><th width="120">UserName</th><th>EMail</th><th width="100">Expires</th><th width="70">Access</th><th width="70">Type</th>';
 echo '<th width="50">#Clients</th><th width="300">Actions</th></tr>';
 foreach ($users as $u) {
 	echo '<tr>';
@@ -13,12 +13,21 @@ foreach ($users as $u) {
 	echo '<td><a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'edituser\')">'.$u->usr_fullname.'</a></td>';
 	echo '<td>'.$u->usr_name.'</td>';
 	echo '<td>'.$u->usr_email.'</td>';
+	echo '<td>'.$u->usr_expdate.'</td>';
 	echo '<td align="center">';
 	switch ($u->usr_level) {
 		case 1: echo 'Basic'; break;
 		case 4: echo 'Editor'; break;
 		case 2: echo 'Admin'; break;
 		case 3: echo 'Root'; break;
+	}
+	echo '</td>';
+	echo '<td align="center">';
+	switch ($u->usr_type) {
+		case 'int': echo 'Internal'; break;
+		case 'ext': echo 'External'; break;
+		case 'trial': echo 'Trial'; break;
+		case 'paid': echo 'Paid'; break;
 	}
 	echo '</td>';
 	echo '<td align="center">'.(count($u->usr_clients)?count($u->usr_clients):'&nbsp;').'</td>';

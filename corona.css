@@ -70,6 +70,7 @@ td,th {font-size:12px;}
 	width:700px
 }
 
+/*
 #header #menu ul { float: right; list-style: none; margin: 0; padding: 0; }
 #header #menu ul li {float: left; margin:0; padding:0; font-size:13px;}
 
@@ -91,7 +92,70 @@ td,th {font-size:12px;}
 }
 
 #header #menu ul li.active { background-color: #dddddd; }
+*/
+#header #nav{
+	float:right;
+	list-style:none;
+	font-weight:bold;
+	padding: 0;
+	margin: 0;
+	z-index: 900;
+}
+#header #nav li{
+	float:left;
+	position:relative;
+	display:block;
+}
+#header #nav li a{
+	display:block;
+	padding:0 15px 0 15px;
+	color:#000000;
+	text-decoration:none;
+	text-shadow:1px 1px 0 rgba(221,221,221,0.75); /* Text shadow to lift it a little */
+	border-left: dotted #aaaaaa 1px;
 
+}
+#header #nav li a:hover{
+
+	background:#ffcdb1; /* Solid colour fall-back */
+}
+
+/*--- DROPDOWN ---*/
+#header #nav ul{
+	list-style:none;
+	position:absolute;
+	right:-9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
+	opacity:0; /* Set initial state to transparent */
+	-webkit-transition:0.25s linear opacity; /* Make the dropdown fade-in in Webkit */
+	margin: 0;
+	padding:0;
+}
+#header #nav ul li{
+	float:none;
+	text-align: left;
+}
+#header #nav ul a{
+	display:block;
+	border-top: dotted #aaaaaa 1px;
+}
+#header #nav li:hover ul{ /* Display the dropdown on hover */
+	right:0; /* Bring back on-screen when needed */
+	opacity:1; /* Fade to opaque */
+}
+#header #nav li:hover a{ /* Set styles for top level when dropdown is hovered */
+
+	background:#ffcdb1; /* Solid colour fall-back */
+	background:rgba(255,205,107,0.85); /* It'll look nice semi-transparent */
+}
+#header #nav li:hover ul a{ /* Override some top level styles when dropdown is hovered */
+	text-decoration:none;
+	-webkit-transition:-webkit-transform 0.075s linear;
+}
+#header #nav li:hover ul li a:hover{ /* Set styles for dropdown when items are hovered */
+	background:#c8c8c8; /* Solid colour fall-back */
+
+	background:rgba(200,200,200,0.85); /* It'll look nice semi-transparent */
+}
 
 #header #maintitle {
 	float: left;
@@ -118,6 +182,7 @@ td,th {font-size:12px;}
 	border-radius: 8px 8px 0 0;
 	-moz-border-radius: 8px 8px 0 0;
 	text-align: left;
+	z-index: 800;
  }
  
 #subheader #submenu {

@@ -10,6 +10,7 @@ class User {
 	var $name = '';
 	var $fullname = '';
 	var $type = '';
+	var $tmpl = 0;
 	var $expdate = '';
 	var $lvl = 0;
 	
@@ -42,6 +43,7 @@ class User {
 			$this->type=$res->usr_type;
 			$this->expdate=$res->usr_expdate;
 			$this->lvl=$res->usr_level;
+			$this->tmpl=$res->usr_template;
 			if ($res->published) { $this->_updateSession();	return true;}
 			else { $this->_logout('Account Disabled','error'); return false; }
 			if (strtotime($this->expdate."+ 1 day") <= strtotime("now") || $this->expdate == "0000-00-00") { $this->_updateSession();	return true;}
@@ -68,6 +70,7 @@ class User {
 			$this->type=$res->usr_type;
 			$this->expdate=$res->usr_expdate;
 			$this->lvl=$res->usr_level;
+			$this->tmpl=$res->usr_template;
 		} else {
 			$this->_logout('User does not exist','error');
 			return false;
@@ -95,6 +98,7 @@ class User {
 		$this->lvl_admin = 0;
 		$this->lvl_root = 0;
 		$this->lvl_order = 0;
+		$this->tmpl=0;
 		$this->expdate='';
 		$q = 'DELETE FROM qr4_session WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
 		$this->db->setQuery($q); $this->db->query();

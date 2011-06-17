@@ -76,7 +76,7 @@ td,th {font-size:12px;}
 	margin: 0 5px 0 5px;
 	padding:0;
 	line-height: 30px;
-	text-align:left;
+	text-align:right;
 	width:700px;
 	
 }
@@ -107,7 +107,6 @@ td,th {font-size:12px;}
 
 #header #nav{
 	float:right;
-	width:100%;
 	list-style:none;
 	font-weight:bold;
 	padding: 0;
@@ -145,7 +144,7 @@ td,th {font-size:12px;}
 }
 #header #nav ul li{
 	float:none;
-	text-algn: left;
+	text-align: left;
 }
 #header #nav ul a{
 	display:block;
@@ -158,7 +157,7 @@ td,th {font-size:12px;}
 #header #nav li:hover a{ /* Set styles for top level when dropdown is hovered */
 
 	background:#333333; /* Solid colour fall-back */
-	background:rgba(51,51,51,0.75); /* It'll look nice semi-transparent */
+	background:rgba(51,51,51,0.85); /* It'll look nice semi-transparent */
 }
 #header #nav li:hover ul a{ /* Override some top level styles when dropdown is hovered */
 	text-decoration:none;
@@ -167,7 +166,7 @@ td,th {font-size:12px;}
 #header #nav li:hover ul li a:hover{ /* Set styles for dropdown when items are hovered */
 	background:#000; /* Solid colour fall-back */
 
-	background:rgba(0,0,0,0.75); /* It'll look nice semi-transparent */
+	background:rgba(0,0,0,0.85); /* It'll look nice semi-transparent */
 }
 
 

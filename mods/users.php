@@ -12,6 +12,7 @@ class Users {
 			case 'login':
 			case 'useradd':
 			case 'useredit':
+			case 'myedit':
 			case 'userclients':
 			case 'myaccount':
 				$hascontent = true;
@@ -30,6 +31,8 @@ class Users {
 			case 'useradd':
 				$title='Add User';	break;
 			case 'useredit':
+				$title='Edit User';	break;
+			case 'myedit':
 				$title='Edit User';	break;
 			case 'userclients':
 				$title='User Clients';	break;
@@ -55,13 +58,17 @@ class Users {
 			if ($user->lvl_root || (JRequest::getInt('user',0) == $user->id && $user->lvl_edit)) echo '<li><a href="index.php?mod=users">Cancel</a></li>';
 			if ($user->lvl_root || (JRequest::getInt('user',0) == $user->id && $user->lvl_edit)) echo '<li><a href="#" onclick="document.userform.validate();">Save User</a></li>';
 		}
+		if ($task == 'myedit') {
+			if ($user->lvl_root || (JRequest::getInt('user',0) == $user->id && $user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=myaccount">Cancel</a></li>';
+			if ($user->lvl_root || (JRequest::getInt('user',0) == $user->id && $user->lvl_edit)) echo '<li><a href="#" onclick="document.userform.validate();">Save User</a></li>';
+		}
 		if ($task == 'userclients') {
 			if ($user->lvl_root) echo '<li><a href="index.php?mod=users">Users</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'haveclient\');">Yes</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unhaveclient\');">No</a></li>';
 		}
 		if ($task == 'myaccount') {
-			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=useredit&user='.$user->id.'">Edit Details / Change Password</a></li>';
+			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=myedit&user='.$user->id.'">Edit Details / Change Password</a></li>';
 			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=payopts&user='.$user->id.'">Payment Options</a></li>';
 		}
 		echo '</ul>';
@@ -110,23 +117,39 @@ class Users {
 		if ($user_id == $user->id && $user->lvl_edit) { $user_name=$user->name; }
 		$user_email=JRequest::getString('user_email');
 		$user_level=JRequest::getInt('user_level',1);
+		$user_type=JRequest::getString('user_type','trial');
+		$user_expdate=JRequest::getString('user_expdate',"0000-00-00");
 		if ($user_id == $user->id && $user->lvl_edit) { $user_level=$user->lvl; }
+		if ($user_id == $user->id && $user->lvl_edit) { $user_type=$user->type; }
+		if ($user_id == $user->id && $user->lvl_edit) { $user_expdate=$user->expdate; }
 		$user_fullname=JRequest::getString('user_fullname');
 		if ($user_id == $user->id && $user->lvl_edit) { $user_fullname=$user->fullname; }
 		$user_pass=JRequest::getString('user_pass');
+		$user_address1=JRequest::getString('user_address1');
+		$user_address2=JRequest::getString('user_address2');
+		$user_city=JRequest::getString('user_city');
+		$user_state=JRequest::getString('user_state');
+		$user_zip=JRequest::getString('user_zip');
+		$user_phone=JRequest::getString('user_phone');
+		$user_fax=JRequest::getString('user_fax');
+		$user_tmpl=JRequest::getInt('user_tmpl',1);
 		if ($user_id == 0) {
-			$q = 'INSERT INTO qr4_users (usr_name,usr_fullname,usr_level,usr_email) VALUES ("'.$user_name.'","'.$user_fullname.'","'.$user_level.'","'.$user_email.'")';
+			$q = 'INSERT INTO qr4_users (usr_name,usr_fullname,usr_level,usr_email,usr_address1,usr_address2,usr_city,usr_state,usr_zip,usr_phone,usr_fax,usr_type,usr_template,usr_expdate) ';
+			$q.= 'VALUES ("'.$user_name.'","'.$user_fullname.'","'.$user_level.'","'.$user_email.'","'.$user_address1.'","'.$user_address2.'","'.$user_city.'","';
+			$q.= $user_state.'","'.$user_zip.'","'.$user_phone.'","'.$user_fax.'","'.$user_type.'","'.$user_tmpl.'","'.$user_expdate.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 			$user_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_users SET usr_name="'.$user_name.'",usr_fullname="'.$user_fullname.'", usr_email="'.$user_email.'",usr_level="'.$user_level.'" WHERE usr_id = '.$user_id;
+			$q = 'UPDATE qr4_users SET usr_name="'.$user_name.'",usr_fullname="'.$user_fullname.'", usr_email="'.$user_email.'",usr_level="'.$user_level.'", ';
+			$q.= 'usr_address1 = "'.$user_address1.'", usr_address2 = "'.$user_address2.'", usr_city = "'.$user_city.'", usr_state = "'.$user_state.'", usr_zip = "'.$user_zip.'", ';
+			$q.= 'usr_phone = "'.$user_phone.'", usr_fax = "'.$user_fax.'", usr_type = "'.$user_type.'", usr_template = "'.$user_tmpl.'", usr_expdate = "'.$user_expdate.'" WHERE usr_id = '.$user_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 		}
 		if ($user_pass) {
 			$q2='UPDATE qr4_users SET usr_pass = "'.md5($user_pass).'" WHERE usr_id = '.$user_id;
 			$this->db->setQuery($q2); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('codelist'); $app->redirect(); }
 		}
-		if ($user_id = $user->id) {
+		if ($user_id == $user->id) {
 			$app->setError('Saved', 'message');
 			$app->setRedirect('users','myaccount');
 			
@@ -141,6 +164,7 @@ class Users {
 	
 	function userAdd() {
 		global $user;
+		$tmpls = $this->getTmplList();
 		if ($user->lvl_root) {
 			include 'mods/users/userform.php';
 		}
@@ -148,6 +172,16 @@ class Users {
 	function userEdit() {
 		global $user;
 		$usr = JRequest::getInt('user',0);
+		$tmpls = $this->getTmplList();
+		if ($user->lvl_root || ($usr == $user->id && $user->lvl_edit)) {
+			$userinfo=$this->getUserInfo($usr);
+			include 'mods/users/userform.php';
+		}
+	}
+	function myEdit() {
+		global $user;
+		$usr = JRequest::getInt('user',0);
+		$tmpls = $this->getTmplList();
 		if ($user->lvl_root || ($usr == $user->id && $user->lvl_edit)) {
 			$userinfo=$this->getUserInfo($usr);
 			include 'mods/users/userform.php';
@@ -343,5 +377,13 @@ class Users {
 			$app->setRedirect('users','userclients','&user='.$euser);
 			$app->redirect();
 		}
+	}
+	
+	function getTmplList() {
+		$q  = 'SELECT * FROM qr4_templates ';
+		$q .= 'WHERE tmpl_type = "admin" ';
+		$q .= 'ORDER BY tmpl_name ';
+		$this->db->setQuery($q); 
+		return $this->db->loadObjectList();
 	}
 }

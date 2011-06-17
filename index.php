@@ -35,8 +35,10 @@ include 'mods/'.$module.'.php';
 $mod = new $module();
 
 //Get Template Info
+if ($user->tmpl == 0) $usetmpl= $settings['template'];
+else $usetmpl=$user->tmpl;
 $qt  = 'SELECT * FROM qr4_templates ';
-$qt .= 'WHERE tmpl_id = "'.$settings['template'].'" ';
+$qt .= 'WHERE tmpl_id = "'.$usetmpl.'" ';
 $db->setQuery($qt);
 $deftmpl = $db->loadObject();
 
