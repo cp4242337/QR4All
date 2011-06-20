@@ -1,7 +1,7 @@
 <?php
 class Users {
 	function Users() {
-		global $dbc;
+		global $dbc, $user, $app;
 		$this->db =& JDatabase::getInstance($dbc);
 	}
 	
@@ -133,6 +133,7 @@ class Users {
 		$user_phone=JRequest::getString('user_phone');
 		$user_fax=JRequest::getString('user_fax');
 		$user_tmpl=JRequest::getInt('user_tmpl',1);
+		if ($user_id == $user->id && $user->lvl_edit) { $user_tmpl=$user->tmpl; }
 		if ($user_id == 0) {
 			$q = 'INSERT INTO qr4_users (usr_name,usr_fullname,usr_level,usr_email,usr_address1,usr_address2,usr_city,usr_state,usr_zip,usr_phone,usr_fax,usr_type,usr_template,usr_expdate) ';
 			$q.= 'VALUES ("'.$user_name.'","'.$user_fullname.'","'.$user_level.'","'.$user_email.'","'.$user_address1.'","'.$user_address2.'","'.$user_city.'","';

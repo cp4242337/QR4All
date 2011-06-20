@@ -1,8 +1,13 @@
 <?php
 class Cats {
 	function Cats() {
-		global $dbc;
+		global $dbc, $user, $app;
 		$this->db =& JDatabase::getInstance($dbc);
+		if ($user->type == 'exp') {
+			$app->setError('Unauthorized Access', 'error');
+			$app->setRedirect('home'); 
+			$app->redirect();
+		}
 	}
 	
 	function hasContent($task) {

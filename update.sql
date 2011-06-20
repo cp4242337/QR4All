@@ -1,4 +1,4 @@
-ALTER TABLE `qr4_users` ADD `usr_type` ENUM( 'trial', 'paid', 'ext', 'int' ) NOT NULL DEFAULT 'int' AFTER `usr_pass` ,
+ALTER TABLE `qr4_users` ADD `usr_type` ENUM( 'trial', 'paid', 'ext', 'int', 'exp' ) NOT NULL DEFAULT 'int' AFTER `usr_pass` ,
 ADD `usr_address1` VARCHAR( 555 ) NOT NULL AFTER `usr_type` ,
 ADD `usr_address2` VARCHAR( 255 ) NOT NULL AFTER `usr_address1` ,
 ADD `usr_city` VARCHAR( 255 ) NOT NULL AFTER `usr_address2` ,
@@ -17,3 +17,8 @@ ALTER TABLE `qr4_users` ADD `usr_template` INT NOT NULL DEFAULT '1' AFTER `usr_t
 
 ALTER TABLE `qr4_menu` ADD `menu_parent` INT NOT NULL AFTER `menu_lvl` 
 
+ALTER TABLE `qr4_menu` ADD `menu_int` BOOLEAN NOT NULL AFTER `menu_lvl` ,
+ADD `menu_ext` BOOLEAN NOT NULL AFTER `menu_int` ,
+ADD `menu_paid` BOOLEAN NOT NULL AFTER `menu_ext` ,
+ADD `menu_trial` BOOLEAN NOT NULL AFTER `menu_paid` ,
+ADD `menu_exp` BOOLEAN NOT NULL AFTER `menu_trial` 

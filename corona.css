@@ -269,6 +269,10 @@ td,th {font-size:12px;}
 	-moz-border-radius: 3px;
 }
 
+#footer a {
+	color: #ffffcc;	
+}
+
 #copyright {
 	margin:0;
 	padding:0;

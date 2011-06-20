@@ -1,4 +1,4 @@
 <?php
 global $app;
-$app->getMainMenu();
+$app->getMainMenu(false);
 ?>

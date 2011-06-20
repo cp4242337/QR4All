@@ -90,7 +90,11 @@ if (!$mod->hasContent($task)) {
 		
 		<div id="footer">
 			<?php 
-				if ($user->id) echo 'User: '.$user->name.' | ';
+				if ($user->id) {
+					echo 'User: '.$user->name.' | ';
+					echo '<a href="index.php?mod=users&task=myaccount">My Account</a> | ';
+					echo '<a href="index.php?mod=users&task=logoutuser">Logout</a> | ';
+				}
 				echo 'IP: '.$_SERVER['REMOTE_ADDR']; 
 				echo ' | v0.9';
 			?>

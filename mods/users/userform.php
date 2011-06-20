@@ -27,6 +27,7 @@
 			<option value="paid" <?php echo ($userinfo->usr_type == 'paid' ? 'selected' : '') ?>>Paid</option>
 			<option value="int" <?php echo ($userinfo->usr_type == 'int' ? 'selected' : '') ?>>Internal</option>
 			<option value="ext" <?php echo ($userinfo->usr_type == 'ext' ? 'selected' : '') ?>>External</option>
+			<option value="exp" <?php echo ($userinfo->usr_type == 'exp' ? 'selected' : '') ?>>Expired</option>
 </select></td></tr>
 <tr><td align="right" class="ftitle">Admin Template:</td><td class="ffield"><select name="user_tmpl" class="field required" title="Template is required">
 			<?php 

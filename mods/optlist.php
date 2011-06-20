@@ -3,8 +3,13 @@ class OptList {
 	var $db;
 	
 	function OptList() {
-		global $dbc;
+		global $dbc, $user, $app;
 		$this->db =& JDatabase::getInstance($dbc);
+		if ($user->type == 'exp' || $user->type == 'paid' || $user->type == 'trial') {
+			$app->setError('Unauthorized Access', 'error');
+			$app->setRedirect('home'); 
+			$app->redirect();
+		}
 	}
 
 	function getTitle($task) {

@@ -1,8 +1,13 @@
 <?php
 class Clients {
 	function Clients() {
-		global $dbc;
+		global $dbc, $user, $app;
 		$this->db =& JDatabase::getInstance($dbc);
+		if ($user->type == 'exp' || $user->type == 'paid' || $user->type == 'trial' || $user->type == 'ext') {
+			$app->setError('Unauthorized Access', 'error');
+			$app->setRedirect('home'); 
+			$app->redirect();
+		}
 	}
 	
 	function hasContent($task) {
@@ -48,11 +53,9 @@ class Clients {
 	}
 	
 	function display() {
-		global $user;
+		global $user,$app;
 		if (!$user->lvl_admin) {
-			$app->setError($this->db->getErrorMsg(), 'error'); 
-			$app->setRedirect('home'); 
-			$app->redirect();
+			echo 'No Access';
 			return 0;
 		} else {
 			$clients=$this->getClients();

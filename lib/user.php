@@ -24,6 +24,7 @@ class User {
 	} 
 
 	function loginUser($username, $password) {
+		global $app;
 		$username = mysql_escape_string($username);
 		$password = mysql_escape_string(md5($password));
 		$sql  = 'SELECT * FROM qr4_users as u ';
@@ -44,16 +45,17 @@ class User {
 			$this->expdate=$res->usr_expdate;
 			$this->lvl=$res->usr_level;
 			$this->tmpl=$res->usr_template;
-			if ($res->published) { $this->_updateSession();	return true;}
+			if ($res->published) { 	}
 			else { $this->_logout('Account Disabled','error'); return false; }
-			if (strtotime($this->expdate."+ 1 day") <= strtotime("now") || $this->expdate == "0000-00-00") { $this->_updateSession();	return true;}
-			else { $this->_logout('Account Expired','error'); return false; }
+			if (strtotime($this->expdate." 00:00:00") >= strtotime(date("Y-m-d H:i:s")) || $this->expdate == "0000-00-00") { $this->_updateSession(); return true;}
+			else { $app->setError('Account Expired','error'); $this->_expireUser($this->id); $this->type="exp"; $this->_updateSession(); return true; }
 		} else {
 			$this->_logout('Incorect Username/Password','error');
 			return false;
 		}
 	} 
 	function getUser($uid) {
+		global $app;
 		$sql  = 'SELECT * FROM qr4_users as u ';
 		$sql .= 'RIGHT JOIN qr4_userlvels as l ON u.usr_level = l.lvl_id ';
 		$sql .= 'WHERE u.usr_id = "'.$uid.'"'; 
@@ -71,12 +73,21 @@ class User {
 			$this->expdate=$res->usr_expdate;
 			$this->lvl=$res->usr_level;
 			$this->tmpl=$res->usr_template;
+			if ($res->published) { 	}
+			else { $this->_logout('Account Disabled','error'); return false; }
+			if (strtotime($this->expdate." 00:00:00") >= strtotime(date("Y-m-d H:i:s")) || $this->expdate == "0000-00-00") { return true;}
+			else { $app->setError('Account Expired','error'); $this->_expireUser($this->id); $this->type="exp"; }
 		} else {
 			$this->_logout('User does not exist','error');
 			return false;
 		}
 	} 
-	
+
+	function _expireUser($id) {
+		$q = 'UPDATE qr4_users SET usr_type = "exp" WHERE usr_id = "'.$id.'"';
+		$this->db->setQuery($q); $this->db->query();
+		
+	}
 	function _updateSession() {
 		$q = 'UPDATE qr4_session SET sess_user = '.$this->id.' WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
 		$this->db->setQuery($q); $this->db->query();

@@ -28,6 +28,7 @@ foreach ($users as $u) {
 		case 'ext': echo 'External'; break;
 		case 'trial': echo 'Trial'; break;
 		case 'paid': echo 'Paid'; break;
+		case 'exp': echo 'Expired'; break;
 	}
 	echo '</td>';
 	echo '<td align="center">'.(count($u->usr_clients)?count($u->usr_clients):'&nbsp;').'</td>';

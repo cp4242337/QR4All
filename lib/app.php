@@ -42,17 +42,18 @@ class App {
 		return $sessinfo;
 	}
 	
-	function getMainMenu() {
+	function getMainMenu($showall = true) {
 		global $user;
 		$q = 'SELECT * FROM qr4_menu WHERE menu_parent = 0 ORDER BY ordering';
 		$this->db->setQuery($q); $menu = $this->db->loadObjectList();
 		echo '<ul id="nav">';
 		if ($menu) foreach ($menu as $m) {
 			$lvl = $m->menu_lvl; 
-			if ($user->$lvl) {
+			$type="menu_".$user->type;
+			if ($user->$lvl && $m->$type) {
 				$needand = false;
 				echo '<li';
-				if ($m->menu_mod == $_REQUEST['mod'] && $m->menu_mod && $m->menu_task != 'logoutuser') echo ' class="active"';
+				//if ($m->menu_mod == $_REQUEST['mod'] && $m->menu_mod && $m->menu_task != 'logoutuser') echo ' class="active"';
 				echo '><a href="index.php?';
 				if ($m->menu_mod) { echo 'mod='.$m->menu_mod; $needand=true; }
 				if ($m->menu_task) { if ($needand) { echo '&'; $needand=false; } echo 'task='.$m->menu_task; }
@@ -60,7 +61,7 @@ class App {
 				$qp = 'SELECT * FROM qr4_menu WHERE menu_parent = '.$m->menu_id.' ORDER BY ordering';
 				$this->db->setQuery($qp); $menup = $this->db->loadObjectList();
 			
-				if ($menup) { 
+				if ($menup && $showall) { 
 					echo '<ul>';
 					foreach ($menup as $mp) {
 						$lvl = $m->menu_lvl; 
