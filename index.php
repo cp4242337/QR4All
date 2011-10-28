@@ -6,6 +6,11 @@
  */
 
 include 'settings.php';
+include 'lib/factory.php';
+include 'lib/loader.php';
+include 'lib/object.php';
+include 'lib/table.php';
+include 'lib/table/session.php';
 include 'lib/app.php';
 include 'lib/user.php';
 include 'lib/filterinput.php';
@@ -13,6 +18,8 @@ include 'lib/request.php';
 include 'lib/database.php';
 include 'lib/database/mysql.php';
 include 'lib/database/mysqli.php';
+include 'lib/session.php';
+include 'lib/storage.php';
 
 global $dbc,$user,$app;
 $dbc['user'] = $settings['dbuser'];
@@ -22,7 +29,7 @@ $dbc['driver'] = 'mysqli';
 
 //$db = new JDatabase($dbc);
 $db = JDatabase::getInstance($dbc);
-session_start();
+//session_start();
 $app = new App($db);
 $user=new User($app->sess->sess_user,$db);
 

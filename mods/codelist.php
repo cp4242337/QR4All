@@ -70,12 +70,21 @@ class CodeList {
 	}
 	
 	function display() {
-		global $user;
-		$curclient=(int)$_POST['client'];
+		global $user,$app;
+		$session =& JFactory::getSession();
+		$curclient=(int)$session->get('client',0);
 		$clients = $this->getClientList($user);
 		$codes=$this->getCodeList($clients,$curclient,$user);
 		include 'mods/codelist/default.php';
 
+	}
+	
+	function setVar() {
+		global $app;
+		$session =& JFactory::getSession();
+		$session->set('client',JRequest::getInt('client',JSession::get('client',0)));
+		$app->setRedirect('codelist'); 
+		$app->redirect();
 	}
 	
 	function saveCode() {
@@ -182,9 +191,10 @@ class CodeList {
 	}
 	
 	function gencodes() {
-		global $user;
+		global $user,$app;
+		$session =& JFactory::getSession();
 		$cids = urldecode(JRequest::getVar('codes'));
-		$curclient=(int)$_POST['client'];
+		$curclient=$session->get('client',0);
 		$clients = $this->getClientList($user);
 		$codes=$this->getCodeList($clients,$curclient,$user,$cids);
 		include 'mods/codelist/gencodes.php';

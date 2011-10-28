@@ -45,6 +45,9 @@ class User {
 			$this->expdate=$res->usr_expdate;
 			$this->lvl=$res->usr_level;
 			$this->tmpl=$res->usr_template;
+			
+			
+			
 			if ($res->published) { 	}
 			else { $this->_logout('Account Disabled','error'); return false; }
 			if (strtotime($this->expdate." 00:00:00") >= strtotime(date("Y-m-d H:i:s")) || $this->expdate == "0000-00-00") { $this->_updateSession(); return true;}
@@ -89,11 +92,30 @@ class User {
 		
 	}
 	function _updateSession() {
+		global $app;
+		// Register the needed session variables
+		$jsession =& JFactory::getSession();
+		$jsession->fork();
+		$app->_createSession($jsession->getId());
+		$jsession->set('user', $this);
+
+		// Get the session object
+		$table = & JTable::getInstance('session');
+		$table->load( $jsession->getId() );
+		$table->guest 		= 0;
+		$table->username 	= $this->name;
+		$table->userid 		= intval($this->id);
+		$table->update();
+
 		$q = 'UPDATE qr4_session SET sess_user = '.$this->id.' WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
 		$this->db->setQuery($q); $this->db->query();
 		
 	}
 	function logoutUser() {
+		$jsession =& JFactory::getSession();
+		$jsession->destroy();
+		$table = & JTable::getInstance('session');
+		$table->destroy($this->id);
 		$this->_logout('You Have Been Logged Out','message');
 	}
 	

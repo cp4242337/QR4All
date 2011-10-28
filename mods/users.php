@@ -69,7 +69,7 @@ class Users {
 		}
 		if ($task == 'myaccount') {
 			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=myedit&user='.$user->id.'">Edit Details / Change Password</a></li>';
-			if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=payopts&user='.$user->id.'">Payment Options</a></li>';
+			//if ($user->lvl_root || ($user->lvl_edit)) echo '<li><a href="index.php?mod=users&task=payopts&user='.$user->id.'">Payment Options</a></li>';
 		}
 		echo '</ul>';
 	}

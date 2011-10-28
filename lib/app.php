@@ -5,8 +5,11 @@ class App {
 	var $db;
 	var $sess;
 	var $_redirurl = null;
+	var $sessionTime = 30;
 	
 	function App($db) {
+		$jsession =& $this->_createSession('QR4AllAdmin');
+		
 		$this->db = $db;
 		if (!$_SESSION['QR4AllAdmin']) {
 			$this->startNewSession();
@@ -44,7 +47,7 @@ class App {
 	
 	function getMainMenu($showall = true) {
 		global $user;
-		$q = 'SELECT * FROM qr4_menu WHERE menu_parent = 0 ORDER BY ordering';
+		$q = 'SELECT * FROM qr4_menu WHERE menu_parent = 0 && published = 1 ORDER BY ordering';
 		$this->db->setQuery($q); $menu = $this->db->loadObjectList();
 		echo '<ul id="nav">';
 		if ($menu) foreach ($menu as $m) {
@@ -58,7 +61,7 @@ class App {
 				if ($m->menu_mod) { echo 'mod='.$m->menu_mod; $needand=true; }
 				if ($m->menu_task) { if ($needand) { echo '&'; $needand=false; } echo 'task='.$m->menu_task; }
 				echo '">'.$m->menu_name.'</a>';
-				$qp = 'SELECT * FROM qr4_menu WHERE menu_parent = '.$m->menu_id.' ORDER BY ordering';
+				$qp = 'SELECT * FROM qr4_menu WHERE menu_parent = '.$m->menu_id.'  && published = 1 ORDER BY ordering';
 				$this->db->setQuery($qp); $menup = $this->db->loadObjectList();
 			
 				if ($menup && $showall) { 
@@ -101,6 +104,29 @@ class App {
 		if ($this->_redirurl) {
 			header("Location: ".$this->_redirurl); 
 		}
+	}
+	
+	function &_createSession( $name )
+	{
+		$options = array();
+		$options['name'] = $name;
+		$session =& JFactory::getSession($options);
+
+		$storage = & JTable::getInstance('session');
+		$storage->purge($session->getExpire());
+
+		// Session exists and is not expired, update time in session table
+		if ($storage->load($session->getId())) {
+			$storage->update();
+			return $session;
+		}
+
+		//Session doesn't exist yet, initalise and store it in the session table
+		if (!$storage->insert( $session->getId())) {
+			
+		}
+
+		return $session;
 	}
 	
 }

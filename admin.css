@@ -136,7 +136,7 @@ td,th {font-size:12px;}
 #header #nav ul{
 	list-style:none;
 	position:absolute;
-	right:-9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
+	right:9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
 	opacity:0; /* Set initial state to transparent */
 	-webkit-transition:0.25s linear opacity; /* Make the dropdown fade-in in Webkit */
 	margin: 0;

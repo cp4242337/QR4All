@@ -8,13 +8,14 @@
 <tr><td align="right" class="ftitle">Full Name:</td><td class="ffield"><?php echo $userinfo->usr_fullname; ?></td></tr>
 <?php } ?>
 <tr><td align="right" class="ftitle">EMail:</td><td class="ffield"><input name="user_email" class="field required validate-email" type="text" title="A valid email address is required"  value="<?php echo $userinfo->usr_email; ?>"></td></tr>
-<tr><td align="right" class="ftitle">Address 1:</td><td class="ffield"><input name="user_address1" class="field required" type="text" title="An address is required"  value="<?php echo $userinfo->usr_address1; ?>"></td></tr>
+<!-- <tr><td align="right" class="ftitle">Address 1:</td><td class="ffield"><input name="user_address1" class="field required" type="text" title="An address is required"  value="<?php echo $userinfo->usr_address1; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Address 2:</td><td class="ffield"><input name="user_address2" class="field" type="text" value="<?php echo $userinfo->usr_address2; ?>"></td></tr>
 <tr><td align="right" class="ftitle">City:</td><td class="ffield"><input name="user_city" class="field required" type="text" title="A city is required"  value="<?php echo $userinfo->usr_city; ?>"></td></tr>
 <tr><td align="right" class="ftitle">State:</td><td class="ffield"><input name="user_state" class="field required" type="text" title="A state is required"  value="<?php echo $userinfo->usr_state; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Zip:</td><td class="ffield"><input name="user_zip" class="field required" type="text" title="A zip code is required"  value="<?php echo $userinfo->usr_zip; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Phone:</td><td class="ffield"><input name="user_phone" class="field required" type="text" title="A phone number is required"  value="<?php echo $userinfo->usr_phone; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Fax:</td><td class="ffield"><input name="user_fax" class="field" type="text" value="<?php echo $userinfo->usr_fax; ?>"></td></tr>
+-->
 <?php if ($user->lvl_root) { ?>
 <tr><td align="right" class="ftitle">User Level:</td><td class="ffield"><select name="user_level" class="field required" title="User level is required">
 			<option value="1" <?php echo ($userinfo->usr_level == '1' ? 'selected' : '') ?>>Basic</option>
