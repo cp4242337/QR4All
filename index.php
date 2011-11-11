@@ -31,7 +31,9 @@ $dbc['driver'] = 'mysqli';
 $db = JDatabase::getInstance($dbc);
 //session_start();
 $app = new App($db);
-$user=new User($app->sess->sess_user,$db);
+$session = JFactory::getSession();
+//$user=new User($session->get('user')->userid,$db);
+$user = JFactory::getUser();
 
 $module = JRequest::getWord('mod','home');
 $task = JRequest::getWord('task','display');

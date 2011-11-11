@@ -14,23 +14,39 @@ class User {
 	var $expdate = '';
 	var $lvl = 0;
 	
-	function User($id,$db) {
-		$this->db = $db;
-		$this->id = $id;
-		$this->name = '';
+	function User($id = 0) {
+		$this->db = JFactory::getDBO();
 		if ($this->id) {
 			$this->getUser($this->id);
 		}
 	} 
 
+	
+	function &getInstance($id = 0)
+	{
+		static $instances;
+
+		if (!isset ($instances)) {
+			$instances = array ();
+		}
+
+		if (empty($instances[$id])) {
+			$user = new User($id);
+			$instances[$id] = $user;
+		}
+
+		return $instances[$id];
+	}
+	
 	function loginUser($username, $password) {
 		global $app;
+		$db = JFactory::getDBO();
 		$username = mysql_escape_string($username);
 		$password = mysql_escape_string(md5($password));
 		$sql  = 'SELECT * FROM qr4_users as u ';
 		$sql .= 'RIGHT JOIN qr4_userlvels as l ON u.usr_level = l.lvl_id ';
 		$sql .= 'WHERE u.usr_name = "'.$username.'" AND u.usr_pass = "'.$password.'"'; 
-		$this->db->setQuery($sql); $res = $this->db->loadObject();
+		$db->setQuery($sql); $res = $db->loadObject();
 		
 		if ( $res->usr_id ) {
 			$this->id = $res->usr_id;
@@ -59,10 +75,11 @@ class User {
 	} 
 	function getUser($uid) {
 		global $app;
+		$db = JFactory::getDBO();
 		$sql  = 'SELECT * FROM qr4_users as u ';
 		$sql .= 'RIGHT JOIN qr4_userlvels as l ON u.usr_level = l.lvl_id ';
 		$sql .= 'WHERE u.usr_id = "'.$uid.'"'; 
-		$this->db->setQuery($sql); $res = $this->db->loadObject();
+		$db->setQuery($sql); $res = $db->loadObject();
 		if ( $res->usr_id ) {
 			$this->id = $res->usr_id;
 			$this->lvl_basic = $res->lvl_basic;
@@ -87,8 +104,9 @@ class User {
 	} 
 
 	function _expireUser($id) {
+		$db = JFactory::getDBO();
 		$q = 'UPDATE qr4_users SET usr_type = "exp" WHERE usr_id = "'.$id.'"';
-		$this->db->setQuery($q); $this->db->query();
+		$db->setQuery($q); $db->query();
 		
 	}
 	function _updateSession() {
@@ -107,8 +125,8 @@ class User {
 		$table->userid 		= intval($this->id);
 		$table->update();
 
-		$q = 'UPDATE qr4_session SET sess_user = '.$this->id.' WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
-		$this->db->setQuery($q); $this->db->query();
+		//$q = 'UPDATE qr4_session SET sess_user = '.$this->id.' WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
+		//$this->db->setQuery($q); $this->db->query();
 		
 	}
 	function logoutUser() {
@@ -133,8 +151,8 @@ class User {
 		$this->lvl_order = 0;
 		$this->tmpl=0;
 		$this->expdate='';
-		$q = 'DELETE FROM qr4_session WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
-		$this->db->setQuery($q); $this->db->query();
+		//$q = 'DELETE FROM qr4_session WHERE sess_id = "'.$_SESSION['QR4AllAdmin'].'"';
+		//$this->db->setQuery($q); $this->db->query();
 		$app->setError($erc, $type);
 	}
 }

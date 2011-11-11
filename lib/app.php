@@ -8,9 +8,10 @@ class App {
 	var $sessionTime = 30;
 	
 	function App($db) {
-		$jsession =& $this->_createSession('QR4AllAdmin');
+		$session =& $this->_createSession('QR4AllAdmin');
 		
 		$this->db = $db;
+		/*
 		if (!$_SESSION['QR4AllAdmin']) {
 			$this->startNewSession();
 		} 
@@ -29,9 +30,11 @@ class App {
 			$this->redirect();
 			$sess=null;
 		}
-		$this->sess = $sess;
+		*/
+		$this->sess = $session;
 	}
 	
+	/*
 	function startNewSession() {
 		$_SESSION['QR4AllAdmin'] = md5(date("Ymdhis").rand(1,1771561));
 		$q = 'INSERT INTO qr4_session (sess_id,sess_user,sess_time) VALUES ("'.$_SESSION['QR4AllAdmin'].'",0,"'.time().'")';
@@ -44,6 +47,7 @@ class App {
 		if (!$sessinfo->sess_id) { $this->startNewSession(); return $this->getSessionData($_SESSION['QR4AllAdmin']); }
 		return $sessinfo;
 	}
+	*/
 	
 	function getMainMenu($showall = true) {
 		global $user;
@@ -122,6 +126,8 @@ class App {
 		}
 
 		//Session doesn't exist yet, initalise and store it in the session table
+		$session->set('user', new User());
+		
 		if (!$storage->insert( $session->getId())) {
 			
 		}

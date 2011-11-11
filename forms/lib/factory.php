@@ -76,14 +76,14 @@ class JFactory
 	/**
 	 * Get an user object
 	 *
-	 * Returns a reference to the global {@link User} object, only creating it
+	 * Returns a reference to the global {@link JUser} object, only creating it
 	 * if it doesn't already exist.
 	 *
 	 * @param 	int 	$id 	The user to load - Can be an integer or string - If string, it is converted to ID automatically.
 	 *
 	 * @access public
 	 * @return object JUser
-	 */
+	 
 	function &getUser($id = null)
 	{
 		
@@ -92,17 +92,17 @@ class JFactory
 		{
 			$session  =& JFactory::getSession();
 			$instance =& $session->get('user');
-			if (!is_a($instance, 'User')) {
-				$instance =& User::getInstance();
+			if (!is_a($instance, 'JUser')) {
+				$instance =& JUser::getInstance();
 			}
 		}
 		else
 		{
-			$instance =& User::getInstance($id);
+			$instance =& JUser::getInstance($id);
 		}
 
 		return $instance;
-	}
+	}*/
 
 	function &getDBO()
 	{
@@ -203,7 +203,7 @@ class JFactory
 	{
 		$handler = "none";
 		// config time is in minutes
-		$options['expire'] = ($this->sessionTime * 60);
+		$options['expire'] = (90 * 60);
 
 		$session = JSession::getInstance($handler, $options);
 		if ($session->getState() == 'expired') {

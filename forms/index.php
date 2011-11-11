@@ -1,15 +1,22 @@
 <?php
 /*
- * QR4All Forms 0.7b
+ * QR4All Forms 0.8
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
 
+include 'lib/factory.php';
+include 'lib/loader.php';
+include 'lib/object.php';
+include 'lib/table.php';
+include 'lib/table/session.php';
 include 'lib/filterinput.php';
 include 'lib/request.php';
 include 'lib/database.php';
 include 'lib/database/mysql.php';
 include 'lib/database/mysqli.php';
+include 'lib/session.php';
+include 'lib/storage.php';
 include('Browscap.php');
 include('ipinfodb.class.php');
 
@@ -22,8 +29,20 @@ $dbc['host'] = 'localhost';
 
 //$db = new JDatabase($dbc);
 $db = JDatabase::getInstance($dbc);
-session_start();
+//session_start();
 $form = JRequest::getVar('c',null);
+
+//Setup Session
+$name=$form;
+$options = array();
+$options['name'] = $name;
+$session =& JFactory::getSession($options);
+$storage = & JTable::getInstance('session');
+$storage->purge($session->getExpire());
+
+
+
+
 if (!$form) { echo 'No Form Specified'; exit; }
 $cookiename = 'form_'.$form.'_session';
 
@@ -38,16 +57,24 @@ if (!$forminfo->published || !$forminfo) { echo 'Form not found'; exit; }
 
 
 //have we been here before??
-if (!isset($_COOKIE[$cookiename])) { //if not set up cookie and sessin id
-	$_SESSION['step'] = NULL;
-	$_SESSION[$cookiename] = NULL;
-	$sessid = md5("time".rand(0,1551761));
+if (!$storage->load($session->getId())) { //if not set up cookie and sessin id
+	$storage->insert( $session->getId());
+	$session->set('step',NULL);
+	$session->set($cookiename,NULL);
+	$sessid = $session->getId();
 	setcookie($cookiename,$sessid,(time()+60*60*24));
-	$_SESSION[$cookiename] = $sessid;
+	$session->set($cookiename,$sessid);
+	$stable = & JTable::getInstance('session');
+	$stable->load( $session->getId() );
+	$stable->form = $form;
+	$stable->update();
+	
+	//set up dataid
 	$qi = 'INSERT INTO qr4_formdata (data_form,data_ip,data_session) VALUES ("'.$forminfo->form_id.'","'.$_SERVER['REMOTE_ADDR'].'","'.$sessid.'")';
 	$db->setQuery($qi);
 	$db->query();
 	$dataid = $db->insertid();
+	
 	//log hit
 	try {
 		$bc = new Browscap("bc_cache"); 
@@ -73,28 +100,22 @@ if (!isset($_COOKIE[$cookiename])) { //if not set up cookie and sessin id
 	$db->setQuery($qh);
 	$db->query($qh);
 } else { //if we have check session id and get dataid
-	if ($_COOKIE[$cookiename] != $_SESSION[$cookiename]) { 
-		setcookie($cookiename,'',(time()-3600));
-		$_SESSION['step'] = NULL;
-		$_SESSION[$cookiename] = NULL;
+	$storage->update();
+	$sessid = $session->get($cookiename);
+	//get dataid
+	$qr = 'SELECT data_id FROM qr4_formdata WHERE data_session = "'.$sessid.'"';
+	$db->setQuery($qr);
+	$dataid = $db->loadResult();
+	if (!$dataid) {
+		setcookie($cookiename,'',(time()-60*60*24));
+		$session->destroy();
 		header("Location:$forminfo->form_code");
-	} else {
-		$sessid = $_SESSION[$cookiename];
-		//get dataid
-		$qr = 'SELECT data_id FROM qr4_formdata WHERE data_session = "'.$sessid.'"';
-		$db->setQuery($qr);
-		$dataid = $db->loadResult();
-		if (!$dataid) {
-			setcookie($cookiename,'',(time()-60*60*24));
-			$_SESSION['step'] = NULL;
-			$_SESSION['id'] = NULL;
-			header("Location:$forminfo->form_code");
-		}
 	}
+	
 }
 
-if (!isset($_SESSION['step'])) { $curstep = 1; $_SESSION['step']=1; }
-else { ($curstep = $_SESSION['step']); }
+if (!$session->get('step',0)) { $curstep = 1; $session->set('step',1); }
+else { $curstep = $session->get('step',0); }
 
 $qp = 'SELECT * FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && published = 1  && trashed = 0 ORDER BY ordering ASC LIMIT '.($curstep - 1).',1';
 $db->setQuery($qp);
@@ -226,7 +247,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 		$db->query();
 	}
 	//go to next page
-	$_SESSION['step'] = $curstep+1;
+	$session->set('step',$curstep+1);
 	header("Location:$forminfo->form_code");
 }
 
