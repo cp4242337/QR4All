@@ -89,6 +89,7 @@ class FormList {
 		$form_client=$this->getClientIdFromCat($form_cat);
 		$form_header= $this->db->getEscaped(JRequest::getVar( 'form_header', null, 'default', 'none', 2));
 		$form_body= $this->db->getEscaped(JRequest::getVar( 'form_body', null, 'default', 'none', 2));
+		$form_sessiontime=$this->db->getEscaped(JRequest::getInt('form_sessiontime',30));
 		
 		if (!$this->CheckFormCount($form_client)) {
 			$app->setError("Maximum number of forms reached for client","error");
@@ -99,11 +100,12 @@ class FormList {
 		
 		if ($form_id == 0) {
 			$form_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain,form_header,form_body) VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'","'.$form_header.'","'.$form_body.'")';
+			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain,form_header,form_body,form_sessiontime) ';
+			$q.= 'VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'","'.$form_header.'","'.$form_body.'","'.$form_sessiontime.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 			$form_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'", form_domain="'.$form_domain.'", form_header="'.$form_header.'", form_body="'.$form_body.'" WHERE form_id = '.$form_id;
+			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'", form_domain="'.$form_domain.'", form_header="'.$form_header.'", form_body="'.$form_body.'", form_sessiontime="'.$form_sessiontime.'" WHERE form_id = '.$form_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 		}
 		
@@ -474,6 +476,10 @@ class FormList {
 						$q4  = 'SELECT COUNT(*) FROM qr4_formpages WHERE page_form = '.$cd->form_id;
 						$q4 .= ' GROUP BY page_form';
 						$this->db->setQuery($q4); $cd->pages = $this->db->loadResult(); if (!$cd->pages) $cd->pages=0;
+						
+						$q5  = 'SELECT COUNT(*) FROM qr4_formdata WHERE data_end != "0000-00-00 00:00:00" && data_form = '.$cd->form_id;
+						$q5 .= ' GROUP BY data_form';
+						$this->db->setQuery($q5); $cd->completes = $this->db->loadResult(); if (!$cd->completes) $cd->completes=0;
 					}
 					$ct->forms = $forml;
 				}
@@ -598,7 +604,7 @@ class FormList {
 		$forminfo = $this->db->loadObject();
 		$q2  = 'SELECT * FROM qr4_formdata as d ';
 		$q2 .= 'RIGHT JOIN qr4_fhits as h ON d.data_id = h.hit_data ';
-		$q2 .= 'WHERE d.data_form = '.$form.' ';
+		$q2 .= 'WHERE d.data_end != "0000-00-00 00:00:00" && d.data_form = '.$form.' ';
 		if ($sdate && $edate) $q2 .= '&& date(d.data_start) BETWEEN "'.$sdate.'" AND "'.$edate.'" '; 
 		$q2 .= 'ORDER BY d.data_start DESC';
 		$this->db->setQuery($q2);

@@ -20,49 +20,42 @@ include 'lib/storage.php';
 include('Browscap.php');
 include('ipinfodb.class.php');
 
+//Init Database
 global $dbc;
 $dbc['user'] = 'qr4all';
 $dbc['password'] = 'qr4all';
 $dbc['database'] = 'qr4all';
 $dbc['driver'] = 'mysqli';
 $dbc['host'] = 'localhost';
-
-//$db = new JDatabase($dbc);
 $db = JDatabase::getInstance($dbc);
-//session_start();
+
+//Get Form Info
 $form = JRequest::getVar('c',null);
-
-//Setup Session
-$name=$form;
-$options = array();
-$options['name'] = $name;
-$session =& JFactory::getSession($options);
-$storage = & JTable::getInstance('session');
-$storage->purge($session->getExpire());
-
-
-
-
 if (!$form) { echo 'No Form Specified'; exit; }
-$cookiename = 'form_'.$form.'_session';
-
 $qf  = 'SELECT * FROM qr4_forms as f ';
 $qf .= 'RIGHT JOIN qr4_templates as t ON f.form_template=t.tmpl_id ';
 $qf .= 'WHERE f.form_code = "'.$form.'"  && f.published = 1 && f.trashed = 0';
 $db->setQuery($qf);
 $forminfo = $db->loadObject();
-
 if (!$forminfo->published || !$forminfo) { echo 'Form not found'; exit; }
 
+//Setup Session
+$options = array();
+$options['name'] = $form;
+$options['expire'] = ($forminfo->form_sessiontime);
+$session =& JFactory::getSession($options);
+$storage = & JTable::getInstance('session');
+$storage->purge($session->getExpire(),$form);
 
+$cookiename = 'form_'.$form.'_session';
 
 //have we been here before??
 if (!$storage->load($session->getId())) { //if not set up cookie and sessin id
+	$session->restart();
 	$storage->insert( $session->getId());
 	$session->set('step',NULL);
 	$session->set($cookiename,NULL);
 	$sessid = $session->getId();
-	setcookie($cookiename,$sessid,(time()+60*60*24));
 	$session->set($cookiename,$sessid);
 	$stable = & JTable::getInstance('session');
 	$stable->load( $session->getId() );

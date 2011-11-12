@@ -104,10 +104,11 @@ class JTableSession extends JTable
 	* @param int 	Session age in seconds
 	* @return mixed Resource on success, null on fail
 	*/
-	function purge( $maxLifetime = 1440 )
+	function purge( $maxLifetime = 1440,$form = '' )
 	{
 		$past = time() - $maxLifetime;
 		$query = 'DELETE FROM '. $this->_tbl .' WHERE ( time < \''. (int) $past .'\' )'; // Index on 'VARCHAR'
+		if ($form) $query .= ' && form = "'.$form.'"';
 		$this->_db->setQuery($query);
 
 		return $this->_db->query();

@@ -1,7 +1,7 @@
 <form action="index.php" method="post" name="codeform" id="codeform">
 <table border="0" cellspacing="0" cellpadding="0" class="codelist-form">
-<tr><td align="right" class="ftitle">Form Int Title:</td><td class="ffield"><input name="form_title" class="field required maxLength:240" type="text" title="Video title must be 5-40 characters"  value="<?php echo $forminfo->form_title; ?>"></td></tr>
-<tr><td align="right" class="ftitle">Form Ext Title:</td><td class="ffield"><input name="form_pubtitle" class="field required maxLength:240" type="text" title="Video title must be 5-40 characters"  value="<?php echo $forminfo->form_publictitle; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Form Int Title:</td><td class="ffield"><input name="form_title" class="field required maxLength:240" type="text" title="From title must be 5-240 characters"  value="<?php echo $forminfo->form_title; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Form Ext Title:</td><td class="ffield"><input name="form_pubtitle" class="field required maxLength:240" type="text" title="Form title must be 5-240 characters"  value="<?php echo $forminfo->form_publictitle; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Client/Cat:</td><td class="ffield"><select name="form_cat" class="field required" title="Client/Category is required">
 			<?php 
 			foreach ($cats as $cl) {
@@ -36,6 +36,7 @@ foreach ($doms as $d) {
 </select></td></tr>
 <tr><td align="right" class="ftitle">Header Lines:</td><td class="ffield"><textarea name="form_header" class="farea"><?php echo $forminfo->form_header; ?></textarea></td></tr>
 <tr><td align="right" class="ftitle">Body Tag:</td><td class="ffield"><textarea name="form_body" class="farea"><?php echo $forminfo->form_body; ?></textarea></td></tr>
+<tr><td align="right" class="ftitle">Session Time (min):</td><td class="ffield"><input name="form_sessiontime" class="field required" type="text" title="Session Time must be more than 15min"  value="<?php echo $forminfo->form_sessiontime; ?>"></td></tr>
 </table>
 <input name="task" type="hidden" value="saveForm">
 <input name="mod" type="hidden" value="formlist">

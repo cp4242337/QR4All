@@ -24,7 +24,7 @@ foreach ($forms as $c) {
 			if ($t->forms) {
 				echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 				echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($t->forms).',\'cb\','.$count.');" /></th>';
-				echo '<th width="250">Title</th><th width="250">Public Title</th><th>URL</th><th width="50"># Pages</th><th width="70">Total Hits</th><th width="300">Ops</th></tr>';
+				echo '<th width="250">Title</th><th width="250">Public Title</th><th>URL</th><th width="50"># Pages</th><th width="50">Total<br>Hits</th><th width="50">Total<br>Compl.</th><th width="300">Ops</th></tr>';
 				foreach ($t->forms as $d) { 
 					echo '<tr>';
 					echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="form[]" value="'.$d->form_id.'" onclick="isChecked(this.checked);"></td>';
@@ -36,6 +36,7 @@ foreach ($forms as $c) {
 					echo '<td>http://'.$d->dom_dom.'/'.$d->form_code.'&nbsp;</td>';
 					echo '<td>'.$d->pages.'&nbsp;</td>';
 					echo '<td>'.$d->hits.'&nbsp;</td>';
+					echo '<td>'.$d->completes.'&nbsp;</td>';
 					echo '<td class="codelist-ops">';
 					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'stats\')" title="View Stats"><img src="images/stats.png" border="0" alt="View Stats" /></a> ';
 					echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'data\')" title="View Data"><img src="images/data.png" border="0" alt="View Form Data" /></a> ';
