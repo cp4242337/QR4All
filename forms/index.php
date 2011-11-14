@@ -239,6 +239,10 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 		$db->setQuery($qe);
 		$db->query();
 	}
+	
+	if ($pageinfo->page_action == 'reset') {
+		$session->restart();
+	}
 	//go to next page
 	$session->set('step',$curstep+1);
 	header("Location:$forminfo->form_code");
@@ -504,16 +508,10 @@ if ($pageinfo->page_type=="confirm") {
 // Page action
 //************
 
-if ($pageinfo->page_action=="next" || $pageinfo->page_action=="submit" || $pageinfo->page_action=="submitmail") {
+if ($pageinfo->page_action=="next" || $pageinfo->page_action=="submit" || $pageinfo->page_action=="submitmail" || $pageinfo->page_action=="reset") {
 	echo '<div id="page-action">';
 	echo '<input type="hidden" name="pagesubmit" value="'.$pageinfo->page_id.'">'."\n";
-	echo '<input type="submit" ';
-	switch ($pageinfo->page_action) {
-		case "next": echo 'value="Next"'; break;
-		case "submit":
-		case "submitmail": echo 'value="Submit"'; break;
-	}
-	echo ' class="button" name="submit">'."\n";
+	echo '<input type="submit" value="'.$pageinfo->page_actiontext.'" class="button" name="submit">'."\n";
 	echo '</div>';
 	
 }

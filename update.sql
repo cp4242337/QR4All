@@ -46,6 +46,9 @@ CREATE TABLE IF NOT EXISTS `qr4_sessions` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 ALTER TABLE `qr4_forms` ADD `form_sessiontime` INT NOT NULL DEFAULT '30' AFTER `form_body` ;
+ALTER TABLE `qr4_formpages` ADD `page_actiontext` VARCHAR( 100 ) NOT NULL  DEFAULT 'Submit' AFTER `page_action` ;
+ALTER TABLE `qr4_formpages` CHANGE `page_action` `page_action` ENUM( 'next', 'submit', 'submitmail', 'none', 'reset' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+
 
 TRUNCATE qr4_menu;
 

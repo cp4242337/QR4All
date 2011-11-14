@@ -34,7 +34,12 @@ echo '<option value="submitmail"';
 if ("submitmail" == $pageinfo->page_action) echo ' selected';
 echo '>Submit Form and Send EMail</option>';
 
+echo '<option value="reset"';
+if ("reset" == $pageinfo->page_action) echo ' selected';
+echo '>Reset Form</option>';
+
 ?></select></td></tr>
+<tr><td align="right" class="ftitle">Button Text:</td><td class="ffield"><input name="page_actiontext" class="field required maxLength:100" type="text" title="Button Text must be 2-100 characters"  value="<?php echo $pageinfo->page_actiontext; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Page Content:</td><td class="ffield"><textarea name="page_content" class="farea"><?php echo $pageinfo->page_content; ?></textarea><br><br>
 <?php 
 if ($aitems) {
