@@ -68,11 +68,20 @@ class VidList {
 	
 	function display() {
 		global $user;
-		$curclient=(int)$_POST['client'];
+		$session =& JFactory::getSession();
+		$curclient=(int)$session->get('client',0);
 		$clients = $this->getClientList($user);
 		$vids=$this->getVidList($clients,$curclient,$user);
 		include 'mods/vidlist/default.php';
 
+	}
+	
+	function setVar() {
+		global $app;
+		$session =& JFactory::getSession();
+		$session->set('client',JRequest::getInt('client',JSession::get('client',0)));
+		$app->setRedirect('vidlist'); 
+		$app->redirect();
 	}
 	
 	function saveVid() {

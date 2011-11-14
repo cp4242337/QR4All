@@ -105,7 +105,7 @@ if (!$mod->hasContent($task)) {
 					echo '<a href="index.php?mod=users&task=logoutuser">Logout</a> | ';
 				}
 				echo 'IP: '.$_SERVER['REMOTE_ADDR']; 
-				echo ' | '.date("Y-m-d H:i:s").' | '; 
+				echo ' | '.date("Y-m-d H:i:s"); 
 				echo ' | v0.9';
 			?>
 		</div>

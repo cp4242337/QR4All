@@ -71,11 +71,20 @@ class FormList {
 	
 	function display() {
 		global $user;
-		$curclient=(int)$_POST['client'];
+		$session =& JFactory::getSession();
+		$curclient=(int)$session->get('client',0);
 		$clients = $this->getClientList($user);
 		$forms=$this->getFormList($clients,$curclient,$user);
 		include 'mods/formlist/default.php';
 
+	}
+	
+	function setVar() {
+		global $app;
+		$session =& JFactory::getSession();
+		$session->set('client',JRequest::getInt('client',JSession::get('client',0)));
+		$app->setRedirect('formlist'); 
+		$app->redirect();
 	}
 	
 	function saveForm() {

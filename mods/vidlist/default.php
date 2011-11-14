@@ -12,6 +12,7 @@ foreach ($clients as $cl) {
 	echo '>'.$cl->cl_name.'</option>';
 }
 echo '</select>';
+echo '<input type="hidden" name="task" value="setVar">';
 echo '</form>';
 }
 $count=0;
