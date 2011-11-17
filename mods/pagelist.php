@@ -75,14 +75,15 @@ class PageList {
 		$page_type=JRequest::getString('page_type');
 		$page_action=JRequest::getString('page_action');
 		$page_actiontext=JRequest::getString('page_actiontext');
+		$page_redirurl=JRequest::getString('page_redirurl');
 		$page_content= $this->db->getEscaped(JRequest::getVar( 'page_content', null, 'default', 'none', 2));
 		$ordering=$this->getNextOrderNum($page_form);
 		if ($page_id == 0) {
-			$q = 'INSERT INTO qr4_formpages (page_form,page_title,page_type,page_action,page_actiontext,ordering,page_content) VALUES ("'.$page_form.'","'.$page_title.'","'.$page_type.'","'.$page_action.'","'.$page_actiontext.'","'.$ordering.'","'.$page_content.'")';
+			$q = 'INSERT INTO qr4_formpages (page_form,page_title,page_type,page_action,page_actiontext,page_redirurl,ordering,page_content) VALUES ("'.$page_form.'","'.$page_title.'","'.$page_type.'","'.$page_action.'","'.$page_actiontext.'","'.$page_redirurl.'","'.$ordering.'","'.$page_content.'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('pagelist','display','&form='.$page_form); $app->redirect(); }
 			$form_id=$this->db->insertid();
 		} else {
-			$q = 'UPDATE qr4_formpages SET page_title="'.$page_title.'", page_type="'.$page_type.'", page_action="'.$page_action.'", page_actiontext="'.$page_actiontext.'", page_content="'.$page_content.'" WHERE page_id = '.$page_id;
+			$q = 'UPDATE qr4_formpages SET page_title="'.$page_title.'", page_type="'.$page_type.'", page_action="'.$page_action.'", page_actiontext="'.$page_actiontext.'", page_redirurl="'.$page_redirurl.'", page_content="'.$page_content.'" WHERE page_id = '.$page_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('pagelist','display','&form='.$page_form); $app->redirect(); }
 		}
 		$app->setError('Page Saved', 'message');

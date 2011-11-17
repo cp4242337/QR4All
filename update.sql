@@ -13,7 +13,7 @@ ADD `usr_fax` VARCHAR( 255 ) NOT NULL AFTER `usr_phone`,
 ADD `usr_paypalrpid` VARCHAR( 50 ) NOT NULL AFTER `usr_nextbilldate`;
 
 ALTER TABLE `qr4_users` ADD `usr_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `usr_type` ;
-ALTER TABLE `qr4_users` ADD `usr_template` INT NOT NULL DEFAULT '1' AFTER `usr_type` ;
+ALTER TABLE `qr4_users` ADD `usr_template` INT NOT NULL DEFAULT '8' AFTER `usr_type` ;
 
 ALTER TABLE `qr4_menu` ADD `menu_parent` INT NOT NULL AFTER `menu_lvl` ;
 
@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS `qr4_sessions` (
 
 ALTER TABLE `qr4_forms` ADD `form_sessiontime` INT NOT NULL DEFAULT '30' AFTER `form_body` ;
 ALTER TABLE `qr4_formpages` ADD `page_actiontext` VARCHAR( 100 ) NOT NULL  DEFAULT 'Submit' AFTER `page_action` ;
-ALTER TABLE `qr4_formpages` CHANGE `page_action` `page_action` ENUM( 'next', 'submit', 'submitmail', 'none', 'reset' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
+ALTER TABLE `qr4_formpages` ADD `page_redirurl` VARCHAR( 255 ) NOT NULL AFTER `page_actiontext` ;
+ALTER TABLE `qr4_formpages` CHANGE `page_action` `page_action` ENUM( 'next', 'submit', 'submitmail', 'none', 'reset','redirect' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
 
 
 TRUNCATE qr4_menu;

@@ -13,7 +13,7 @@ echo '<option value="cbx"'; if ("cbx" == $iteminfo->item_type) echo ' selected';
 echo '<option value="dds"'; if ("dds" == $iteminfo->item_type) echo ' selected'; echo '>Dropdown Select</option>';
 echo '<option value="eml"'; if ("eml" == $iteminfo->item_type) echo ' selected'; echo '>EMail Address</option>';
 echo '<option value="phn"'; if ("phn" == $iteminfo->item_type) echo ' selected'; echo '>Phone Number</option>';
-echo '<option value="phn"'; if ("hdn" == $iteminfo->item_type) echo ' selected'; echo '>Phone Number</option>';
+echo '<option value="hdn"'; if ("hdn" == $iteminfo->item_type) echo ' selected'; echo '>Hidden</option>';
 
 ?></select></td></tr>
 <tr><td align="right" class="ftitle">Required:</td><td class="ffield">

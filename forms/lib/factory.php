@@ -169,7 +169,7 @@ class JFactory
 	 */
 	function &_createSession( $options = array())
 	{
-		$handler = "none";
+		$handler = "database";
 		// config time is in minutes
 		$options['expire'] = ($options['expire'] * 60);
 

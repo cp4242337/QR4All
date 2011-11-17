@@ -234,7 +234,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 	}
 	// --- EMAIL ACTION TO GO HERE ---
 	//set end if submitting
-	if ($pageinfo->page_action == 'submit' || $pageinfo->page_action == 'submitmail') {
+	if ($pageinfo->page_action == 'submit' || $pageinfo->page_action == 'submitmail' || $pageinfo->page_action == 'redirect') {
 		$qe = 'UPDATE qr4_formdata SET data_end = "'.date("Y-m-d H:i:s").'" WHERE data_id = '.$dataid;
 		$db->setQuery($qe);
 		$db->query();
@@ -243,15 +243,20 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 	if ($pageinfo->page_action == 'reset') {
 		$session->restart();
 	}
-	//go to next page
-	$session->set('step',$curstep+1);
-	header("Location:$forminfo->form_code");
+	
+	if ($pageinfo->page_action != "redirect") {
+		//go to next page
+		$session->set('step',$curstep+1);
+		header("Location:$forminfo->form_code");
+	} else {
+		header("Location:$pageinfo->page_redirurl");
+	}
 }
 
 //set title
 $title=$forminfo->form_publictitle.' - '.$pageinfo->page_title;
 
-//start oage
+//start page
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 echo '<html>'."\n";
 echo '<head><title>'.$title.'</title>'."\n";
@@ -266,17 +271,13 @@ else echo '<body>'."\n";
 echo '<div id="wrapper">'."\n";
 echo '<div id="header"></div>'."\n";
 echo '<div id="content">'."\n";
-//start form
-if ($pageinfo->page_action != 'none') {
-	echo '<form action="" method="post" name="qr4form" id="qr4form">'."\n";
-	
-}
+
 
 //************
 // Page action
 //************
 
-// Page
+// Page Content
 if ($pageinfo->page_type=="text" || $pageinfo->page_type=="form" || $pageinfo->page_type=="confirm") {
 	$pagecontent = $pageinfo->page_content;
 	$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.$pageinfo->ordering;
@@ -320,6 +321,12 @@ if ($pageinfo->page_type=="text" || $pageinfo->page_type=="form" || $pageinfo->p
 	echo $pagecontent."\n";
 }
 
+//start form
+if ($pageinfo->page_action != 'none') {
+	echo '<form action="" method="post" name="qr4form" id="qr4form">'."\n";
+	
+}
+
 // Form Page
 if ($pageinfo->page_type=="form") {
 	$qi = 'SELECT * FROM qr4_formitems WHERE item_page = '.$pageinfo->page_id.' && published = 1 ORDER BY ordering';	
@@ -328,7 +335,7 @@ if ($pageinfo->page_type=="form") {
 	//show items
 	foreach ($items as $item) {
 		//Question text if not a single checkbox
-		if ($item->item_type != 'cbx') {
+		if ($item->item_type != 'cbx' && $item->item_type != 'hdn' ) {
 			echo '<strong>';
 			echo $item->item_text;
 			echo '</strong><br>'."\n";
@@ -508,7 +515,7 @@ if ($pageinfo->page_type=="confirm") {
 // Page action
 //************
 
-if ($pageinfo->page_action=="next" || $pageinfo->page_action=="submit" || $pageinfo->page_action=="submitmail" || $pageinfo->page_action=="reset") {
+if ($pageinfo->page_action != "none") {
 	echo '<div id="page-action">';
 	echo '<input type="hidden" name="pagesubmit" value="'.$pageinfo->page_id.'">'."\n";
 	echo '<input type="submit" value="'.$pageinfo->page_actiontext.'" class="button" name="submit">'."\n";

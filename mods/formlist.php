@@ -633,7 +633,7 @@ class FormList {
 			$qi  = 'SELECT * FROM qr4_formitems as i ';
 			$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
 			$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$d->data_id.' ';
-			$qi .= 'ORDER BY i.ordering';	
+			$qi .= 'ORDER BY i.item_id';	
 			$this->db->setQuery($qi);
 			$ansdata = $this->db->loadObjectList();
 			foreach ($ansdata as $a) {
@@ -643,6 +643,7 @@ class FormList {
 					case "tbx":
 					case "eml":
 					case "phn":
+					case "hdn":
 						$d->$ans = $a->ans_answer;
 						break;
 					case "rad":
@@ -670,8 +671,8 @@ class FormList {
 		$this->db->setQuery($qpp);
 		$prevpages = $this->db->loadResultArray();
 		$qi  = 'SELECT * FROM qr4_formitems as i ';
-		$qi .= 'WHERE item_type != "hdn" && item_type != "msg" && item_page IN ('.implode(",",$prevpages).') && published = 1 ';
-		$qi .= 'ORDER BY i.ordering';	
+		$qi .= 'WHERE item_type != "msg" && item_page IN ('.implode(",",$prevpages).') && published = 1 ';
+		$qi .= 'ORDER BY i.item_page, i.ordering';	
 		$this->db->setQuery($qi);
 		$items = $this->db->loadObjectList();
 		return $items;

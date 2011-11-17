@@ -30,6 +30,7 @@ foreach ($pages as $d) {
 		case "submit": echo "Submit Form"; break;
 		case "submitmail": echo "Submit Form and Send EMail"; break;
 		case "reset": echo "Reset Form"; break;
+		case "redirect": echo "Submit Form and Redirect"; break;
 	}
 	echo '&nbsp;</td>';
 	if ($user->lvl_edit) {
