@@ -1,6 +1,6 @@
 <?php 
 /*
- * QR4All 0.9
+ * QR4All 0.9.1
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -106,7 +106,7 @@ if (!$mod->hasContent($task)) {
 				}
 				echo 'IP: '.$_SERVER['REMOTE_ADDR']; 
 				echo ' | '.date("Y-m-d H:i:s"); 
-				echo ' | v0.9';
+				echo ' | v0.9.1';
 			?>
 		</div>
 		

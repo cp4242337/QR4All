@@ -73,7 +73,9 @@ class CodeList {
 		global $user,$app;
 		$session =& JFactory::getSession();
 		$curclient=(int)$session->get('client',0);
+		$curcat=(int)$session->get('cat',0);
 		$clients = $this->getClientList($user);
+		if ($curclient) $cats = $this->getCatList($curclient);
 		$codes=$this->getCodeList($clients,$curclient,$user);
 		include 'mods/codelist/default.php';
 
@@ -83,6 +85,7 @@ class CodeList {
 		global $app;
 		$session =& JFactory::getSession();
 		$session->set('client',JRequest::getInt('client',JSession::get('client',0)));
+		$session->set('cat',JRequest::getInt('cat',JSession::get('cat',0)));
 		$app->setRedirect('codelist'); 
 		$app->redirect();
 	}
@@ -366,6 +369,16 @@ class CodeList {
 		return $this->db->loadObjectList();
 	}
 	
+	function getCatList($clid=0) {
+		$q  = 'SELECT * FROM qr4_clientcats as uc ';
+		$q .= 'RIGHT JOIN qr4_cats as cat ON uc.clcat_cat=cat.cat_id ';
+		$q .= 'WHERE cat.published = 1 ';
+		$q .= '&& uc.clcat_client = '.$clid.' ';
+		$q .= 'ORDER BY cat.cat_name ';
+		$this->db->setQuery($q); 
+		return $this->db->loadObjectList();
+	}
+	
 	function getClientCats($clients) {
 		$cats = Array();
 		foreach ($clients as $cl) {	
@@ -382,12 +395,15 @@ class CodeList {
 	}
 	
 	function getCodeList($clients,$curclient,$user,$cids=array(),$sdate=null,$edate=null) {
+		$session =& JFactory::getSession();
+		$curcat=(int)$session->get('cat',0);
 		$codes = Array();
 		foreach ($clients as $cl) {	
 			if ($curclient == $cl->cl_id || !$curclient) {
 				$q  = 'SELECT * FROM qr4_clientcats as cc ';
 				$q .= 'RIGHT JOIN qr4_cats as ct ON cc.clcat_cat = ct.cat_id ';
 				$q .= 'WHERE ct.published = 1 && cc.clcat_client = '.$cl->cl_id;
+				if ($curcat) $q .= ' && ct.cat_id = '.$curcat;
 				$this->db->setQuery($q);
 				$cats = $this->db->loadObjectList();
 				foreach ($cats as &$ct) {

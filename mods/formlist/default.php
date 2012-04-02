@@ -12,6 +12,20 @@ foreach ($clients as $cl) {
 	echo '>'.$cl->cl_name.'</option>';
 }
 echo '</select>';
+
+if ($curclient) {
+	echo ' Category: <select name="cat" onchange="document.clientlist.submit();" class="field">';
+	echo '<option value="0"';
+	if ($curcat == 0) echo ' SELECTED';
+	echo '>All</option>';
+	foreach ($cats as $cat) {
+		echo '<option value="'.$cat->cat_id.'"';
+		if ($curcat == $cat->cat_id) echo ' SELECTED';
+		echo '>'.$cat->cat_name.'</option>';
+	}
+	echo '</select>';
+}
+
 echo '<input type="hidden" name="task" value="setVar">';
 echo '</form>';
 }
