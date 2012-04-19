@@ -110,7 +110,7 @@ if (!$mod->hasContent($task)) {
 			?>
 		</div>
 		
-		<div id="copyright">&copy;2010-2011 Corona Productions</div>
+		<div id="copyright">&copy;2010-2012 Corona Productions</div>
 		
 	</div>
 	</body></html>

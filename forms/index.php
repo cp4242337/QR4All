@@ -1,6 +1,6 @@
 <?php
 /*
- * QR4All Forms 0.8
+ * QR4All Forms 0.9
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -185,7 +185,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 					$message->attach($attachment);
 				}
 				$body = $eml->eml_content;
-				$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.$pageinfo->ordering;
+				$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.($pageinfo->ordering+1);
 				$db->setQuery($qpp);
 				$prevpages = $db->loadResultArray();
 				if ($prevpages) {
@@ -194,6 +194,7 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 					$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$dataid.' ';
 					$qi .= 'ORDER BY i.ordering';	
 					$db->setQuery($qi);
+					
 					$items = $db->loadObjectList();
 					foreach ($items as $item) {
 						$answer = "";
@@ -332,13 +333,21 @@ if ($pageinfo->page_type=="form") {
 	$qi = 'SELECT * FROM qr4_formitems WHERE item_page = '.$pageinfo->page_id.' && published = 1 ORDER BY ordering';	
 	$db->setQuery($qi);
 	$items = $db->loadObjectList();
+	
+	echo '<div id="form">';
 	//show items
 	foreach ($items as $item) {
+		echo '<div class="form-row">';
 		//Question text if not a single checkbox
-		if ($item->item_type != 'cbx' && $item->item_type != 'hdn' ) {
-			echo '<strong>';
+		echo '<div class="form-row-title">';
+		if ($item->item_type != 'cbx' && $item->item_type != 'hdn' && $item->item_type != 'msg') {
 			echo $item->item_text;
-			echo '</strong><br>'."\n";
+		}
+		echo '</div>'."\n";
+		echo '<div class="form-row-field">';
+		
+		if ($item->item_type == 'msg') {
+			echo $item->item_text;
 		}
 		
 		//output checkbox
@@ -351,7 +360,7 @@ if ($pageinfo->page_type=="form") {
 			echo '>'.$item->item_text.'</label><br>'."\n";
 		}
 	
-		echo '<div id="m'.$item->item_id.'f"></div>';
+		
 		
 		//output radio select
 		if ($item->item_type == 'rad') {
@@ -456,10 +465,13 @@ if ($pageinfo->page_type=="form") {
 		if ($item->item_type == 'hdn') { 
 			echo '<input type="hidden" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" value="'.$item->item_text.'">';
 		}
-		
-		echo '<br>'."\n";
+		echo '</div>';
+		echo '<div class="form-row-msg">';
+		echo '<div id="m'.$item->item_id.'f"></div>';
+		echo '</div>';
+		echo '</div>';
 	}
-	
+	echo '<div style="clear:both;"></div></div>';	
 
 }
 
