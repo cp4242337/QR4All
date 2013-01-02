@@ -39,10 +39,12 @@ foreach ($forms as $c) {
 			if ($t->forms) {
 				echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
 				echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($t->forms).',\'cb\','.$count.');" /></th>';
+				if ($user->lvl_edit) echo '<th width="30">ID#</th>';
 				echo '<th width="250">Title</th><th width="250">Public Title</th><th>URL</th><th width="50"># Pages</th><th width="50">Total<br>Hits</th><th width="50">Total<br>Compl.</th><th width="300">Ops</th></tr>';
 				foreach ($t->forms as $d) { 
 					echo '<tr>';
 					echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="form[]" value="'.$d->form_id.'" onclick="isChecked(this.checked);"></td>';
+					if ($user->lvl_edit) echo '<td>'.$d->form_id.'&nbsp;</td>';
 					echo '<td>';
 					if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editform\')">'.$d->form_title.'</a>';
 					else echo $d->form_title;

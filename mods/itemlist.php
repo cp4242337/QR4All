@@ -67,6 +67,7 @@ class ItemList {
 		$item_page=JRequest::getInt('item_page',0);
 		$item_title=JRequest::getString('item_title');
 		$item_text= $this->db->getEscaped(JRequest::getVar( 'item_text', null, 'default', 'none', 2));
+		$item_hint= $this->db->getEscaped(JRequest::getVar( 'item_hint', null, 'default', 'none', 2));
 		$item_type=JRequest::getString('item_type');
 		$item_req=JRequest::getInt('item_req',0);
 		$item_confirm=JRequest::getInt('item_confirm',0);
@@ -79,8 +80,8 @@ class ItemList {
 		
 		if ($item_id == 0) {
 			$ordering=$this->getNextOrderNum($item_page);
-			$q  = 'INSERT INTO qr4_formitems (item_page,item_title,item_text,item_type,item_req,item_confirm,item_verify,item_verify_limit,item_verify_msg,item_depend_item,item_match_item,ordering) ';
-			$q .= 'VALUES ("'.$item_page.'","'.$item_title.'","'.$item_text.'","'.$item_type.'","'.$item_req.'","'.$item_confirm.'","'.$item_verify.'","';
+			$q  = 'INSERT INTO qr4_formitems (item_page,item_title,item_text,item_hint,item_type,item_req,item_confirm,item_verify,item_verify_limit,item_verify_msg,item_depend_item,item_match_item,ordering) ';
+			$q .= 'VALUES ("'.$item_page.'","'.$item_title.'","'.$item_text.'","'.$item_hint.'","'.$item_type.'","'.$item_req.'","'.$item_confirm.'","'.$item_verify.'","';
 			$q .= $item_verify_limit.'","'.$item_verify_msg.'","'.$item_depend_item.'","'.$item_match_item.'","'.$ordering.'")';
 			$this->db->setQuery($q); 
 			if (!$this->db->query()) { 
@@ -91,7 +92,7 @@ class ItemList {
 			}
 			$item_id=$this->db->insertid();
 		} else {
-			$q  = 'UPDATE qr4_formitems SET item_title="'.$item_title.'", item_text="'.$item_text.'", item_type="'.$item_type.'", item_req="'.$item_req.'", ';
+			$q  = 'UPDATE qr4_formitems SET item_title="'.$item_title.'", item_text="'.$item_text.'", item_hint="'.$item_hint.'", item_type="'.$item_type.'", item_req="'.$item_req.'", ';
 			$q .= 'item_confirm="'.$item_confirm.'", item_verify="'.$item_verify.'", item_verify_limit="'.$item_verify_limit.'", item_depend_item="'.$item_depend_item.'", ';
 			$q .= 'item_match_item="'.$item_match_item.'", item_verify_msg="'.$item_verify_msg.'" ';
 			$q .= 'WHERE item_id = '.$item_id;

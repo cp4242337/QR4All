@@ -1,6 +1,6 @@
 <?php
 /*
- * QR4All Forms 0.9
+ * QR4All Forms 0.9.2
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -281,6 +281,7 @@ echo '<div id="content">'."\n";
 // Page Content
 if ($pageinfo->page_type=="text" || $pageinfo->page_type=="form" || $pageinfo->page_type=="confirm") {
 	$pagecontent = $pageinfo->page_content;
+	$pagecontent = str_replace("{dataid}",$dataid,$pagecontent);
 	$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.$pageinfo->ordering;
 	$db->setQuery($qpp);
 	$prevpages = $db->loadResultArray();
@@ -344,7 +345,8 @@ if ($pageinfo->page_type=="form") {
 			echo $item->item_text;
 		}
 		echo '</div>'."\n";
-		echo '<div class="form-row-field">';
+		if ($item->item_type != 'msg') echo '<div class="form-row-field">';
+		else echo '<div class="form-row-message">';
 		
 		if ($item->item_type == 'msg') {
 			echo $item->item_text;
@@ -352,28 +354,29 @@ if ($pageinfo->page_type=="form") {
 		
 		//output checkbox
 		if ($item->item_type == 'cbx') {
-			echo '<label><input type="checkbox" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f"';
+			echo '<div class="form-radio"><input type="checkbox" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f"';
 			echo "class=\"msgPos:'m".$item->item_id."f'";
 			if ($item->item_req) echo ' validate-required-check';
 			echo '"';
 			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
-			echo '>'.$item->item_text.'</label><br>'."\n";
+			echo '><label for="i'.$item->item_id.'f">'.$item->item_text.'</label></div>'."\n";
 		}
 	
 		
 		
 		//output radio select
 		if ($item->item_type == 'rad') {
-			$query = 'SELECT * FROM qr4_formitems_opts WHERE opt_item = '.$item->item_id.' ORDER BY ordering ASC';
+			if ($item->item_verify_msg == "") $item->item_verify_msg = "Please select an answer";
+			$query = 'SELECT * FROM qr4_formitems_opts WHERE published = 1 && opt_item = '.$item->item_id.' ORDER BY ordering ASC';
 			$db->setQuery( $query );
 			$iopts = $db->loadObjectList();
 			$numopts=0;
 			echo '<span id="i'.$item->id.'list">'."\n";
 			foreach ($iopts as $opts) {
-				echo '<label><input type="radio" name="i'.$item->item_id.'f" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
+				echo '<div class="form-radio"><input type="radio" name="i'.$item->item_id.'f" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
 				if ($item->item_req && $numopts == 0) echo " class=\"msgPos:'m".$item->item_id."f' validate-reqchk-byname\"";
 				if ($item->item_verify_msg && $numopts == 0) echo ' title="'.$item->item_verify_msg.'"';
-				echo '>'.$opts->opt_text.'</label><br>'."\n";
+				echo '><label for="i'.$item->item_id.$numopts.'f">'.$opts->opt_text.'</label></div>'."\n";
 				$numopts++;
 			}
 			echo '</span>'."\n";
@@ -381,7 +384,7 @@ if ($pageinfo->page_type=="form") {
 	
 		//output dropdown select
 		if ($item->item_type == 'dds') {
-			$query = 'SELECT * FROM qr4_formitems_opts WHERE opt_item = '.$item->item_id.' ORDER BY ordering ASC';
+			$query = 'SELECT * FROM qr4_formitems_opts WHERE published = 1 && opt_item = '.$item->item_id.' ORDER BY ordering ASC';
 			$db->setQuery( $query );
 			$iopts = $db->loadObjectList();
 			$numopts=0;
@@ -401,16 +404,16 @@ if ($pageinfo->page_type=="form") {
 	
 		//output multi checkbox
 		if ($item->item_type == 'mcb') {
-			$query = 'SELECT * FROM qr4_formitems_opts WHERE opt_item = '.$item->item_id.' ORDER BY ordering ASC';
+			$query = 'SELECT * FROM qr4_formitems_opts WHERE published = 1 && opt_item = '.$item->item_id.' ORDER BY ordering ASC';
 			$db->setQuery( $query );
 			$iopts = $db->loadObjectList();
 			$numopts=0;
 			foreach ($iopts as $opts) {
-				echo '<label><input type="checkbox" name="i'.$item->item_id.'f[]" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
+				echo '<div class="form-radio"><input type="checkbox" name="i'.$item->item_id.'f[]" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
 				if ($item->item_req && $numopts ==0 && !$item->item_verify) echo " class=\"msgPos:'m".$item->item_id."f\'".' validate-reqchk-byname"';
 				if ($item->item_verify && $numopts == 0) echo " class=\"msgPos:'m".$item->item_id."f'".' checkAtLeast:'.$item->item_verify_limit.'"';
 				if ($item->item_verify_msg && $numopts == 0) echo ' title="'.$item->item_verify_msg.'"';
-				echo '>'.$opts->opt_text.'</label><br>'."\n";
+				echo '><label for="i'.$item->item_id.$numopts.'f">'.$opts->opt_text.'</label></div>'."\n";
 				$numopts++;
 			}
 		}
@@ -465,10 +468,15 @@ if ($pageinfo->page_type=="form") {
 		if ($item->item_type == 'hdn') { 
 			echo '<input type="hidden" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" value="'.$item->item_text.'">';
 		}
+		if ($item->item_hint) {
+			echo '<span class="form-row-hint">'.$item->item_hint.'</span>';
+		}
 		echo '</div>';
-		echo '<div class="form-row-msg">';
-		echo '<div id="m'.$item->item_id.'f"></div>';
-		echo '</div>';
+		if ($item->item_type != 'msg') {
+			echo '<div class="form-row-msg">';
+			echo '<div id="m'.$item->item_id.'f"></div>';
+			echo '</div>';
+		}
 		echo '</div>';
 	}
 	echo '<div style="clear:both;"></div></div>';	

@@ -3,14 +3,14 @@ CREATE TABLE IF NOT EXISTS `qr4_catcodes` (
   `catcd_cat` int(11) NOT NULL,
   `catcd_code` bigint(20) NOT NULL,
   PRIMARY KEY (`catcd_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `qr4_catforms` (
   `catform_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `catform_cat` int(11) NOT NULL,
   `catform_form` bigint(20) NOT NULL,
   PRIMARY KEY (`catform_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `qr4_cats` (
   `cat_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `qr4_catvids` (
   `catvid_cat` int(11) NOT NULL,
   `catvid_vid` bigint(20) NOT NULL,
   PRIMARY KEY (`catvid_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `qr4_clientcats` (
   `clcat_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `qr4_clientforms` (
   `clform_cl` int(11) NOT NULL,
   `clform_form` int(11) NOT NULL,
   PRIMARY KEY (`clform_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `qr4_clients` (
   `cl_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -55,14 +55,14 @@ CREATE TABLE IF NOT EXISTS `qr4_clients` (
   `cl_maxvids` int(11) NOT NULL,
   `cl_maxforms` int(11) NOT NULL,
   PRIMARY KEY (`cl_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `qr4_clientvids` (
   `clvid_id` int(11) NOT NULL AUTO_INCREMENT,
   `clvid_vid` int(11) NOT NULL,
   `clvid_client` int(11) NOT NULL,
   PRIMARY KEY (`clvid_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `qr4_codes` (
   `cd_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -77,10 +77,10 @@ CREATE TABLE IF NOT EXISTS `qr4_codes` (
 
 CREATE TABLE IF NOT EXISTS `qr4_domains` (
   `dom_id` int(11) NOT NULL AUTO_INCREMENT,
-  `dom_dom` varchar(255) CHARACTER SET latin1 NOT NULL,
-  `dom_type` enum('video','form','code','stream') COLLATE utf8_unicode_ci NOT NULL,
+  `dom_dom` varchar(255) NOT NULL,
+  `dom_type` enum('video','form','code','stream') NOT NULL,
   PRIMARY KEY (`dom_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `qr4_fhits` (
   `hit_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -139,6 +139,7 @@ CREATE TABLE IF NOT EXISTS `qr4_formitems` (
   `item_page` int(11) NOT NULL,
   `item_title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `item_text` text COLLATE utf8_unicode_ci NOT NULL,
+  `item_hint` text COLLATE utf8_unicode_ci NOT NULL,
   `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','phn','hdn') COLLATE utf8_unicode_ci NOT NULL,
   `item_req` tinyint(1) NOT NULL DEFAULT '0',
   `item_confirm` tinyint(1) NOT NULL DEFAULT '0',
@@ -169,7 +170,9 @@ CREATE TABLE IF NOT EXISTS `qr4_formpages` (
   `page_form` int(11) NOT NULL,
   `page_title` varchar(255) CHARACTER SET latin1 NOT NULL,
   `page_type` enum('text','form','confirm') CHARACTER SET latin1 NOT NULL,
-  `page_action` enum('next','submit','submitmail','none') CHARACTER SET latin1 NOT NULL,
+  `page_action` enum('next','submit','submitmail','none','reset','redirect') CHARACTER SET latin1 NOT NULL,
+  `page_actiontext` varchar(100) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Submit',
+  `page_redirurl` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `page_content` text CHARACTER SET latin1 NOT NULL,
   `ordering` int(11) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
@@ -213,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `qr4_formpages_emails_logs` (
 
 CREATE TABLE IF NOT EXISTS `qr4_forms` (
   `form_id` int(11) NOT NULL AUTO_INCREMENT,
-  `form_code` varchar(8) CHARACTER SET latin1 NOT NULL,
+  `form_code` varchar(16) CHARACTER SET latin1 NOT NULL,
   `form_title` varchar(255) CHARACTER SET latin1 NOT NULL,
   `form_publictitle` varchar(255) CHARACTER SET latin1 NOT NULL,
   `form_template` int(11) NOT NULL,
@@ -222,6 +225,7 @@ CREATE TABLE IF NOT EXISTS `qr4_forms` (
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   `form_header` text COLLATE utf8_unicode_ci NOT NULL,
   `form_body` text COLLATE utf8_unicode_ci NOT NULL,
+  `form_sessiontime` int(11) NOT NULL DEFAULT '30',
   PRIMARY KEY (`form_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -243,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `qr4_hits` (
   `hit_countrycode` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `hit_timezone` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`hit_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `qr4_menu` (
   `menu_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -261,6 +265,20 @@ CREATE TABLE IF NOT EXISTS `qr4_menu` (
   `published` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`menu_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `qr4_qa_questions` (
+  `qa_id` int(11) NOT NULL AUTO_INCREMENT,
+  `qa_form` int(11) NOT NULL,
+  `qa_data` int(11) NOT NULL,
+  `qa_who` varchar(255) NOT NULL,
+  `qa_whodetail` varchar(255) NOT NULL,
+  `qa_question` text NOT NULL,
+  `qa_published` tinyint(1) NOT NULL DEFAULT '0',
+  `qa_answered` tinyint(4) NOT NULL,
+  `qa_when` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `qa_order` int(11) NOT NULL,
+  PRIMARY KEY (`qa_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `qr4_sessions` (
   `username` varchar(150) DEFAULT '',
@@ -297,29 +315,29 @@ CREATE TABLE IF NOT EXISTS `qr4_userlvels` (
 CREATE TABLE IF NOT EXISTS `qr4_users` (
   `usr_id` int(3) NOT NULL AUTO_INCREMENT,
   `usr_name` varchar(60) CHARACTER SET latin1 NOT NULL,
-  `usr_fullname` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `usr_fullname` varchar(255) NOT NULL,
   `usr_email` varchar(60) CHARACTER SET latin1 NOT NULL,
   `usr_pass` text CHARACTER SET latin1 NOT NULL,
-  `usr_type` enum('trial','paid','ext','int','exp') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'int',
-  `usr_template` int(11) NOT NULL DEFAULT '1',
+  `usr_type` enum('trial','paid','ext','int','exp') NOT NULL DEFAULT 'int',
+  `usr_template` int(11) NOT NULL DEFAULT '8',
   `usr_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `usr_address1` varchar(555) COLLATE utf8_unicode_ci NOT NULL,
-  `usr_address2` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `usr_city` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `usr_state` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `usr_zip` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `usr_phone` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `usr_fax` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `usr_address1` varchar(555) NOT NULL,
+  `usr_address2` varchar(255) NOT NULL,
+  `usr_city` varchar(255) NOT NULL,
+  `usr_state` varchar(255) NOT NULL,
+  `usr_zip` varchar(255) NOT NULL,
+  `usr_phone` varchar(255) NOT NULL,
+  `usr_fax` varchar(255) NOT NULL,
   `usr_expdate` date NOT NULL,
   `usr_billamt` float NOT NULL,
   `usr_lastbilldate` datetime NOT NULL,
   `usr_nextbilldate` datetime NOT NULL,
-  `usr_paypalrpid` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `usr_paypalrpid` varchar(50) NOT NULL,
   `published` tinyint(1) NOT NULL DEFAULT '1',
   `usr_level` int(11) NOT NULL,
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`usr_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `qr4_usersclients` (
   `cu_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -346,47 +364,21 @@ CREATE TABLE IF NOT EXISTS `qr4_vhits` (
   `hit_countrycode` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `hit_timezone` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`hit_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `qr4_videos` (
   `vid_id` int(11) NOT NULL AUTO_INCREMENT,
-  `vid_title` varchar(100) CHARACTER SET latin1 NOT NULL,
-  `vid_file` varchar(255) CHARACTER SET latin1 NOT NULL,
-  `vid_code` varchar(20) CHARACTER SET latin1 NOT NULL,
+  `vid_title` varchar(100) NOT NULL,
+  `vid_file` varchar(255) NOT NULL,
+  `vid_code` varchar(20) NOT NULL,
   `vid_domain` int(11) NOT NULL DEFAULT '1',
-  `vid_ratio` enum('43','169') CHARACTER SET latin1 NOT NULL DEFAULT '169',
-  `vid_pubtitle` varchar(150) CHARACTER SET latin1 NOT NULL,
-  `vid_sdomain` int(11) NOT NULL,
-  `vid_tmpl` int(11) NOT NULL,
-  `vid_returl` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `vid_rettitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `vid_ratio` enum('43','169') NOT NULL DEFAULT '169',
+  `vid_pubtitle` varchar(150) NOT NULL,
+  `vid_returl` varchar(255) NOT NULL,
+  `vid_rettitle` varchar(255) NOT NULL,
+  `vid_tmpl` int(11) NOT NULL DEFAULT '1',
+  `vid_sdomain` int(11) NOT NULL DEFAULT '1',
   `published` tinyint(1) NOT NULL DEFAULT '1',
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`vid_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-INSERT INTO `qr4_menu` (`menu_id`, `menu_name`, `menu_mod`, `menu_task`, `menu_lvl`, `menu_int`, `menu_ext`, `menu_paid`, `menu_trial`, `menu_exp`, `menu_parent`, `ordering`, `published`) VALUES
-(1, 'Home', 'home', '', 'lvl_basic', 1, 1, 1, 1, 1, 0, 1, 1),
-(2, 'Codes', 'codelist', '', 'lvl_basic', 1, 1, 1, 1, 0, 0, 10, 1),
-(3, 'Users', 'users', '', 'lvl_root', 1, 0, 0, 0, 0, 11, 20, 1),
-(4, 'Clients', 'clients', '', 'lvl_admin', 1, 0, 0, 0, 0, 11, 30, 1),
-(5, 'Logout', 'users', 'logoutuser', 'lvl_basic', 1, 1, 1, 1, 1, 0, 1000, 1),
-(6, 'Cats', 'cats', '', 'lvl_edit', 1, 1, 1, 1, 0, 0, 40, 1),
-(7, 'Videos', 'vidlist', '', 'lvl_basic', 1, 1, 0, 0, 0, 0, 15, 1),
-(8, 'Forms', 'formlist', '', 'lvl_basic', 1, 1, 0, 0, 0, 0, 17, 1),
-(9, 'Templates', 'templates', '', 'lvl_admin', 1, 0, 0, 0, 0, 11, 50, 1),
-(10, 'My Account', 'users', 'myaccount', 'lvl_basic', 1, 1, 1, 1, 1, 0, 900, 0),
-(11, 'Admin', 'home', '', 'lvl_admin', 1, 0, 0, 0, 0, 0, 100, 1);
-
-INSERT INTO `qr4_templates` (`tmpl_id`, `tmpl_name`, `tmpl_url`, `tmpl_type`) VALUES
-(1, 'Default', 'admin.css', 'admin'),
-(2, 'Corona', 'corona.css', 'admin');
-
-INSERT INTO `qr4_userlvels` (`lvl_id`, `lvl_name`, `lvl_basic`, `lvl_edit`, `lvl_admin`, `lvl_root`, `lvl_order`) VALUES
-(1, 'Basic', 1, 0, 0, 0, 10),
-(2, 'Admin', 1, 1, 1, 0, 30),
-(3, 'Root', 1, 1, 1, 1, 100),
-(4, 'Editor', 1, 1, 0, 0, 20);
-
-INSERT INTO `qr4_users` (`usr_id`, `usr_name`, `usr_fullname`, `usr_email`, `usr_pass`, `usr_type`, `usr_template`, `usr_created`, `usr_address1`, `usr_address2`, `usr_city`, `usr_state`, `usr_zip`, `usr_phone`, `usr_fax`, `usr_expdate`, `usr_billamt`, `usr_lastbilldate`, `usr_nextbilldate`, `usr_paypalrpid`, `published`, `usr_level`, `trashed`) VALUES
-(12, 'root', 'Root User', 'mamundsen@coronapro.com', '33beb5939f8b799a102a9d5c9e698a6a', 'int', 1, '0000-00-00 00:00:00', '', '', '', '', '', '', '', '0000-00-00', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '', 1, 3, 0);
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
