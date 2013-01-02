@@ -106,11 +106,11 @@ if (!$mod->hasContent($task)) {
 				}
 				echo 'IP: '.$_SERVER['REMOTE_ADDR']; 
 				echo ' | '.date("Y-m-d H:i:s"); 
-				echo ' | v0.9.1';
+				echo ' | v0.9.2';
 			?>
 		</div>
 		
-		<div id="copyright">&copy;2010-2012 Corona Productions</div>
+		<div id="copyright">&copy;2010-2013 Corona Productions</div>
 		
 	</div>
 	</body></html>
