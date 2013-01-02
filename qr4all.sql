@@ -382,3 +382,19 @@ CREATE TABLE IF NOT EXISTS `qr4_videos` (
   `trashed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`vid_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+INSERT INTO `qr4_menu` (`menu_id`, `menu_name`, `menu_mod`, `menu_task`, `menu_lvl`, `menu_int`, `menu_ext`, `menu_paid`, `menu_trial`, `menu_exp`, `menu_parent`, `ordering`, `published`) VALUES
+59		(1, 'Home', 'home', '', 'lvl_basic', 1, 1, 1, 1, 1, 0, 1, 1),
+60		(2, 'Codes', 'codelist', '', 'lvl_basic', 1, 1, 1, 1, 0, 0, 10, 1),
+61		(3, 'Users', 'users', '', 'lvl_root', 1, 0, 0, 0, 0, 11, 20, 1),
+62		(4, 'Clients', 'clients', '', 'lvl_admin', 1, 0, 0, 0, 0, 11, 30, 1),
+63		(5, 'Logout', 'users', 'logoutuser', 'lvl_basic', 1, 1, 1, 1, 1, 0, 1000, 1),
+64		(6, 'Cats', 'cats', '', 'lvl_edit', 1, 1, 1, 1, 0, 0, 40, 1),
+65		(7, 'Videos', 'vidlist', '', 'lvl_basic', 1, 1, 0, 0, 0, 0, 15, 1),
+66		(8, 'Forms', 'formlist', '', 'lvl_basic', 1, 1, 0, 0, 0, 0, 17, 1),
+67		(9, 'Templates', 'templates', '', 'lvl_admin', 1, 0, 0, 0, 0, 11, 50, 1),
+68		(10, 'My Account', 'users', 'myaccount', 'lvl_basic', 1, 1, 1, 1, 1, 0, 900, 0),
+69		(11, 'Admin', 'home', '', 'lvl_admin', 1, 0, 0, 0, 0, 0, 100, 1);
+
+INSERT INTO `qr4_users` (`usr_id`, `usr_name`, `usr_fullname`, `usr_email`, `usr_pass`, `usr_type`, `usr_template`, `usr_created`, `usr_address1`, `usr_address2`, `usr_city`, `usr_state`, `usr_zip`, `usr_phone`, `usr_fax`, `usr_expdate`, `usr_billamt`, `usr_lastbilldate`, `usr_nextbilldate`, `usr_paypalrpid`, `published`, `usr_level`, `trashed`) VALUES
+(12, 'admin', 'Administrator', 'name@domain.com', '33beb5939f8b799a102a9d5c9e698a6a', 'int', 8, '0000-00-00 00:00:00', '', '', '', '', '', '', '', '0000-00-00', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '', 1, 3, 0);
