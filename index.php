@@ -1,6 +1,6 @@
 <?php 
 /*
- * QR4All 0.9.2
+ * QR4All 0.9.3
  * Liscensed under GPLv2
  * (C) Corona Productions
  */

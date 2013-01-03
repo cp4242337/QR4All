@@ -660,6 +660,7 @@ class FormList {
 					case "eml":
 					case "phn":
 					case "hdn":
+					case "dob":
 						$d->$ans = $a->ans_answer;
 						break;
 					case "rad":

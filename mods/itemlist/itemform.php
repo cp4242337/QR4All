@@ -15,6 +15,7 @@ echo '<option value="dds"'; if ("dds" == $iteminfo->item_type) echo ' selected';
 echo '<option value="eml"'; if ("eml" == $iteminfo->item_type) echo ' selected'; echo '>EMail Address</option>';
 echo '<option value="phn"'; if ("phn" == $iteminfo->item_type) echo ' selected'; echo '>Phone Number</option>';
 echo '<option value="hdn"'; if ("hdn" == $iteminfo->item_type) echo ' selected'; echo '>Hidden</option>';
+echo '<option value="dob"'; if ("dob" == $iteminfo->item_type) echo ' selected'; echo '>DOB MMDD</option>';
 
 ?></select></td></tr>
 <tr><td align="right" class="ftitle">Required:</td><td class="ffield">

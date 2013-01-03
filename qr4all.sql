@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `qr4_formitems` (
   `item_title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `item_text` text COLLATE utf8_unicode_ci NOT NULL,
   `item_hint` text COLLATE utf8_unicode_ci NOT NULL,
-  `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','phn','hdn') COLLATE utf8_unicode_ci NOT NULL,
+  `item_type` enum('msg','txt','tbx','eml','rad','mcb','cbx','dds','phn','hdn','dob') COLLATE utf8_unicode_ci NOT NULL,
   `item_req` tinyint(1) NOT NULL DEFAULT '0',
   `item_confirm` tinyint(1) NOT NULL DEFAULT '0',
   `item_verify` tinyint(1) NOT NULL DEFAULT '0',

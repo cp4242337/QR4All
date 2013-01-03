@@ -1,6 +1,6 @@
 <?php
 /*
- * QR4All Forms 0.9.2
+ * QR4All Forms 0.9.3
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -145,6 +145,13 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 				case "mcb":
 					$answer = implode(" ",JRequest::getVar("i".$item->item_id."f",""));
 					break;
+				case "dob":
+					$fmonth = $db->getEscaped(JRequest::getInt("i".$item->item_id."f",""));
+					$fday = $db->getEscaped(JRequest::getInt("i".$item->item_id."f_day",""));
+					if ($fmonth < 10) $fmonth = "0".$fmonth;
+					if ($fday < 10) $fday = "0".$fday;
+					$answer = $fmonth.$fday;
+					break;
 			}
 			if ($item->item_type != 'msg') {
 				$qia = 'INSERT INTO qr4_formdata_answers (ans_data,ans_question,ans_answer) VALUES ('.$dataid.','.$item->item_id.',"'.$answer.'")';
@@ -264,8 +271,11 @@ echo '<head><title>'.$title.'</title>'."\n";
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'."\n"; 
 echo $forminfo->form_header."\n";
 echo '<link rel="stylesheet" href="'.$forminfo->tmpl_url.'" type="text/css" />'."\n";
-echo '<script type="text/javascript" src="scripts/mootools.js"></script>'."\n";
-echo '<script type="text/javascript" src="scripts/mootools-more.js"></script>'."\n";
+echo '<script src="scripts/jquery.js" type="text/javascript"></script>'."\n";
+echo '<script src="scripts/jquery.validate.js" type="text/javascript"></script>'."\n";
+echo '<script src="scripts/additional-methods.js" type="text/javascript"></script>'."\n";
+echo '<script src="scripts/jquery.metadata.js" type="text/javascript"></script>'."\n";
+echo '<script src="scripts/jquery.simplemodal.js" type="text/javascript"></script>'."\n";
 echo '</head>'."\n";
 if ($forminfo->form_body) echo '<body '.$forminfo->form_body.'>'."\n";
 else echo '<body>'."\n";
@@ -299,6 +309,7 @@ if ($pageinfo->page_type=="text" || $pageinfo->page_type=="form" || $pageinfo->p
 				case "tbx":
 				case "eml":
 				case "phn":
+				case "dob":
 					$answer = $item->ans_answer;
 					break;
 				case "rad":
@@ -355,11 +366,25 @@ if ($pageinfo->page_type=="form") {
 		//output checkbox
 		if ($item->item_type == 'cbx') {
 			echo '<div class="form-radio"><input type="checkbox" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f"';
-			echo "class=\"msgPos:'m".$item->item_id."f'";
-			if ($item->item_req) echo ' validate-required-check';
-			echo '"';
-			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
-			echo '><label for="i'.$item->item_id.'f">'.$item->item_text.'</label></div>'."\n";
+			if ($item->item_req) {
+				echo ' validate="{';
+				if (!$item->item_depend_item) echo 'required:true';
+				else {
+					echo 'required: function(element) { var met=false; '; 
+					foreach ($dependables[$item->item_depend_item] as $di) { 
+						if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+						else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+					}
+     				echo ' return met; }';
+				}
+				echo ', messages:{required:\'';
+				if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+				else echo "Required";
+				echo '\'}}"';
+			}
+			echo ' />'."\n";
+			
+			echo '<label for="i'.$item->item_id.'f">'.$item->item_text.'</label></div>'."\n";
 		}
 	
 		
@@ -370,16 +395,36 @@ if ($pageinfo->page_type=="form") {
 			$query = 'SELECT * FROM qr4_formitems_opts WHERE published = 1 && opt_item = '.$item->item_id.' ORDER BY ordering ASC';
 			$db->setQuery( $query );
 			$iopts = $db->loadObjectList();
+			$first=true;
 			$numopts=0;
-			echo '<span id="i'.$item->id.'list">'."\n";
 			foreach ($iopts as $opts) {
 				echo '<div class="form-radio"><input type="radio" name="i'.$item->item_id.'f" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
-				if ($item->item_req && $numopts == 0) echo " class=\"msgPos:'m".$item->item_id."f' validate-reqchk-byname\"";
-				if ($item->item_verify_msg && $numopts == 0) echo ' title="'.$item->item_verify_msg.'"';
+				if ($item->item_req && $first) {
+					echo ' validate="{';
+					if (!$item->item_depend_item) echo 'required:true';
+					else {
+						echo 'required: function(element) { var met=false; '; 
+						foreach ($dependables[$item->item_depend_item] as $di) { 
+							if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+							else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+						}
+	     				echo ' return met; }';
+					}
+					echo ', messages:{required:\'';
+					if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+					else echo "Required";
+					echo '\'}}"'; 
+					$first=false;
+				}
 				echo '><label for="i'.$item->item_id.$numopts.'f">'.$opts->opt_text.'</label></div>'."\n";
+				if ($opts->opt_depend) {
+					$dependables[$item->item_id][$numopts]->num=$numopts; 
+					$dependables[$item->item_id][$numopts]->id=$opts->opt_id;
+					$dependables[$item->item_id][$numopts]->type="rad";
+				}
 				$numopts++;
 			}
-			echo '</span>'."\n";
+			echo "\n";
 		}
 	
 		//output dropdown select
@@ -388,18 +433,36 @@ if ($pageinfo->page_type=="form") {
 			$db->setQuery( $query );
 			$iopts = $db->loadObjectList();
 			$numopts=0;
-			echo '<select name="i'.$item->item_id.'f"  id="i'.$item->item_id.'f" class="inputfield';
-			echo " msgPos:'m".$item->item_id."f'";
-			if ($item->item_req) echo ' required';
-			echo '"';
-			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
+			echo '<div class="form-field"><select name="i'.$item->item_id.'f"  id="i'.$item->item_id.'f" class="inputfield"';
+			
+			if ($item->item_req) {
+				echo ' validate="{';
+				if (!$item->item_depend_item) echo 'required:true';
+				else {
+					echo 'required: function(element) { var met=false; '; 
+					foreach ($dependables[$item->item_depend_item] as $di) { 
+						if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+						else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+					}
+     				echo ' return met; }';
+				}
+				echo ', messages:{required:\'';
+				if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+				else echo "Required";
+				echo '\'}}"';
+			}
 			echo '>'."\n";
 			foreach ($iopts as $opts) {
 				echo '<option value="'.$opts->opt_id.'"';
 				echo '>'.$opts->opt_text.'</option>'."\n";
+				if ($opts->opt_depend) {
+					$dependables[$item->item_id][$numopts]->num=$numopts; 
+					$dependables[$item->item_id][$numopts]->id=$opts->opt_id;
+					$dependables[$item->item_id][$numopts]->type="dds";
+				}
 				$numopts++;
 			}
-			echo '</select><br>'."\n";
+			echo '</select></div>'."\n";
 		}
 	
 		//output multi checkbox
@@ -407,63 +470,157 @@ if ($pageinfo->page_type=="form") {
 			$query = 'SELECT * FROM qr4_formitems_opts WHERE published = 1 && opt_item = '.$item->item_id.' ORDER BY ordering ASC';
 			$db->setQuery( $query );
 			$iopts = $db->loadObjectList();
+			$first=true;
 			$numopts=0;
 			foreach ($iopts as $opts) {
 				echo '<div class="form-radio"><input type="checkbox" name="i'.$item->item_id.'f[]" id="i'.$item->item_id.$numopts.'f" value="'.$opts->opt_id.'"';
-				if ($item->item_req && $numopts ==0 && !$item->item_verify) echo " class=\"msgPos:'m".$item->item_id."f\'".' validate-reqchk-byname"';
-				if ($item->item_verify && $numopts == 0) echo " class=\"msgPos:'m".$item->item_id."f'".' checkAtLeast:'.$item->item_verify_limit.'"';
-				if ($item->item_verify_msg && $numopts == 0) echo ' title="'.$item->item_verify_msg.'"';
+				if ($item->item_req && $first) {
+					echo ' validate="{';
+					if (!$item->item_depend_item) echo 'required:true';
+					else {
+						echo 'required: function(element) { var met=false; '; 
+						foreach ($dependables[$item->item_depend_item] as $di) { 
+							if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+							else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+						}
+	     				echo ' return met; }';
+					}
+					if ($item->item_verify_limit) echo ', minlength:'.$item->item_verify_limit;
+					echo ', messages:{required:\'';
+					if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+					else echo "Required";
+					echo '\'';
+					if ($item->item_verify_limit) echo ', minlength:\'Select at least '.$item->item_verify_limit.'\'';
+					echo '}}"';
+					$first=false;
+				}
 				echo '><label for="i'.$item->item_id.$numopts.'f">'.$opts->opt_text.'</label></div>'."\n";
+				if ($opts->opt_depend) {
+					$dependables[$item->item_id][$numopts]->num=$numopts; 
+					$dependables[$item->item_id][$numopts]->id=$opts->opt_id;
+					$dependables[$item->item_id][$numopts]->type="mcb";
+				}
 				$numopts++;
 			}
 		}
 	
 		//output text field
-		if ($item->item_type == 'txt') { 
-			echo '<input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield';
-			echo " msgPos:'m".$item->item_id."f'";
-			if ($item->item_verify && !$item->item_match_item) echo ' minLength:'.(int)$item->item_verify_limit;
-			if ($item->item_req && !$item->item_match_item) echo ' required';
-			if ($item->item_verify && $item->item_match_item) echo " required-with validate-match matchInput:'i".$item->item_match_item."f'";
-			echo '"';
+		if ($item->item_type == 'txt' || $item->item_type == 'eml' || $item->item_type == 'phn') { 
+			echo '<div class="form-field"><input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield"';
+			
+			if ($item->item_req) {
+				echo ' validate="{';
+				if (!$item->item_depend_item) echo 'required:true';
+				else {
+					echo 'required: function(element) { var met=false; '; 
+					foreach ($dependables[$item->item_depend_item] as $di) { 
+						if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+						else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+					}
+     				echo ' return met; }';
+				}
+				if ($f->uf_min) echo ', minlength:'.(int)$item->item_verify_limit;
+				if ($item->item_type == 'eml') echo ', email:true';
+				if ($item->item_type == 'phn') echo ', phoneUS:true';
+				if ($item->item_match_item) echo ', equalTo: \'#i'.$item->item_match_item.'f\'';
+				echo ', messages:{required:\'';
+				if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+				else echo "Required";
+				echo '\'';
+				if ($item->item_verify_limit) echo ', minlength:\'Min length '.$item->item_verify_limit.' characters\'';
+				if ($item->item_type == 'eml') echo ', email:\'Email address must be valid\'';
+				if ($item->item_type == 'phn') echo ', phoneUS:\'US Phone Number Required\'';
+				if ($item->item_match_item) echo ', equalTo: \'Fields must match\'';
+				echo '}}"';
+			}
 			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
-			echo '><br>'."\n"; 
+			echo '></div>'."\n"; 
 		}
 	
 		//output text box
 		if ($item->item_type == 'tbx') { 
-			echo '<textarea cols="60" rows="3" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputbox';
-			echo " msgPos:'m".$item->item_id."f'";
-			if ($item->item_req) echo ' required';
-			echo '"';
-			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
-			echo '></textarea><br>'."\n"; 
+			echo '<div class="form-field"><textarea cols="60" rows="3" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputbox"';
+			if ($item->item_req) {
+				echo ' validate="{';
+				if (!$item->item_depend_item) echo 'required:true';
+				else {
+					echo 'required: function(element) { var met=false; '; 
+					foreach ($dependables[$item->item_depend_item] as $di) { 
+						if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+						else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+					}
+     				echo ' return met; }';
+				}
+				echo ', messages:{required:\'';
+				if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+				else echo "Required";
+				echo '\'}}"';
+			}
+			echo '></textarea></div>'."\n"; 
 		}
 	
-		//output email field
-		if ($item->item_type == 'eml') { 
-			echo '<input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield';
-			echo " msgPos:'m".$item->item_id."f'";
-			if ($item->item_verify && !$item->item_match_item) echo ' validate-email';
-			if ($item->item_req && !$item->item_match_item) echo ' required';
-			if ($item->item_verify && $item->item_match_item) echo " required-with validate-match matchInput:'i".$item->item_match_item."f'";
-			echo '"';
-			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
-			echo '><br>'."\n";
+		//Birthday
+		if ($item->item_type == 'dob') {
+			$selected = ' selected="selected"';
+			echo '<div class="form-field"><select id="i'.$item->item_id.'f" name="i'.$item->item_id.'f" class="inputmonth"';
+			if ($item->item_req) {
+				echo ' validate="{';
+				if (!$item->item_depend_item) echo 'required:true';
+				else {
+					echo 'required: function(element) { var met=false; '; 
+					foreach ($dependables[$item->item_depend_item] as $di) { 
+						if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+						else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+					}
+     				echo ' return met; }';
+				}
+				echo ', messages:{required:\'';
+				if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+				else echo "Month Required";
+				echo '\'}}"';
+			}
+			echo '>';
+			echo '<option value="">- Select Month -</option>';
+			echo '<option value="01">01 - January</option>';
+			echo '<option value="02">02 - February</option>';
+			echo '<option value="03">03 - March</option>';
+			echo '<option value="04">04 - April</option>';
+			echo '<option value="05">05 - May</option>';
+			echo '<option value="06">06 - June</option>';
+			echo '<option value="07">07 - July</option>';
+			echo '<option value="08">08 - August</option>';
+			echo '<option value="09">09 - September</option>';
+			echo '<option value="10">10 - October</option>';
+			echo '<option value="11">11 - November</option>';
+			echo '<option value="12">12 - December</option>';
+			echo '</select>';
+			echo '<select id="i'.$item->item_id.'f_day" name="i'.$item->item_id.'f_day" class="inputday"';
+			if ($item->item_req) {
+				echo ' validate="{';
+				if (!$item->item_depend_item) echo 'required:true';
+				else {
+					echo 'required: function(element) { var met=false; '; 
+					foreach ($dependables[$item->item_depend_item] as $di) { 
+						if ($di->type=="dds") echo 'if (jQuery(\'#i'.$item->item_depend_item.'f\').val() == '.$di->id.') met=true; ';
+						else  echo 'if (jQuery(\'#i'.$item->item_depend_item.$di->num.'f:checked\').val()) met=true; ';
+					}
+     				echo ' return met; }';
+				}
+				echo ', messages:{required:\'';
+				if ($item->item_verify_msg) echo addslashes($item->item_verify_msg);
+				else echo "Day Required";
+				echo '\'}}"';
+			}
+			echo '>';
+			echo '<option value="">- Select Day -</option>';
+			for ($i=1;$i<=31;$i++) {
+				if ($i<10) $val = "0".$i;
+				else $val=$i;
+				echo '<option value="'.$val.'">'.$val.'</option>';
+			}
+			echo '</select></div>';
 		}
-	
-		//output phone field
-		if ($item->item_type == 'phn') { 
-			echo '<input type="text" size="40" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" class="inputfield';
-			echo " msgPos:'m".$item->item_id."f'";
-			if ($item->item_verify && !$item->item_match_item) echo ' validate-digits';
-			if ($item->item_req && !$item->item_match_item) echo ' required';
-			if ($item->item_verify && $item->item_match_item) echo " required-with validate-match matchInput:'i".$item->item_match_item."f'";
-			echo '"';
-			if ($item->item_verify_msg) echo ' title="'.$item->item_verify_msg.'"';
-			echo '><br>'."\n";
-		}
-	
+		
 		//output hidden field
 		if ($item->item_type == 'hdn') { 
 			echo '<input type="hidden" name="i'.$item->item_id.'f" id="i'.$item->item_id.'f" value="'.$item->item_text.'">';
@@ -474,7 +631,7 @@ if ($pageinfo->page_type=="form") {
 		echo '</div>';
 		if ($item->item_type != 'msg') {
 			echo '<div class="form-row-msg">';
-			echo '<div id="m'.$item->item_id.'f"></div>';
+			
 			echo '</div>';
 		}
 		echo '</div>';
@@ -548,41 +705,19 @@ if ($pageinfo->page_action != 'none') {
 	echo '</form>'."\n";
 	?>
 <script type="text/javascript">
-	window.addEvent('load', function() {
-	
-		new Form.Validator.Inline($('qr4form'), {
-			stopOnFailure: true,
-			useTitles: true,
-			errorPrefix: "",
-			onFormValidate: function(passed, form, event) {
-				if (passed) {
-					form.submit();
-				}
-			}
-		});
+	jQuery(document).ready(function() {
+		jQuery.metadata.setType("attr", "validate");
+		jQuery("#qr4form").validate({
+			errorClass:"validation-advice",
+			validClass:"validation-good",
+			errorPlacement: function(error, element) {
+		    	error.appendTo( element.parent("div").parent("div").next("div") );
+		    }
+	    });
+
 	});
 
-	FormValidator.add('required-with', {
-		test: function(element,props) {
-			if (!element.value && document.id(props.matchInput).get('value')) { return false; }
-			else return true;
-		}
-	});
 
-	FormValidator.add('checkAtLeast', {
-		errorMsg: function(element, props){
-			return props.useTitle ? element.get('title') : "Check at least "+props.checkAtLeast+" items";
-			},
-		test: function(element,props) {
-			var grpName = props.groupName || element.get('name');
-			var atleast = props.checkAtLeast;
-			var checked = $$(document.getElementsByName(grpName)).filter(function(item, index){
-				return item.checked;
-			});
-			if (checked.length >= atleast) return true;
-			else return false;
-		} 
-	});
 </script>
 	<?php 
 }
