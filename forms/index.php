@@ -1,6 +1,6 @@
 <?php
 /*
- * QR4All Forms 0.9.3
+ * QR4All Forms 0.9.4
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -170,12 +170,12 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 		$emldata = $db->loadObjectList();
 		foreach ($emldata as $eml) {
 			//get to name and address
-			$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.$eml->eml_toaddr;
-			$db->setQuery($qte);
-			$toaddr = $db->loadResult();
-			$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.$eml->eml_toname;
-			$db->setQuery($qte);
-			$toname = $db->loadResult();
+			//$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.(int)$eml->eml_toaddr;
+			//$db->setQuery($qte);
+			$toaddr = $eml->eml_toaddr; //$db->loadResult();
+			//$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.(int)$eml->eml_toname;
+			//$db->setQuery($qte);
+			$toname = $eml->eml_toname;//$db->loadResult();
 			if ($toaddr) {
 				$mailer = Swift_Mailer::newInstance($transport);
 				$logger = new Swift_Plugins_Loggers_ArrayLogger();
@@ -183,7 +183,6 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 				$message = Swift_Message::newInstance();
 				$message->setSubject($eml->eml_subject);
 				$message->setFrom(array($eml->eml_fromaddr => $eml->eml_fromname));
-				$message->setTo(array($toaddr => $toname));
 				$dba = 'SELECT * FROM qr4_formpages_emails_attach WHERE at_email = '.$eml->eml_id;
 				$db->setQuery($dba);
 				$atlist = $db->loadObjectList();
@@ -229,8 +228,11 @@ if ($pagesub=JRequest::getVar("pagesubmit",0)) {
 								
 						}
 						$body = str_replace("{i".$item->item_id."}",$answer,$body);
+						$toaddr = str_replace("{i".$item->item_id."}",$answer,$toaddr);
+						$toname = str_replace("{i".$item->item_id."}",$answer,$toname);
 					}
 				}
+				$message->setTo(array($toaddr => $toname));
 				$message->setBody($body,'text/html');
 				$mailer->send($message);
 				$dbl = 'INSERT INTO qr4_formpages_emails_logs (log_eml,log_msg) VALUES ("'.$eml->eml_id.'","'.$db->getEscaped($logger->dump()).'")';

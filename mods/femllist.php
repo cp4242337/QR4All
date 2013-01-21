@@ -68,8 +68,8 @@ class FEmlList {
 		$eml_page=JRequest::getInt('eml_page',0);
 		$eml_fromname=JRequest::getString('eml_fromname');
 		$eml_fromaddr=JRequest::getString('eml_fromaddr');
-		$eml_toname=JRequest::getInt('eml_toname',0);
-		$eml_toaddr=JRequest::getInt('eml_toaddr',0);
+		$eml_toname=JRequest::getString('eml_toname');
+		$eml_toaddr=JRequest::getString('eml_toaddr');
 		$eml_subject=JRequest::getString('eml_subject');
 		$eml_content= $this->db->getEscaped(JRequest::getVar( 'eml_content', null, 'default', 'none', 2));
 		$eml_form=JRequest::getInt('eml_form',0);
