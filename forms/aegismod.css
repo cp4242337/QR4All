@@ -1,0 +1,72 @@
+body { 
+	font-family: "Arial","Helvetica",sans-serif; 
+	font-size: 12px; 	
+	background-color: #01223f;
+	margin: 0 auto;
+	padding: 10px; }
+
+#wrapper {
+	margin: 0 auto;
+	padding:0;
+}
+#header {
+	width: 950px;
+	height: 10px;
+	margin: 0 auto;
+	padding: 0;
+	background: #ffffff;
+	border-top: 2px solid #000000;
+	border-left: 2px solid #000000;
+	border-right: 2px solid #000000;
+}
+#content {
+	width: 910px;
+	padding: 5px 20px;
+	margin: 0 auto;
+	background: #ffffff;
+	border-left: 2px solid #000000;
+	border-right: 2px solid #000000;
+}
+#footer {
+	width: 950px;
+	height: 20px;
+	margin: 0 auto;
+	padding: 0;
+	background: #ffffff;
+	border-left: 2px solid #000000;
+	border-right: 2px solid #000000;
+	border-bottom: 2px solid #000000;
+}
+a { color: #000080; }
+a.button,a.buttons { font-size: 11px; }
+.validation-advice { color: #800000; font-size:10px; font-weight:bold;line-height:16px;padding: 3px 5px 3px 3px;}
+.inputbox, .inputfield { width: 260px; border: 1px solid #777777;font-size:12px; -webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;}
+.button,.buttons { 
+	text-align:center;display:inline-block;width:40px;text-decoration: none; margin: 0 5px; padding: 2px 3px; background-color: #013765; border: 1px solid #025faf;font-size: 11px; color: #ffffff;
+}
+.button:hover, .buttons:hover { background-color: #215785; }
+span.ibutton,span.ibuttons { font-size: 11px; }
+.ibutton, .ibuttons { 
+	text-align:center;display:inline-block;width:40px;text-decoration: none; margin: 0 5px; padding: 2px 3px; background-color: #222222; border: 1px solid #025faf;font-size: 11px; color: #888888;
+}
+.number {font-size: 24px; line-height:40px; padding-right:10px;font-weight:bold;}
+#page-action { text-align:center; width:100%; }
+
+#form { width:840px; padding:0 0 10px 0; margin: 0 auto; }
+.form-row {clear:both; float:left; width:100%;  padding:0; margin: 0 auto;}
+.form-row-title { font-weight:bold; float:left; width:260px; text-align:right; padding: 3px 5px 3px 3px; font-size:12px; line-height:16px;}
+.form-row-field {float:left; width: 270px; text-align:left; padding: 3px 3px 3px 5px; font-size:12px;}
+.form-row-error { font-weight:bold; float:left; width:290px; text-align:left; padding: 3px 5px 3px 3px;  font-size:10px;line-height:16px;}
+.editfield { width: 830px; border: 1px solid #2a472a; font-size: 14px;height:100px;margin-bottom:10px;}
+
+.mod-question { float:left; width: 880px; padding: 10px 4px 10px 4px; margin: 0 auto; border-bottom: 1px dotted #000000; }
+.mod-question:hover { background:#edf6fc; }
+.mod-question-content {width: 490px; float:left; }
+.mod-question-actions {width: 360px; float: right;padding: 4px;text-align:right;}
+.mod-question-actions a { }
+.mod-question-actions a:hover {}
+.published {color: #008000;}
+.unpublished {color: #800000;}
+.answered {color: #000080;}
+.useragent {font-size:10px;color:#777777;}
+li { font-size: 16px; }

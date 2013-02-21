@@ -44,7 +44,7 @@ foreach ($forms as $c) {
 				foreach ($t->forms as $d) { 
 					echo '<tr>';
 					echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="form[]" value="'.$d->form_id.'" onclick="isChecked(this.checked);"></td>';
-					if ($user->lvl_edit) echo '<td>'.$d->form_id.'&nbsp;</td>';
+					if ($user->lvl_edit) echo '<td>'.$d->form_id.'</td>';
 					echo '<td>';
 					if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editform\')">'.$d->form_title.'</a>';
 					else echo $d->form_title;

@@ -40,6 +40,7 @@ class OptList {
 		if ($task == 'display') {
 			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=optlist&task=addopt&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'&item='.JRequest::getInt('item',0).'">Add Option</a></li>';
+				echo '<li><a href="#" onclick="allTask(\'copyOpt\');">Copy</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 			}
@@ -99,6 +100,37 @@ class OptList {
 		$app->redirect();
 		
 	}
+	
+	function copyOpt() {
+		global $app;
+		$cids = JRequest::getVar( 'opt', array(0), 'post', 'array' );
+		$form = JRequest::getInt( 'form', 0 );
+		$page = JRequest::getInt( 'page', 0 );
+		$item = JRequest::getInt( 'item', 0 );
+		foreach ($cids as $c) {
+			$q = 'SELECT * FROM qr4_formitems_opts WHERE opt_id = '.$c;
+			$this->db->setQuery($q);
+			$info = $this->db->loadObject();
+			
+			$ordering=$this->getNextOrderNum($item);
+			$q  = 'INSERT INTO qr4_formitems_opts (opt_item,opt_text,opt_depend,ordering,trashed,published) ';
+			$q .= 'VALUES ("'.$info->opt_item.'","'.$this->db->getEscaped($info->opt_text).'","'.$info->opt_depend.'","'.$ordering.'","'.$info->trashed.'","'.$info->published.'")';
+			$this->db->setQuery($q); 
+			if (!$this->db->query()) { 
+				$app->setError($this->db->getErrorMsg(), 'error'); 
+				$app->setRedirect('optlist','display','&form='.$form.'&page='.$page.'&item='.$item); 
+				$app->redirect();
+				return 0;
+			}
+			$opt_id=$this->db->insertid();
+		}
+		$app->setError('Option(s) Copied', 'message');
+		$app->setRedirect('optlist','display','&form='.$form.'&page='.$page.'&item='.$item);  
+		$app->redirect();
+		
+	}
+	
+	
 	
 	function getNextOrderNum($item) {
 		$q='SELECT ordering FROM qr4_formitems_opts WHERE opt_item = '.$item.' ORDER BY ordering DESC LIMIT 1';

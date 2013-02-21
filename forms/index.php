@@ -1,6 +1,6 @@
 <?php
 /*
- * QR4All Forms 0.9.4
+ * QR4All Forms 0.9.5
  * Liscensed under GPLv2
  * (C) Corona Productions
  */
@@ -75,7 +75,7 @@ if (!$storage->load($session->getId())) { //if not set up cookie and sessin id
 	} catch (Browscap_Exception $exp) {
 	}
 	$ipaddr=$_SERVER['REMOTE_ADDR'];
-	$ipinfodb = new ipinfodb;
+	/*$ipinfodb = new ipinfodb;
 	$ipinfodb->setKey('81352021746a636eadfd91bb40315d2846de4ae57fe07fbbc88f84a871d24b7f');
 	$locations = $ipinfodb->getGeoLocation($ipaddr);
 	$errors = $ipinfodb->getError();
@@ -87,7 +87,7 @@ if (!$storage->load($session->getId())) { //if not set up cookie and sessin id
 		$country=$locations['CountryName'];
 		$countrycode=$locations['CountryCode'];
 		$timezone=$locations['TimezoneName'];
-	}
+	}*/
 	$qh  = 'INSERT INTO qr4_fhits (hit_form,hit_data,hit_ipaddr,hit_useragent,hit_browser,hit_browserver,hit_platform,hit_ismobile,hit_lat,hit_long,hit_city,hit_region,hit_country,hit_countrycode,hit_timezone) ';
 	$qh .= 'VALUES ('.$forminfo->form_id.','.$dataid.',"'.$ipaddr.'","'.$db->getEscaped($_SERVER['HTTP_USER_AGENT']).'","'.$browser['browser'].'","'.$browser['version'].'","'.$browser['platform'].'","'.$browser['ismobiledevice'].'","'.$lat.'","'.$long.'","'.$city.'","'.$region.'","'.$country.'","'.$countrycode.'","'.$timezone.'")';
 	$db->setQuery($qh);
@@ -114,152 +114,162 @@ $qp = 'SELECT * FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && 
 $db->setQuery($qp);
 $pageinfo = $db->loadObject();
 
+if ($pageinfo->page_qa) {
+	$qqa = 'SELECT * FROM qr4_formpages_qa WHERE qa_page = '.$pageinfo->page_id;
+	$db->setQuery($qqa);
+	$pageqa = $db->loadObject();
+}
 //Handle submission of page
 if ($pagesub=JRequest::getVar("pagesubmit",0)) {
-	if ($pagesub != $pageinfo->page_id) { echo 'Incorrect Page ID'; exit; }
-	//save data
-	$qi = 'SELECT * FROM qr4_formitems WHERE item_page = '.$pageinfo->page_id.' && published = 1 ORDER BY ordering';	
-	$db->setQuery($qi);
-	$items = $db->loadObjectList();
-	if (sizeof($items)) {
-		//remove old answers
-		$itemids = array();
-		foreach ($items as $item) { $itemids[] = $item->item_id; }
-		$qra = 'DELETE FROM qr4_formdata_answers WHERE ans_question IN ('.implode(",",$itemids).') && ans_data = '.$dataid;
-		$db->setQuery($qra);
-		$db->query();
-		//insert new answers
-		foreach ($items as $item) {
-			$answer = '';
-			switch ($item->item_type) {
-				case "txt":
-				case "tbx":
-				case "eml":
-				case "phn":
-				case "rad":
-				case "dds":
-				case "cbx":
-				case "hdn":
-					$answer = $db->getEscaped(JRequest::getVar("i".$item->item_id."f",""));
-					break;
-				case "mcb":
-					$answer = implode(" ",JRequest::getVar("i".$item->item_id."f",""));
-					break;
-				case "dob":
-					$fmonth = $db->getEscaped(JRequest::getInt("i".$item->item_id."f",""));
-					$fday = $db->getEscaped(JRequest::getInt("i".$item->item_id."f_day",""));
-					if ($fmonth < 10) $fmonth = "0".$fmonth;
-					if ($fday < 10) $fday = "0".$fday;
-					$answer = $fmonth.$fday;
-					break;
-			}
-			if ($item->item_type != 'msg') {
-				$qia = 'INSERT INTO qr4_formdata_answers (ans_data,ans_question,ans_answer) VALUES ('.$dataid.','.$item->item_id.',"'.$answer.'")';
-				$db->setQuery($qia);
-				$db->query();
+	if (JRequest::getVar("nextpage",0)) {
+		if ($pagesub != $pageinfo->page_id) { echo 'Incorrect Page ID'; exit; }
+		//save data
+		$qi = 'SELECT * FROM qr4_formitems WHERE item_page = '.$pageinfo->page_id.' && published = 1 ORDER BY ordering';	
+		$db->setQuery($qi);
+		$items = $db->loadObjectList();
+		if (sizeof($items)) {
+			//remove old answers
+			$itemids = array();
+			foreach ($items as $item) { $itemids[] = $item->item_id; }
+			$qra = 'DELETE FROM qr4_formdata_answers WHERE ans_question IN ('.implode(",",$itemids).') && ans_data = '.$dataid;
+			$db->setQuery($qra);
+			$db->query();
+			//insert new answers
+			foreach ($items as $item) {
+				$answer = '';
+				switch ($item->item_type) {
+					case "txt":
+					case "tbx":
+					case "eml":
+					case "phn":
+					case "rad":
+					case "dds":
+					case "cbx":
+					case "hdn":
+						$answer = $db->getEscaped(JRequest::getVar("i".$item->item_id."f",""));
+						break;
+					case "mcb":
+						$answer = implode(" ",JRequest::getVar("i".$item->item_id."f",""));
+						break;
+					case "dob":
+						$fmonth = $db->getEscaped(JRequest::getInt("i".$item->item_id."f",""));
+						$fday = $db->getEscaped(JRequest::getInt("i".$item->item_id."f_day",""));
+						if ($fmonth < 10) $fmonth = "0".$fmonth;
+						if ($fday < 10) $fday = "0".$fday;
+						$answer = $fmonth.$fday;
+						break;
+				}
+				if ($item->item_type != 'msg') {
+					$qia = 'INSERT INTO qr4_formdata_answers (ans_data,ans_question,ans_answer) VALUES ('.$dataid.','.$item->item_id.',"'.$answer.'")';
+					$db->setQuery($qia);
+					$db->query();
+				}
 			}
 		}
-	}
-	//page action
-	if ($pageinfo->page_action == 'submitmail') {
-		include 'lib/swift/swift_required.php';
-		$transport = Swift_SendmailTransport::newInstance();
-		//get emails
-		$qe = 'SELECT * FROM qr4_formpages_emails WHERE eml_page = '.$pageinfo->page_id.' && published = 1 && trashed = 0';
-		$db->setQuery($qe);
-		$emldata = $db->loadObjectList();
-		foreach ($emldata as $eml) {
-			//get to name and address
-			//$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.(int)$eml->eml_toaddr;
-			//$db->setQuery($qte);
-			$toaddr = $eml->eml_toaddr; //$db->loadResult();
-			//$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.(int)$eml->eml_toname;
-			//$db->setQuery($qte);
-			$toname = $eml->eml_toname;//$db->loadResult();
-			if ($toaddr) {
-				$mailer = Swift_Mailer::newInstance($transport);
-				$logger = new Swift_Plugins_Loggers_ArrayLogger();
-				$mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($logger));
-				$message = Swift_Message::newInstance();
-				$message->setSubject($eml->eml_subject);
-				$message->setFrom(array($eml->eml_fromaddr => $eml->eml_fromname));
-				$dba = 'SELECT * FROM qr4_formpages_emails_attach WHERE at_email = '.$eml->eml_id;
-				$db->setQuery($dba);
-				$atlist = $db->loadObjectList();
-				foreach ($atlist as $at) {
-					$attachment = Swift_Attachment::newInstance($at->at_content, $at->at_filename, $at->at_filetype);
-					$message->attach($attachment);
-				}
-				$body = $eml->eml_content;
-				$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.($pageinfo->ordering+1);
-				$db->setQuery($qpp);
-				$prevpages = $db->loadResultArray();
-				if ($prevpages) {
-					$qi  = 'SELECT * FROM qr4_formitems as i ';
-					$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
-					$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$dataid.' ';
-					$qi .= 'ORDER BY i.ordering';	
-					$db->setQuery($qi);
-					
-					$items = $db->loadObjectList();
-					foreach ($items as $item) {
-						$answer = "";
-						switch ($item->item_type) {
-							case "txt":
-							case "tbx":
-							case "eml":
-							case "phn":
-								$answer = $item->ans_answer;
-								break;
-							case "rad":
-							case "dds":
-								$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id = '.$item->ans_answer;
-								$db->setQuery($qa);
-								$answer = $db->loadResult();
-								break;
-							case "mcb":
-								$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id IN ('.str_replace(" ",",",$item->ans_answer).')';
-								$db->setQuery($qa);
-								$answer = implode("<br>",$db->loadResultArray());
-								break;
-							case "cbx":
-								$answer = ($item->ans_answer == "on" ? 'Yes' : 'No');
-								break;
-								
-						}
-						$body = str_replace("{i".$item->item_id."}",$answer,$body);
-						$toaddr = str_replace("{i".$item->item_id."}",$answer,$toaddr);
-						$toname = str_replace("{i".$item->item_id."}",$answer,$toname);
+		//page action
+		if ($pageinfo->page_action == 'submitmail') {
+			include 'lib/swift/swift_required.php';
+			$transport = Swift_SendmailTransport::newInstance();
+			//get emails
+			$qe = 'SELECT * FROM qr4_formpages_emails WHERE eml_page = '.$pageinfo->page_id.' && published = 1 && trashed = 0';
+			$db->setQuery($qe);
+			$emldata = $db->loadObjectList();
+			foreach ($emldata as $eml) {
+				//get to name and address
+				//$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.(int)$eml->eml_toaddr;
+				//$db->setQuery($qte);
+				$toaddr = $eml->eml_toaddr; //$db->loadResult();
+				//$qte = 'SELECT ans_answer FROM qr4_formdata_answers WHERE ans_data = '.$dataid.' && ans_question = '.(int)$eml->eml_toname;
+				//$db->setQuery($qte);
+				$toname = $eml->eml_toname;//$db->loadResult();
+				if ($toaddr) {
+					$mailer = Swift_Mailer::newInstance($transport);
+					$logger = new Swift_Plugins_Loggers_ArrayLogger();
+					$mailer->registerPlugin(new Swift_Plugins_LoggerPlugin($logger));
+					$message = Swift_Message::newInstance();
+					$message->setSubject($eml->eml_subject);
+					$message->setFrom(array($eml->eml_fromaddr => $eml->eml_fromname));
+					$dba = 'SELECT * FROM qr4_formpages_emails_attach WHERE at_email = '.$eml->eml_id;
+					$db->setQuery($dba);
+					$atlist = $db->loadObjectList();
+					foreach ($atlist as $at) {
+						$attachment = Swift_Attachment::newInstance($at->at_content, $at->at_filename, $at->at_filetype);
+						$message->attach($attachment);
 					}
+					$body = $eml->eml_content;
+					$qpp = 'SELECT page_id FROM qr4_formpages WHERE page_form = '.$forminfo->form_id.'  && trashed = 0 && published = 1 && ordering < '.($pageinfo->ordering+1);
+					$db->setQuery($qpp);
+					$prevpages = $db->loadResultArray();
+					if ($prevpages) {
+						$qi  = 'SELECT * FROM qr4_formitems as i ';
+						$qi .= 'RIGHT JOIN qr4_formdata_answers as a ON i.item_id = a.ans_question '; //future data retrevial
+						$qi .= 'WHERE item_page IN ('.implode(",",$prevpages).') && published = 1 && a.ans_data = '.$dataid.' ';
+						$qi .= 'ORDER BY i.ordering';	
+						$db->setQuery($qi);
+						
+						$items = $db->loadObjectList();
+						foreach ($items as $item) {
+							$answer = "";
+							switch ($item->item_type) {
+								case "txt":
+								case "tbx":
+								case "eml":
+								case "phn":
+									$answer = $item->ans_answer;
+									break;
+								case "rad":
+								case "dds":
+									$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id = '.$item->ans_answer;
+									$db->setQuery($qa);
+									$answer = $db->loadResult();
+									break;
+								case "mcb":
+									$qa = 'SELECT opt_text FROM qr4_formitems_opts WHERE opt_id IN ('.str_replace(" ",",",$item->ans_answer).')';
+									$db->setQuery($qa);
+									$answer = implode("<br>",$db->loadResultArray());
+									break;
+								case "cbx":
+									$answer = ($item->ans_answer == "on" ? 'Yes' : 'No');
+									break;
+									
+							}
+							$body = str_replace("{i".$item->item_id."}",$answer,$body);
+							$toaddr = str_replace("{i".$item->item_id."}",$answer,$toaddr);
+							$toname = str_replace("{i".$item->item_id."}",$answer,$toname);
+						}
+					}
+					$message->setTo(array($toaddr => $toname));
+					$message->setBody($body,'text/html');
+					$mailer->send($message);
+					$dbl = 'INSERT INTO qr4_formpages_emails_logs (log_eml,log_msg) VALUES ("'.$eml->eml_id.'","'.$db->getEscaped($logger->dump()).'")';
+					$db->setQuery($dbl);
+					$db->query();
 				}
-				$message->setTo(array($toaddr => $toname));
-				$message->setBody($body,'text/html');
-				$mailer->send($message);
-				$dbl = 'INSERT INTO qr4_formpages_emails_logs (log_eml,log_msg) VALUES ("'.$eml->eml_id.'","'.$db->getEscaped($logger->dump()).'")';
-				$db->setQuery($dbl);
-				$db->query();
+				
 			}
-			
 		}
-	}
-	// --- EMAIL ACTION TO GO HERE ---
-	//set end if submitting
-	if ($pageinfo->page_action == 'submit' || $pageinfo->page_action == 'submitmail' || $pageinfo->page_action == 'redirect') {
-		$qe = 'UPDATE qr4_formdata SET data_end = "'.date("Y-m-d H:i:s").'" WHERE data_id = '.$dataid;
-		$db->setQuery($qe);
-		$db->query();
-	}
-	
-	if ($pageinfo->page_action == 'reset') {
+		// --- EMAIL ACTION TO GO HERE ---
+		//set end if submitting
+		if ($pageinfo->page_action == 'submit' || $pageinfo->page_action == 'submitmail' || $pageinfo->page_action == 'redirect') {
+			$qe = 'UPDATE qr4_formdata SET data_end = "'.date("Y-m-d H:i:s").'" WHERE data_id = '.$dataid;
+			$db->setQuery($qe);
+			$db->query();
+		}
+		
+		if ($pageinfo->page_action == 'reset') {
+			$session->restart();
+		}
+		
+		if ($pageinfo->page_action != "redirect") {
+			//go to next page
+			$session->set('step',$curstep+1);
+			header("Location:$forminfo->form_code");
+		} else {
+			header("Location:$pageinfo->page_redirurl");
+		}
+	} else if (JRequest::getVar("resetform",0)) {
 		$session->restart();
-	}
-	
-	if ($pageinfo->page_action != "redirect") {
-		//go to next page
-		$session->set('step',$curstep+1);
-		header("Location:$forminfo->form_code");
-	} else {
-		header("Location:$pageinfo->page_redirurl");
+			header("Location:$forminfo->form_code");
 	}
 }
 
@@ -331,9 +341,48 @@ if ($pageinfo->page_type=="text" || $pageinfo->page_type=="form" || $pageinfo->p
 					
 			}
 			$pagecontent = str_replace("{i".$item->item_id."}",$answer,$pagecontent);
+			if ($pageinfo->page_qa) {
+				$pageqa->qa_who = str_replace("{i".$item->item_id."}",$answer,$pageqa->qa_who);
+				$pageqa->qa_whodetail = str_replace("{i".$item->item_id."}",$answer,$pageqa->qa_whodetail);
+				$pageqa->qa_instruct = str_replace("{i".$item->item_id."}",$answer,$pageqa->qa_instruct);
+			}
 		}
 	}
 	echo $pagecontent."\n";
+	if ($pageinfo->page_qa) {
+		echo '<script type="text/javascript">
+	
+		  /* attach a submit handler to the form */
+		  window.onload = (function(){
+			try{jQuery("#qandaform").submit(function(event) {
+		
+			/* stop form from submitting normally */
+			event.preventDefault(); 
+				
+			/* Send the data using post and put the results in a div */
+			jQuery.post( "/lib/qanda.php", jQuery("#qandaform").serialize(),
+			  function( data ) {
+				  jQuery( "#qabox-msg" ).empty().append( data );
+				  jQuery(":input","#qandaform").not(":button, :submit, :reset, :hidden").val("");
+							  
+			  }
+			);
+		  });
+		}catch(e){}});
+		</script>';
+		echo '<div id="qabox-outer"><div id="qabox-top"></div><div id="qabox-inner"><div id="qabox-question">';
+		echo '<form id="qandaform" name="qandaform" action="/lib/qanda.php" method="post">';
+		echo $pageqa->qa_instruct;
+		echo '<b>Question:</b><br />';
+		echo '<textarea  name="qtext" id="qatext" rows="2" cols="70" class="required"></textarea><br />';
+		echo '<input type="hidden" name="whodetail" value="'.$pageqa->qa_whodetail.'" />';
+		echo '<input type="hidden" name="who" value="'.$pageqa->qa_who.'" />';
+		echo '<input type="hidden" name="dataid" value="'.$dataid.'" />';
+		echo '<input type="hidden" name="form" value="'.$forminfo->form_id.'" />';
+		echo '<input type="submit" name="button" id="submitter" class="qabox-btn" value="Submit Question" />';
+		echo '<span style="clear:both"><!-- spanner --></span>';
+		echo '</form></div><div id="qabox-msg"></div></div><div id="qabox-bot"></div></div><p>&nbsp;</p>';
+	}
 }
 
 //start form
@@ -359,7 +408,7 @@ if ($pageinfo->page_type=="form") {
 		}
 		echo '</div>'."\n";
 		if ($item->item_type != 'msg') echo '<div class="form-row-field">';
-		else echo '<div class="form-row-message">';
+		else echo '<div class="form-row-field">';
 		
 		if ($item->item_type == 'msg') {
 			echo $item->item_text;
@@ -697,7 +746,7 @@ if ($pageinfo->page_type=="confirm") {
 if ($pageinfo->page_action != "none") {
 	echo '<div id="page-action">';
 	echo '<input type="hidden" name="pagesubmit" value="'.$pageinfo->page_id.'">'."\n";
-	echo '<input type="submit" value="'.$pageinfo->page_actiontext.'" class="button" name="submit">'."\n";
+	echo '<input type="submit" value="'.$pageinfo->page_actiontext.'" class="button" name="nextpage">'."\n";
 	echo '</div>';
 	
 }
@@ -705,6 +754,13 @@ if ($pageinfo->page_action != "none") {
 //end form
 if ($pageinfo->page_action != 'none') {
 	echo '</form>'."\n";
+	if ($pageinfo->page_reset)  {
+		echo '<div id="page-reset">';
+		echo '<form action="" method="post" name="qr4formreset" id="qr4formreset">'."\n";
+		echo '<input type="hidden" name="pagesubmit" value="'.$pageinfo->page_id.'">'."\n";
+		echo '<input type="submit" value="'.$pageinfo->page_resettext.'" class="button" name="resetform"></form>'."\n";
+		echo '</div>';
+	}
 	?>
 <script type="text/javascript">
 	jQuery(document).ready(function() {

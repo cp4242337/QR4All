@@ -4,19 +4,19 @@ $count=0;
 echo '<form name="codelistform" method="post" action="">';
 echo '<div class="codelist-codes">';
 echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
-echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($options).',\'cb\','.$count.');" /></th><th width="30">ID#</th>';
-echo '<th>Text</th>';
+echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($options).',\'cb\','.$count.');" /></th>';
+echo '<th>Text</th><th width="25">ID#</th>';
 if ($user->lvl_edit && (sizeof($options) > 1)) echo '<th width="120">Order <a href="javascript:saveorder('.(sizeof($options)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
 else echo '<th width="100">Order</th>';
 echo '<th width="300">Ops</th></tr>';
 foreach ($options as $d) { 
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="opt[]" value="'.$d->opt_id.'" onclick="isChecked(this.checked);"></td>';
-	echo '<td>'.$d->opt_id.'</td>';
 	echo '<td>';
 	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editopt\')">'.$d->opt_text.'</a>';
 	else echo $d->opt_text;
 	echo '&nbsp;</td>';
+	echo '<td>'.$d->opt_id.'</td>';
 	if ($user->lvl_edit) {
 		echo '<td><input type="text" name="order[]" size="5" value="'.$d->ordering.'" ';
 		if (sizeof($options) <= 1) echo 'disabled="diabled" ';

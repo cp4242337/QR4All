@@ -44,7 +44,30 @@ echo '>Submit Form and Redirect</option>';
 
 ?></select></td></tr>
 <tr><td align="right" class="ftitle">Button Text:</td><td class="ffield"><input name="page_actiontext" class="field maxLength:100" type="text" title="Button Text must be 2-100 characters"  value="<?php echo $pageinfo->page_actiontext; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Reset Button:</td><td class="ffield"><?php 
+
+echo '<input type="radio" name="page_reset" value="0"';
+if ("1" != $pageinfo->page_reset) echo ' checked="checked"';
+echo '> Do Not Display ';
+
+echo '<input type="radio" name="page_reset" value="1"';
+if ("1" == $pageinfo->page_reset) echo ' checked="checked"';
+echo '> Display ';
+
+?></td></tr>
+<tr><td align="right" class="ftitle">Reset Text:</td><td class="ffield"><input name="page_resettext" class="field" type="text" title="Reset Text must be 2-100 characters"  value="<?php echo $pageinfo->page_resettext; ?>"></td></tr>
 <tr><td align="right" class="ftitle">Redirct URL:</td><td class="ffield"><input name="page_redirurl" class="field validate-url" type="text" title="Redirect URL must be a url"  value="<?php echo $pageinfo->page_redirurl; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Show Q & A:</td><td class="ffield"><?php 
+
+echo '<input type="radio" name="page_qa" value="0"';
+if ("1" != $pageinfo->page_qa) echo ' checked="checked"';
+echo '> Do Not Display ';
+
+echo '<input type="radio" name="page_qa" value="1"';
+if ("1" == $pageinfo->page_qa) echo ' checked="checked"';
+echo '> Display ';
+
+?></td></tr>
 <tr><td align="right" class="ftitle">Page Content:</td><td class="ffield"><textarea name="page_content" class="farea"><?php echo $pageinfo->page_content; ?></textarea><br><br>
 <?php 
 if ($aitems) {

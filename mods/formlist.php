@@ -45,6 +45,7 @@ class FormList {
 			echo '<li><a href="#" onclick="allTask(\'stats\');">Form Stats</a></li>';
 			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=formlist&task=addform">Add Form</a></li>';
+				echo '<li><a href="#" onclick="allTask(\'copyForm\');">Copy Form</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'trash\');">Trash</a></li>';
@@ -102,6 +103,7 @@ class FormList {
 		$form_header= $this->db->getEscaped(JRequest::getVar( 'form_header', null, 'default', 'none', 2));
 		$form_body= $this->db->getEscaped(JRequest::getVar( 'form_body', null, 'default', 'none', 2));
 		$form_sessiontime=$this->db->getEscaped(JRequest::getInt('form_sessiontime',30));
+		$form_password=JRequest::getVar('form_password',"");
 		
 		if (!$this->CheckFormCount($form_client)) {
 			$app->setError("Maximum number of forms reached for client","error");
@@ -112,13 +114,17 @@ class FormList {
 		
 		if ($form_id == 0) {
 			$form_code=$this->gen_uuid();
-			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain,form_header,form_body,form_sessiontime) ';
-			$q.= 'VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'","'.$form_header.'","'.$form_body.'","'.$form_sessiontime.'")';
+			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain,form_header,form_body,form_sessiontime,form_password) ';
+			$q.= 'VALUES ("'.$form_code.'","'.$form_title.'","'.$form_pubtitle.'","'.$form_tmpl.'","'.$form_domain.'","'.$form_header.'","'.$form_body.'","'.$form_sessiontime.'","'.md5($form_password).'")';
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
 			$form_id=$this->db->insertid();
 		} else {
 			$q = 'UPDATE qr4_forms SET form_title="'.$form_title.'", form_publictitle="'.$form_pubtitle.'", form_template="'.$form_tmpl.'", form_domain="'.$form_domain.'", form_header="'.$form_header.'", form_body="'.$form_body.'", form_sessiontime="'.$form_sessiontime.'" WHERE form_id = '.$form_id;
 			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
+			if ($form_password) {
+				$qp = 'UPDATE qr4_forms SET form_password="'.md5($form_password).'" WHERE form_id = '.$form_id;
+				$this->db->setQuery($qp); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
+			}
 		}
 		
 		$qd1 = 'DELETE FROM qr4_catforms WHERE catform_form = '.$form_id;
@@ -134,6 +140,140 @@ class FormList {
 		$app->redirect();
 		
 	}
+	
+	function copyForm() {
+		global $app;
+		$cids = JRequest::getVar( 'form', array(0), 'post', 'array' );
+		foreach ($cids as $c) {
+			$q = 'SELECT * FROM qr4_forms WHERE form_id = '.$c;
+			$this->db->setQuery($q);
+			$info = $this->db->loadObject();
+			$form_code=$this->gen_uuid();
+			
+			$q = 'INSERT INTO qr4_forms (form_code,form_title,form_publictitle,form_template,form_domain,form_header,form_body,form_sessiontime,published,trashed) ';
+			$q.= 'VALUES ("'.$form_code.'","'.$info->form_title.' COPY","'.$info->form_publictitle.'","'.$info->form_template.'","'.$info->form_domain.'","'.$this->db->getEscaped($info->form_header).'","'.$this->db->getEscaped($info->form_body).'","'.$info->form_sessiontime.'","'.$info->published.'","'.$info->trashed.'")';
+			$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
+			$form_id=$this->db->insertid();
+			
+			$qd1 = 'SELECT * FROM qr4_catforms WHERE catform_form = '.$info->form_id;
+			$this->db->setQuery($qd1); $cf = $this->db->loadObject();
+			$qi1 = 'INSERT INTO qr4_catforms (catform_cat,catform_form) VALUES ('.$cf->catform_cat.','.$form_id.')';
+			$this->db->setQuery($qi1); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
+			$qd2 = 'SELECT * FROM qr4_clientforms WHERE clform_form = '.$info->form_id;
+			$this->db->setQuery($qd1); $cl = $this->db->loadObject();
+			$qi2 = 'INSERT INTO qr4_clientforms (clform_cl,clform_form) VALUES ('.$cl->clform_cl.','.$form_id.')';
+			$this->db->setQuery($qi2); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist'); $app->redirect(); }
+		
+			
+			$qp = "SELECT * FROM qr4_formpages WHERE page_form = ".$info->form_id. ' ORDER BY ordering';
+			$this->db->setQuery($qp);
+			$pages = $this->db->loadObjectList();
+			
+			foreach ($pages as $p) {
+				$q='SELECT ordering FROM qr4_formpages WHERE page_form = '.$form_id.' ORDER BY ordering DESC LIMIT 1';
+				$this->db->setQuery($q);
+				$on = (int)$this->db->loadResult();
+				if ($on) $orderingp = ($on+1);
+				else $orderingp = 1;
+						
+				$q = 'INSERT INTO qr4_formpages (page_form,page_title,page_type,page_action,page_actiontext,page_reset,page_resettext,page_redirurl,ordering,page_content,page_qa,published,trashed) ';
+				$q.= 'VALUES ("'.$form_id.'","'.$p->page_title.'","'.$p->page_type.'","'.$p->page_action.'","'.$p->page_actiontext.'","'.$p->page_reset.'","'.$p->page_resettext.'","'.$p->page_redirurl.'","'.$orderingp.'","'.$this->db->getEscaped($p->page_content).'","'.$p->page_qa.'","'.$p->published.'","'.$p->trashed.'")';
+				$this->db->setQuery($q); if (!$this->db->query()) { $app->setError($this->db->getErrorMsg(), 'error'); $app->setRedirect('formlist','display',''); $app->redirect(); }
+				$page_id=$this->db->insertid();
+				
+				
+				$qi = 'SELECT * FROM qr4_formitems WHERE item_page = '.$p->page_id. ' ORDER BY ordering';
+				$this->db->setQuery($qi);
+				$items = $this->db->loadObjectList();
+				
+				foreach ($items as $i) {
+					$q='SELECT ordering FROM qr4_formitems WHERE item_page = '.$page_id.' ORDER BY ordering DESC LIMIT 1';
+					$this->db->setQuery($q);
+					$on = (int)$this->db->loadResult();
+					if ($on) $orderingi = ($on+1);
+					else $orderingi = 1;
+	
+					$q  = 'INSERT INTO qr4_formitems (item_page,item_title,item_text,item_hint,item_type,item_req,item_confirm,item_verify,item_verify_limit,item_verify_msg,item_depend_item,item_match_item,ordering,published) ';
+					$q .= 'VALUES ("'.$page_id.'","'.$i->item_title.'","'.$this->db->getEscaped($i->item_text).'","'.$this->db->getEscaped($i->i_hint).'","'.$i->item_type.'","'.$i->i_req.'","'.$item->i_confirm.'","'.$i->item_verify.'","';
+					$q .= $i->item_verify_limit.'","'.$i->item_verify_msg.'","'.$i->item_depend_item.'","'.$i->item_match_item.'","'.$orderingi.'","'.$i->published.'")';
+					$this->db->setQuery($q); 
+					if (!$this->db->query()) { 
+						$app->setError($this->db->getErrorMsg(), 'error'); 
+						$app->setRedirect('formlist','display',''); 
+						$app->redirect();
+						return 0;
+					}
+					$item_id=$this->db->insertid();
+					
+					if ($i->item_type == "rad" || $i->item_type == "mcb" || $i->item_type == "dds") {
+						$qo = "SELECT * FROM qr4_formitems_opts WHERE opt_item = ".$i->item_id. ' ORDER BY ordering';
+						$this->db->setQuery($qo);
+						$opts = $this->db->loadObjectList();
+						foreach ($opts as $o) {
+							$q='SELECT ordering FROM qr4_formitems_opts WHERE opt_item = '.$item_id.' ORDER BY ordering DESC LIMIT 1';
+							$this->db->setQuery($q);
+							$on = (int)$this->db->loadResult();
+							if ($on) $ordering = ($on+1);
+							else $ordering = 1;
+						
+							$q  = 'INSERT INTO qr4_formitems_opts (opt_item,opt_text,opt_depend,ordering,trashed,published) ';
+							$q .= 'VALUES ("'.$item_id.'","'.$this->db->getEscaped($o->opt_text).'","'.$o->opt_depend.'","'.$ordering.'","'.$o->trashed.'","'.$o->published.'")';
+							$this->db->setQuery($q); 
+							if (!$this->db->query()) { 
+								$app->setError($this->db->getErrorMsg(), 'error'); 
+								$app->setRedirect('formlist','display',''); 
+								$app->redirect();
+								return 0;
+							}
+							$opt_id=$this->db->insertid();
+						}
+					}
+				}
+				
+			
+				
+				$qe = 'SELECT * FROM qr4_formpages_emails WHERE eml_page = '.$p->page_id;
+				$this->db->setQuery($qe);
+				$emls = $this->db->loadObjectList();
+				
+				foreach ($emls as $e) {
+					$q  = 'INSERT INTO qr4_formpages_emails (eml_title,eml_page,eml_fromname,eml_fromaddr,eml_toname,eml_toaddr,eml_subject,eml_content) ';
+					$q .= 'VALUES ("'.$e->eml_title.'","'.$page_id.'","'.$e->eml_fromname.'","'.$e->eml_fromaddr.'","'.$e->eml_toname.'","'.$e->eml_toaddr.'","'.$e->eml_subject.'","'.$this->db->getEscaped($e->eml_content).'")';
+					$this->db->setQuery($q); 
+					if (!$this->db->query()) { 
+						$app->setError($this->db->getErrorMsg(), 'error'); 
+						$app->setRedirect('formlist','display',''); 
+						$app->redirect();
+						return 0;
+					}
+				}
+				
+			
+				$qa = 'SELECT * FROM qr4_formpages_qa WHERE qa_page = '.$p->page_id;
+				$this->db->setQuery($qa);
+				$qas = $this->db->loadObject();
+				
+				if ($qas) {
+					$q  = 'INSERT INTO qr4_formpages_qa (qa_page,qa_who,qa_whodetail,qa_instruct) ';
+					$q .= 'VALUES ("'.$page_id.'","'.$this->db->getEscaped($qas->qa_who).'","'.$this->db->getEscaped($qas->qa_whodetail).'","'.$this->db->getEscaped($qas->qa_instruct).'")';
+					$this->db->setQuery($q); 
+					if (!$this->db->query()) { 
+						$app->setError($this->db->getErrorMsg(), 'error'); 
+						$app->setRedirect('pagelist','display','&form='.$form); 
+						$app->redirect();
+						return 0;
+					}
+				}
+			}
+		}
+		
+		$app->setError('Form(s) Copied', 'message');
+		$app->setRedirect('formlist','display',''); 
+		$app->redirect();
+	
+	}
+	
+	
 	
 	function getClientIdFromCat($catid) {
 		$q='SELECT clcat_client FROM qr4_clientcats WHERE clcat_cat = '.$catid;

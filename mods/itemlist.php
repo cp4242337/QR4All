@@ -40,8 +40,11 @@ class ItemList {
 		if ($task == 'display') {
 			if ($user->lvl_edit) {
 				echo '<li><a href="index.php?mod=itemlist&task=additem&form='.JRequest::getInt('form',0).'&page='.JRequest::getInt('page',0).'">Add Item</a></li>';
+				echo '<li><a href="#" onclick="allTask(\'copyItem\');">Copy</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'publish\');">Publish</a></li>';
 				echo '<li><a href="#" onclick="allTask(\'unpublish\');">Unpublish</a></li>';
+				echo '<li><a href="#" onclick="allTask(\'trash\');">Trash</a></li>';
+				echo '<li><a href="#" onclick="allTask(\'untrash\');">Untrash</a></li>';
 			}
 			echo '<li><a href="index.php?mod=pagelist&form='.JRequest::getInt('form',0).'">Pages</a></li>';
 		}
@@ -106,6 +109,61 @@ class ItemList {
 		}
 		$app->setError('Item Saved', 'message');
 		$app->setRedirect('itemlist','display','&form='.$item_form.'&page='.$item_page); 
+		$app->redirect();
+		
+	}
+	
+	function copyItem() {
+		global $app;
+		$cids = JRequest::getVar( 'item', array(0), 'post', 'array' ); 
+		$form = JRequest::getInt( 'form', 0 );
+		$page = JRequest::getInt( 'page', 0 );
+		foreach ($cids as $c) {
+			$qi = 'SELECT * FROM qr4_formitems WHERE item_id = '.$c;
+			$this->db->setQuery($qi);
+			$info = $this->db->loadObject();
+		
+			$ordering=$this->getNextOrderNum($info->item_page);
+			$q  = 'INSERT INTO qr4_formitems (item_page,item_title,item_text,item_hint,item_type,item_req,item_confirm,item_verify,item_verify_limit,item_verify_msg,item_depend_item,item_match_item,ordering,published) ';
+			$q .= 'VALUES ("'.$info->item_page.'","'.$info->item_title.'","'.$this->db->getEscaped($info->item_text).'","'.$this->db->getEscaped($info->item_hint).'","'.$info->item_type.'","'.$info->item_req.'","'.$info->item_confirm.'","'.$info->item_verify.'","';
+			$q .= $info->item_verify_limit.'","'.$info->item_verify_msg.'","'.$info->item_depend_item.'","'.$info->item_match_item.'","'.$ordering.'","'.$info->published.'")';
+			$this->db->setQuery($q); 
+			if (!$this->db->query()) { 
+				$app->setError($this->db->getErrorMsg(), 'error'); 
+				$app->setRedirect('itemlist','display','&form='.$form.'&page='.$page); 
+				$app->redirect();
+				return 0;
+			}
+			
+			$item_id=$this->db->insertid();
+			
+			if ($info->item_type == "rad" || $info->item_type == "mcb" || $info->item_type == "dds") {
+				$qo = "SELECT * FROM qr4_formitems_opts WHERE opt_item = ".$info->item_id. ' ORDER BY ordering';
+				$this->db->setQuery($qo);
+				$opts = $this->db->loadObjectList();
+				foreach ($opts as $o) {
+				
+					$q='SELECT ordering FROM qr4_formitems_opts WHERE opt_item = '.$item_id.' ORDER BY ordering DESC LIMIT 1';
+					$this->db->setQuery($q);
+					$on = (int)$this->db->loadResult();
+					if ($on) $ordering = ($on+1);
+					else $ordering = 1;
+				
+					$q  = 'INSERT INTO qr4_formitems_opts (opt_item,opt_text,opt_depend,ordering,trashed,published) ';
+					$q .= 'VALUES ("'.$item_id.'","'.$this->db->getEscaped($o->opt_text).'","'.$o->opt_depend.'","'.$ordering.'","'.$o->trashed.'","'.$o->published.'")';
+					$this->db->setQuery($q); 
+					if (!$this->db->query()) { 
+						$app->setError($this->db->getErrorMsg(), 'error'); 
+						$app->setRedirect('optlist','display','&form='.$form.'&page='.$page); 
+						$app->redirect();
+						return 0;
+					}
+					$opt_id=$this->db->insertid();
+				}
+			}
+		}
+		$app->setError('Item(s) Copied', 'message');
+		$app->setRedirect('itemlist','display','&form='.$form.'&page='.$page);  
 		$app->redirect();
 		
 	}

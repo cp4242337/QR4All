@@ -34,9 +34,10 @@ foreach ($doms as $d) {
 ?>
 
 </select></td></tr>
+<tr><td align="right" class="ftitle">Session Time (min):</td><td class="ffield"><input name="form_sessiontime" class="field required" type="text" title="Session Time must be more than 15min"  value="<?php echo ($forminfo->form_sessiontime) ? $forminfo->form_sessiontime : "60"; ?>"></td></tr>
+<tr><td align="right" class="ftitle">Password:</td><td class="ffield"><input name="form_password" class="field" type="text" title="Password"></td></tr>
 <tr><td align="right" class="ftitle">Header Lines:</td><td class="ffield"><textarea name="form_header" class="farea"><?php echo $forminfo->form_header; ?></textarea></td></tr>
 <tr><td align="right" class="ftitle">Body Tag:</td><td class="ffield"><textarea name="form_body" class="farea"><?php echo $forminfo->form_body; ?></textarea></td></tr>
-<tr><td align="right" class="ftitle">Session Time (min):</td><td class="ffield"><input name="form_sessiontime" class="field required" type="text" title="Session Time must be more than 15min"  value="<?php echo $forminfo->form_sessiontime; ?>"></td></tr>
 </table>
 <input name="task" type="hidden" value="saveForm">
 <input name="mod" type="hidden" value="formlist">

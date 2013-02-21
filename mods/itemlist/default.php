@@ -12,11 +12,11 @@ echo '<th width="75"># Options</th><th width="300">Ops</th></tr>';
 foreach ($items as $d) { 
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="item[]" value="'.$d->item_id.'" onclick="isChecked(this.checked);"></td>';
-	echo '<td>'.$d->item_id.'&nbsp;</td>';
 	echo '<td>';
 	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'edititem\')">'.$d->item_title.'</a>';
 	else echo $d->item_title;
 	echo '&nbsp;</td>';
+	echo '<td>'.$d->item_id.'&nbsp;</td>';
 	echo '<td>';
 	switch ($d->item_type) {
 		case "msg": echo "Message"; break;

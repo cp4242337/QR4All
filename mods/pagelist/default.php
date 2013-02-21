@@ -4,16 +4,15 @@ $count=0;
 echo '<form name="codelistform" method="post" action="">';
 echo '<div class="codelist-codes">';
 echo '<table cellpadding="0" cellspacing="0" border="0" class="codelist-table">';
-echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($pages).',\'cb\','.$count.');" /></th><th width="30">ID#</th>';
-
-echo '<th>Title</th><th width="250">Type</th><th width="250">Action</th>';
+echo '<tr><th width="10"><input type="checkbox" name="toggle'.$count.'" value="" onclick="checkAll('.sizeof($pages).',\'cb\','.$count.');" /></th>';
+echo '<th width="25">ID#</th><th>Title</th><th width="250">Type</th><th width="250">Action</th>';
 if ($user->lvl_edit && (sizeof($pages) > 1)) echo '<th width="120">Order <a href="javascript:saveorder('.(sizeof($pages)-1).', \'saveorder\')" title="Save Order">Save</a></th>';
 else echo '<th width="100">Order</th>';
 echo '<th width="50"># Items</th><th width="300">Ops</th></tr>';
 foreach ($pages as $d) { 
 	echo '<tr>';
 	echo '<td width="10"><input type="checkbox" id="cb'.$count.'" name="page[]" value="'.$d->page_id.'" onclick="isChecked(this.checked);"></td>';
-	echo '<td>'.$d->page_id.'&nbsp;</td>';
+	echo '<td>'.$d->page_id.'</td>';
 	echo '<td>';
 	if ($user->lvl_edit) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editpage\')">'.$d->page_title.'</a>';
 	else echo $d->page_title;
@@ -54,6 +53,8 @@ foreach ($pages as $d) {
 		else echo '<img src="images/items_i.png" border="0" class="nolink" />';
 		if ($d->page_action == 'submitmail') echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'setupemail\')" title="Setup Email"><img src="images/config.png" border="0" alt="Setup Email" /></a> ';
 		else echo '<img src="images/config_i.png" border="0" class="nolink" />';
+		if ($d->page_qa && $d->ordering != 1) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'editqa\')" title="Q&A"><img src="images/qa.png" border="0" alt="Q&A" /></a> ';
+		else echo '<img src="images/qa_i.png" border="0" class="nolink" />';
 		if ($d->published) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'unpublish\')" title="Unpublish"><img src="images/unpublish.png" border="0" alt="Unpublish" /></a> ';
 		else echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'publish\')" title="Publish"><img src="images/publish.png" border="0" alt="Publish" /></a> ';
 		if (!$d->trashed) echo '<a href="#" onclick="return listItemTask(\'cb'.$count.'\',\'trash\')" title="Send to Trash"><img src="images/trash.png" border="0" "alt="Send to Trash" /></a> ';
